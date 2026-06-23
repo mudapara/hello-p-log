@@ -1,0 +1,46 @@
+.admin-page h1 {
+  font-size: 1.3rem;
+  color: #e65100;
+}
+
+.admin-login {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 280px;
+}
+
+.admin-login input {
+  padding: 0.5rem;
+  border: 1px solid #ffe082;
+  border-radius: 8px;
+}
+
+.admin-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+}
+
+.admin-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f5f5f5;
+  font-size: 0.9rem;
+}
+
+.log-id {
+  font-size: 0.7rem;
+  color: #8d6e63;
+  word-break: break-all;
+}
+
+.btn-danger {
+  background: #ffcdd2;
+  border-color: #e57373;
+  color: #b71c1c;
+  flex-shrink: 0;
+}

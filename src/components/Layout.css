@@ -1,0 +1,81 @@
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background: linear-gradient(135deg, #fff9c4 0%, #fffde7 100%);
+  border-bottom: 2px solid #fdd835;
+  padding: 1rem 1.25rem;
+}
+
+.brand {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.brand-name {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #f57f17;
+}
+
+.brand-tag {
+  display: block;
+  font-size: 0.8rem;
+  color: #6d4c41;
+  margin-top: 0.15rem;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #5d4037;
+  background: #fff;
+  border: 1px solid #ffe082;
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.nav-link.active {
+  background: #ffca28;
+  border-color: #ffa000;
+  color: #3e2723;
+}
+
+.main {
+  flex: 1;
+  padding: 1.25rem;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.footer {
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #795548;
+  border-top: 1px solid #ffe082;
+  background: #fffde7;
+}
+
+.footer a {
+  color: #e65100;
+}
+
+.footer span {
+  margin: 0 0.5rem;
+}

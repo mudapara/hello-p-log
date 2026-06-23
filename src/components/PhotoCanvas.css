@@ -1,0 +1,81 @@
+.photo-canvas {
+  position: relative;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #ffe082;
+  background: #000;
+}
+
+.photo-bg {
+  display: block;
+  width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+.mist-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 88px;
+  height: 68px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  animation: mist-drift 3s ease-in-out infinite;
+  z-index: 2;
+}
+
+.mist-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+.mist-blob-1 {
+  width: 52px;
+  height: 42px;
+  top: 12px;
+  left: 16px;
+  background: radial-gradient(ellipse, rgba(255, 235, 59, 0.95) 0%, rgba(255, 193, 7, 0.65) 45%, rgba(255, 152, 0, 0.25) 70%, transparent 85%);
+  animation: mist-pulse 2.2s ease-in-out infinite;
+}
+
+.mist-blob-2 {
+  width: 38px;
+  height: 32px;
+  top: 4px;
+  left: 4px;
+  background: radial-gradient(ellipse, rgba(255, 241, 118, 0.9) 0%, rgba(255, 193, 7, 0.45) 55%, transparent 80%);
+  animation: mist-pulse 2.8s ease-in-out infinite 0.3s;
+}
+
+.mist-blob-3 {
+  width: 34px;
+  height: 28px;
+  top: 18px;
+  left: 36px;
+  background: radial-gradient(ellipse, rgba(255, 213, 79, 0.88) 0%, rgba(255, 160, 0, 0.4) 60%, transparent 80%);
+  animation: mist-pulse 2.5s ease-in-out infinite 0.6s;
+}
+
+.mist-user .mist-blob-1 {
+  background: radial-gradient(ellipse, rgba(255, 193, 7, 0.98) 0%, rgba(255, 143, 0, 0.7) 50%, rgba(255, 111, 0, 0.3) 75%, transparent 90%);
+}
+
+.mist-user .mist-blob-2,
+.mist-user .mist-blob-3 {
+  background: radial-gradient(ellipse, rgba(255, 179, 0, 0.9) 0%, rgba(255, 143, 0, 0.5) 55%, transparent 80%);
+}
+
+@keyframes mist-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.92; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+@keyframes mist-drift {
+  0%, 100% { transform: translate(-50%, -50%); }
+  50% { transform: translate(-50%, calc(-50% - 3px)); }
+}

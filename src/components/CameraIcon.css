@@ -1,0 +1,9 @@
+.camera-icon {
+  display: inline-block;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.camera-icon--lg {
+  font-size: 4rem;
+}

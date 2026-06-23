@@ -1,0 +1,43 @@
+.ad-slot {
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.ad-label {
+  display: block;
+  font-size: 0.65rem;
+  color: #a1887f;
+  margin-bottom: 0.25rem;
+  letter-spacing: 0.05em;
+}
+
+.ad-placeholder {
+  background: #fafafa;
+  border: 1px dashed #d7ccc8;
+  border-radius: 8px;
+  padding: 1rem;
+  color: #8d6e63;
+}
+
+.ad-placeholder p {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.ad-placeholder small {
+  font-size: 0.7rem;
+  color: #a1887f;
+}
+
+.ad-slot-top .ad-placeholder {
+  min-height: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.ad-slot-footer .ad-placeholder {
+  min-height: 56px;
+}
