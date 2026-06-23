@@ -50,7 +50,7 @@ export function UserLogForm({ mode, photoDataUrl = null, onSubmit }: Props) {
   const [ageDisplay, setAgeDisplay] = useState('')
   const [hideGender, setHideGender] = useState(false)
   const [hideAge, setHideAge] = useState(false)
-  const [smellType, setSmellType] = useState(SMELL_TYPES[0])
+  const [smellType, setSmellType] = useState<typeof SMELL_TYPES[number]>(SMELL_TYPES[0])
   const [smellIntensity, setSmellIntensity] = useState(3)
   const [soundPreset, setSoundPreset] = useState('small_pu')
   const [bustedCount, setBustedCount] = useState(0)
@@ -279,7 +279,11 @@ export function UserLogForm({ mode, photoDataUrl = null, onSubmit }: Props) {
 
       <div className="field">
         <label htmlFor="smell">匂いの種類</label>
-        <select id="smell" value={smellType} onChange={(e) => setSmellType(e.target.value)}>
+        <select
+          id="smell"
+          value={smellType}
+          onChange={(e) => setSmellType(e.target.value as typeof SMELL_TYPES[number])}
+        >
           {SMELL_TYPES.map((s) => (
             <option key={s} value={s}>{s}</option>
           ))}
