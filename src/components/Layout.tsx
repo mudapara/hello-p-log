@@ -1,10 +1,10 @@
 import { Link, Outlet, useLocation } from 'react-router-dom'
-import { AdSlot } from './AdSlot'
 import { APP_NAME, TAGLINE } from '../lib/constants'
 import './Layout.css'
 
 const NAV = [
-  { to: '/', label: '写真鑑識' },
+  { to: '/', label: 'TOP' },
+  { to: '/photo', label: '写真鑑識' },
   { to: '/map', label: '日本マップ' },
   { to: '/log/new', label: 'ログ投稿' },
   { to: '/about', label: '使い方・注意' },
@@ -32,11 +32,9 @@ export function Layout() {
           ))}
         </nav>
       </header>
-      <AdSlot slot="top" />
       <main className="main">
         <Outlet />
       </main>
-      <AdSlot slot="footer" />
       <footer className="footer">
         <Link to="/about">使い方・注意事項</Link>
         <span>·</span>

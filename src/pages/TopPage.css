@@ -1,0 +1,99 @@
+.top-page {
+  text-align: center;
+  padding: 0.5rem 0 2rem;
+}
+
+.top-hero {
+  margin-bottom: 2rem;
+}
+
+.top-kicker {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #f57f17;
+}
+
+.top-title {
+  margin: 0;
+  font-size: clamp(2.5rem, 12vw, 4.5rem);
+  font-weight: 900;
+  line-height: 1.05;
+  color: #e65100;
+  text-shadow:
+    3px 3px 0 #ffca28,
+    6px 6px 0 rgba(255, 193, 7, 0.35);
+}
+
+.top-manifesto {
+  margin: 1.25rem auto 0;
+  max-width: 28rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.7;
+  color: #4e342e;
+}
+
+.top-sub {
+  margin: 1rem auto 0;
+  max-width: 24rem;
+  font-size: 1rem;
+  color: #795548;
+  line-height: 1.6;
+}
+
+.top-nav {
+  display: grid;
+  gap: 1rem;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.top-card {
+  display: block;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  padding: 1.1rem 1.25rem;
+  border-radius: 1rem;
+  border: 2px solid #ffc107;
+  background: linear-gradient(135deg, #fffde7 0%, #fff9c4 100%);
+  box-shadow: 0 4px 0 #ffa000;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.top-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #ffa000;
+}
+
+.top-card-title {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #e65100;
+}
+
+.top-card-desc {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
+  color: #5d4037;
+  line-height: 1.5;
+}
+
+.top-card-go {
+  display: block;
+  margin-top: 0.65rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #f57f17;
+}
+
+.top-footnote {
+  margin: 2rem 0 0;
+  font-size: 0.8rem;
+  color: #a1887f;
+}

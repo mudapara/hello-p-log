@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { JapanMap } from '../components/JapanMap'
 import { LogDetailModal } from '../components/LogDetailModal'
 import { useLogs } from '../hooks/useLogs'
-import { seedAiLogsIfEmpty, isSupabaseEnabled } from '../lib/logStore'
+import { seedAiLogsIfEmpty } from '../lib/logStore'
 import type { FartLog } from '../types'
 import './MapPage.css'
 
@@ -29,13 +29,6 @@ export function MapPage() {
       <p className="lead">
         ログ1件＝黄色い光る点1つ。増えるほど、日本が黄色く見えてきます。
       </p>
-
-      {!isSupabaseEnabled() && (
-        <p className="notice">
-          ローカルモード: このブラウザに保存されたログのみ表示されます。
-          Supabaseを設定すると全員で共有できます。
-        </p>
-      )}
 
       <div className="stats">
         <span>総ログ: <strong>{logs.length}</strong></span>

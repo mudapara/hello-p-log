@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Layout } from './components/Layout'
+import { TopPage } from './pages/TopPage'
 import { HomePage } from './pages/HomePage'
 import { MapPage } from './pages/MapPage'
 import { NewLogPage } from './pages/NewLogPage'
@@ -12,7 +13,8 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<TopPage />} />
+          <Route path="/photo" element={<HomePage />} />
           <Route path="/map" element={<MapPage />} />
           <Route path="/log/new" element={<NewLogPage />} />
           <Route path="/about" element={<AboutPage />} />

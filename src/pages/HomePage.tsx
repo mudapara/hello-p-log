@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { generateAiLogsForLocation, mergeLogsForPhoto } from '../lib/aiLogGenerator'
 import { getCurrentPosition, roundCoordinate } from '../lib/geo'
 import { findNearbyUserLogs } from '../lib/logStore'
@@ -10,11 +10,17 @@ import './HomePage.css'
 export function HomePage() {
   const fileRef = useRef<HTMLInputElement>(null)
   const cameraRef = useRef<HTMLInputElement>(null)
+  const [isMobile, setIsMobile] = useState(false)
   const [photoUrl, setPhotoUrl] = useState<string | null>(null)
   const [overlayLogs, setOverlayLogs] = useState<PhotoOverlayLog[] | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [locationLabel, setLocationLabel] = useState<string | null>(null)
+
+  useEffect(() => {
+    const ua = navigator.userAgent
+    setIsMobile(/Android|iPhone|iPad|iPod|Mobile/i.test(ua))
+  }, [])
 
   const analyzePhoto = async (dataUrl: string) => {
     setLoading(true)
@@ -66,30 +72,33 @@ export function HomePage() {
       <section className="hero">
         <h1>写真鑑識</h1>
         <p className="lead">
-          おならをした場所に、黄色いログを残す——そんなサイトです。
           写真をアップすると、オナラログが浮かび上がります。
         </p>
       </section>
 
       <div className="upload-actions upload-actions--stack">
-        <button type="button" className="btn btn-primary btn-block" onClick={() => cameraRef.current?.click()}>
-          写真を撮影する
-        </button>
-        <button type="button" className="btn btn-block" onClick={() => fileRef.current?.click()}>
+        {isMobile && (
+          <button type="button" className="btn btn-primary btn-block" onClick={() => cameraRef.current?.click()}>
+            写真を撮影する
+          </button>
+        )}
+        <button type="button" className={`btn btn-block${isMobile ? '' : ' btn-primary'}`} onClick={() => fileRef.current?.click()}>
           写真を選ぶ
         </button>
-        <input
-          ref={cameraRef}
-          type="file"
-          accept="image/*"
-          capture="environment"
-          className="hidden-input"
-          onChange={(e) => {
-            const file = e.target.files?.[0]
-            if (file) handleFile(file)
-            e.target.value = ''
-          }}
-        />
+        {isMobile && (
+          <input
+            ref={cameraRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden-input"
+            onChange={(e) => {
+              const file = e.target.files?.[0]
+              if (file) handleFile(file)
+              e.target.value = ''
+            }}
+          />
+        )}
         <input
           ref={fileRef}
           type="file"
@@ -101,10 +110,7 @@ export function HomePage() {
             e.target.value = ''
           }}
         />
-        <p className="hint">撮影・アルバムのどちらでもOK</p>
-        <p className="hint hint-sub">
-          ※スマホでは「撮影する」でカメラが起動します。PCではファイル選択画面が開きます。
-        </p>
+        {isMobile && <p className="hint">撮影・アルバムのどちらでもOK</p>}
       </div>
 
       {loading && <p className="status">解析中…ログを生成しています</p>}
