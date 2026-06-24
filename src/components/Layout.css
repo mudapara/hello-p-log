@@ -2,6 +2,27 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 0%, rgba(255, 235, 59, 0.28) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 45% at 95% 100%, rgba(255, 193, 7, 0.22) 0%, transparent 50%),
+    linear-gradient(165deg, #fffde7 0%, #fff8e1 45%, #fffef5 100%);
+}
+
+.layout::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.35;
+  background-image: radial-gradient(circle, rgba(255, 193, 7, 0.45) 1.5px, transparent 1.5px);
+  background-size: 28px 28px;
+}
+
+.layout > * {
+  position: relative;
+  z-index: 1;
 }
 
 .header {

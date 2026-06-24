@@ -71,9 +71,11 @@
 .dot-ai {
   background: #fff176;
   box-shadow: 0 0 4px #fdd835;
+  border: 1px dashed #f9a825;
 }
 
 .dot-user {
-  background: #ffc107;
-  box-shadow: inset 0 0 0 1px #ff8f00;
+  background: linear-gradient(135deg, #ffeb3b, #ffc107);
+  box-shadow: 0 0 6px rgba(255, 193, 7, 0.8);
+  border: 1px solid #ff8f00;
 }

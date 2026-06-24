@@ -123,7 +123,9 @@ export function HomePage() {
       {photoUrl && overlayLogs && (
         <section className="result">
           <h2>鑑識結果</h2>
-          <p className="hint">黄色いモヤをタップするとメタン情報が見られます</p>
+          <p className="hint">
+            黄色いモヤをタップするとメタン情報が見られます（全{overlayLogs.length}件）
+          </p>
           <PhotoCanvas photoUrl={photoUrl} logs={overlayLogs} />
           <p className="legend">
             <span className="dot dot-ai" /> AI

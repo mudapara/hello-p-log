@@ -18,7 +18,7 @@ import {
   TACTICS,
 } from './constants'
 import { estimateMethaneLevel } from './methaneConcentration'
-import { positionAtButtHeight } from './photoPosition'
+import { positionAtButtHeight, spreadPhotoOverlays } from './photoPosition'
 import { roundCoordinate } from './geo'
 
 function pick<T>(arr: readonly T[]): T {
@@ -143,5 +143,6 @@ export function mergeLogsForPhoto(
   const users = nearbyUserLogs.slice(0, maxUser)
   const aiCount = Math.max(3, aiLogs.length - users.length)
   const selectedAi = aiLogs.slice(0, aiCount)
-  return attachOverlayPositions([...users, ...selectedAi], groundY)
+  const positioned = attachOverlayPositions([...users, ...selectedAi], groundY)
+  return spreadPhotoOverlays(positioned, groundY)
 }

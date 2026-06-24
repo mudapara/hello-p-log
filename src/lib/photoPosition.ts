@@ -130,6 +130,51 @@ export function positionAtButtHeight(groundY: number, x?: number): { x: number; 
   }
 }
 
+const MIN_MARKER_GAP = 0.13
+
+/** 写真上のログが重ならないよう、地面付近に横方向へ分散 */
+export function spreadPhotoOverlays<T extends { overlayX: number; overlayY: number; source: string; photoTapX?: number | null }>(
+  logs: T[],
+  groundY: number,
+): T[] {
+  if (logs.length === 0) return []
+
+  const sorted = [...logs].sort((a, b) => {
+    if (a.source !== b.source) return a.source === 'user' ? -1 : 1
+    return a.overlayX - b.overlayX
+  })
+
+  const yBase = Math.max(0.48, Math.min(0.86, groundY - 0.09))
+  const placed = sorted.map((log, i) => {
+    const useTap = log.source === 'user' && log.photoTapX != null
+    const x = useTap ? log.photoTapX! : 0.12 + (i * 0.76) / Math.max(1, sorted.length - 1)
+    const y = yBase - (i % 2) * 0.035
+    return { ...log, overlayX: x, overlayY: y }
+  })
+
+  placed.sort((a, b) => a.overlayX - b.overlayX)
+  for (let i = 1; i < placed.length; i++) {
+    const prev = placed[i - 1]!
+    const cur = placed[i]!
+    if (cur.overlayX - prev.overlayX < MIN_MARKER_GAP) {
+      placed[i] = { ...cur, overlayX: prev.overlayX + MIN_MARKER_GAP }
+    }
+  }
+
+  const maxX = 0.92
+  const overflow = placed[placed.length - 1]!.overlayX - maxX
+  if (overflow > 0) {
+    for (let i = 0; i < placed.length; i++) {
+      placed[i] = {
+        ...placed[i]!,
+        overlayX: Math.max(0.08, placed[i]!.overlayX - overflow),
+      }
+    }
+  }
+
+  return placed
+}
+
 export function clampTapToButtHeight(
   tapX: number,
   tapY: number,
