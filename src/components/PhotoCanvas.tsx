@@ -30,7 +30,6 @@ export function PhotoCanvas({ photoUrl, logs }: Props) {
             onClick={() => setSelected(log)}
             aria-label={`${log.nickname}のログ（${log.source === 'user' ? '現地' : 'AI'}）`}
           >
-            <span className="mist-ring" aria-hidden="true" />
             <span className="mist-blob mist-blob-1" />
             <span className="mist-blob mist-blob-2" />
             <span className="mist-blob mist-blob-3" />
@@ -38,9 +37,9 @@ export function PhotoCanvas({ photoUrl, logs }: Props) {
               <>
                 <span className="mist-spark mist-spark-1" />
                 <span className="mist-spark mist-spark-2" />
+                <span className="mist-spark mist-spark-3" />
               </>
             )}
-            <span className="mist-badge">{log.source === 'user' ? '現地' : 'AI'}</span>
           </button>
         ))}
       </div>

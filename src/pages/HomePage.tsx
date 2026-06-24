@@ -3,6 +3,7 @@ import { generateAiLogsForLocation, mergeLogsForPhoto } from '../lib/aiLogGenera
 import { getCurrentPosition, roundCoordinate } from '../lib/geo'
 import { findNearbyUserLogs } from '../lib/logStore'
 import { detectGroundLineY, detectPhotoScene } from '../lib/photoPosition'
+import { renderShareImage, shareOrDownloadImage } from '../lib/shareImage'
 import type { PhotoOverlayLog } from '../types'
 import { PhotoCanvas } from '../components/PhotoCanvas'
 import './HomePage.css'
@@ -16,6 +17,8 @@ export function HomePage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [locationLabel, setLocationLabel] = useState<string | null>(null)
+  const [sharing, setSharing] = useState(false)
+  const [shareMessage, setShareMessage] = useState<string | null>(null)
 
   useEffect(() => {
     const ua = navigator.userAgent
@@ -68,6 +71,23 @@ export function HomePage() {
       void analyzePhoto(reader.result as string)
     }
     reader.readAsDataURL(file)
+  }
+
+  const handleShare = async () => {
+    if (!photoUrl || !overlayLogs) return
+    setSharing(true)
+    setShareMessage(null)
+    setError(null)
+    try {
+      const blob = await renderShareImage(photoUrl, overlayLogs)
+      const result = await shareOrDownloadImage(blob, `hello-p-log-${Date.now()}.jpg`)
+      setShareMessage(result === 'shared' ? 'シェアしました' : '画像を保存しました（SNSに貼り付けてください）')
+    } catch (e) {
+      if (e instanceof Error && e.name === 'AbortError') return
+      setError(e instanceof Error ? e.message : 'シェア画像の作成に失敗しました')
+    } finally {
+      setSharing(false)
+    }
   }
 
   return (
@@ -128,9 +148,20 @@ export function HomePage() {
           </p>
           <PhotoCanvas photoUrl={photoUrl} logs={overlayLogs} />
           <p className="legend">
-            <span className="dot dot-ai" /> AI
-            <span className="dot dot-user" /> 現地（ユーザー投稿）
+            <span className="dot dot-ai" /> 淡い黄色＝AI
+            <span className="dot dot-user" /> 濃い黄色＋キラキラ＝現地
           </p>
+          <div className="result-actions">
+            <button
+              type="button"
+              className="btn btn-primary"
+              disabled={sharing}
+              onClick={() => void handleShare()}
+            >
+              {sharing ? '画像を作成中…' : 'SNSでシェア'}
+            </button>
+          </div>
+          {shareMessage && <p className="share-message">{shareMessage}</p>}
         </section>
       )}
     </div>

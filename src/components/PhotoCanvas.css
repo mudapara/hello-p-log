@@ -27,33 +27,16 @@
 }
 
 .mist-marker.mist-ai {
-  width: 72px;
-  height: 56px;
+  width: 68px;
+  height: 54px;
+  opacity: 0.92;
+  filter: saturate(0.85);
 }
 
 .mist-marker.mist-user {
-  width: 96px;
-  height: 76px;
-}
-
-.mist-ring {
-  position: absolute;
-  inset: 2px 8px 10px;
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.mist-ai .mist-ring {
-  border: 2px dashed rgba(255, 241, 118, 0.85);
-  box-shadow: 0 0 8px rgba(255, 235, 59, 0.45);
-}
-
-.mist-user .mist-ring {
-  border: 2px solid rgba(255, 193, 7, 0.95);
-  box-shadow:
-    0 0 10px rgba(255, 235, 59, 0.75),
-    0 0 18px rgba(255, 193, 7, 0.45);
-  animation: mist-ring-pulse 2s ease-in-out infinite;
+  width: 100px;
+  height: 80px;
+  filter: saturate(1.15) brightness(1.05);
 }
 
 .mist-blob {
@@ -111,12 +94,22 @@
 }
 
 .mist-user .mist-blob-1 {
-  background: radial-gradient(ellipse, rgba(255, 235, 59, 0.98) 0%, rgba(255, 193, 7, 0.75) 45%, rgba(255, 152, 0, 0.35) 70%, transparent 88%);
+  background: radial-gradient(ellipse, rgba(255, 235, 59, 1) 0%, rgba(255, 193, 7, 0.82) 40%, rgba(255, 152, 0, 0.4) 68%, transparent 88%);
+  filter: blur(3px);
 }
 
 .mist-user .mist-blob-2,
 .mist-user .mist-blob-3 {
-  background: radial-gradient(ellipse, rgba(255, 213, 79, 0.95) 0%, rgba(255, 179, 0, 0.55) 55%, transparent 82%);
+  background: radial-gradient(ellipse, rgba(255, 213, 79, 0.98) 0%, rgba(255, 179, 0, 0.62) 55%, transparent 82%);
+}
+
+.mist-ai .mist-blob-1 {
+  background: radial-gradient(ellipse, rgba(255, 249, 196, 0.9) 0%, rgba(255, 241, 118, 0.55) 50%, transparent 85%);
+}
+
+.mist-ai .mist-blob-2,
+.mist-ai .mist-blob-3 {
+  background: radial-gradient(ellipse, rgba(255, 245, 157, 0.75) 0%, rgba(255, 235, 59, 0.35) 55%, transparent 82%);
 }
 
 .mist-spark {
@@ -141,32 +134,10 @@
   animation-delay: 1s;
 }
 
-.mist-badge {
-  position: absolute;
-  bottom: -2px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.6rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  padding: 0.1rem 0.4rem;
-  border-radius: 999px;
-  line-height: 1.2;
-  pointer-events: none;
-  white-space: nowrap;
-}
-
-.mist-ai .mist-badge {
-  background: rgba(255, 249, 196, 0.92);
-  color: #f57f17;
-  border: 1px solid #fff176;
-}
-
-.mist-user .mist-badge {
-  background: linear-gradient(135deg, #ffca28, #ffc107);
-  color: #3e2723;
-  border: 1px solid #ffa000;
-  box-shadow: 0 0 6px rgba(255, 193, 7, 0.65);
+.mist-spark-3 {
+  top: 50%;
+  right: 2px;
+  animation-delay: 1.7s;
 }
 
 @keyframes mist-pulse {
@@ -177,11 +148,6 @@
 @keyframes mist-drift {
   0%, 100% { transform: translate(-50%, -50%); }
   50% { transform: translate(-50%, calc(-50% - 3px)); }
-}
-
-@keyframes mist-ring-pulse {
-  0%, 100% { opacity: 0.85; transform: scale(0.96); }
-  50% { opacity: 1; transform: scale(1.04); }
 }
 
 @keyframes mist-sparkle {
