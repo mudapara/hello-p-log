@@ -12,13 +12,13 @@ export function TopPage() {
   return (
     <div className="top-page">
       <section className="top-hero">
-        <p className="top-kicker">世界を黄色にする、覚悟のサイト</p>
+        <p className="top-kicker">今日もどこかで、誰かが残した</p>
         <h1 className="top-title">{APP_NAME}</h1>
         <p className="top-manifesto">
           おならをした場所に、黄色いログを残す——そんなサイトです。
         </p>
         <p className="top-sub">
-          真面目に作った。でも、ばかばかしい。それがいい。
+          誰も求めていない。しかし放たれたのだ…
         </p>
       </section>
 
@@ -27,14 +27,10 @@ export function TopPage() {
           <Link key={item.to} to={item.to} className="top-card">
             <span className="top-card-title">{item.title}</span>
             <span className="top-card-desc">{item.desc}</span>
-            <span className="top-card-go">いくぞ →</span>
+            <span className="top-card-go">こいてみる →</span>
           </Link>
         ))}
       </nav>
-
-      <p className="top-footnote">
-        音は鳴りません。でも、想像はしてください。
-      </p>
     </div>
   )
 }

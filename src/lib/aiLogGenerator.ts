@@ -4,16 +4,20 @@ import {
   AI_AGES,
   AI_FOOD_SAMPLES,
   AI_GENDERS,
-  AI_NAMES,
+  AI_NAMES_FEMALE,
+  AI_NAMES_MALE,
+  AI_NAMES_NEUTRAL,
   ANIMALS,
-  DILUTION_RATES,
   SMELL_STRENGTH_OPTIONS,
   SMELL_TYPES,
   SOCIAL_IMPACTS,
+  SOCIAL_IMPACTS_INDOOR,
+  SOCIAL_IMPACTS_OUTDOOR,
   getComparisonForSpeed,
   SOUND_OPTIONS,
   TACTICS,
 } from './constants'
+import { estimateMethaneLevel } from './methaneConcentration'
 import { positionAtButtHeight } from './photoPosition'
 import { roundCoordinate } from './geo'
 
@@ -36,23 +40,48 @@ function randomLoggedAt(): string {
   return new Date(now - hoursAgo * 3600000).toISOString()
 }
 
-export function generateAiLog(lat: number, lng: number): FartLog {
+export type AiLogScene = 'outdoor' | 'indoor' | 'any'
+
+export interface GenerateAiLogOptions {
+  /** 写真鑑識などシーンに合わせた社会的影響度を選ぶ */
+  scene?: AiLogScene
+}
+
+function pickNameForGender(gender: (typeof AI_GENDERS)[number]): string {
+  if (gender === '男') return pick(AI_NAMES_MALE)
+  if (gender === '女') return pick(AI_NAMES_FEMALE)
+  return pick(AI_NAMES_NEUTRAL)
+}
+
+function pickSocialImpact(scene: AiLogScene): string {
+  if (scene === 'outdoor') return pick(SOCIAL_IMPACTS_OUTDOOR)
+  if (scene === 'indoor') return pick(SOCIAL_IMPACTS_INDOOR)
+  return pick(SOCIAL_IMPACTS)
+}
+
+export function generateAiLog(
+  lat: number,
+  lng: number,
+  options: GenerateAiLogOptions = {},
+): FartLog {
+  const scene = options.scene ?? 'any'
   const isAnimal = Math.random() < 0.2
   const entityType: EntityType = isAnimal ? 'animal' : 'human'
   const sound = pick(SOUND_OPTIONS)
   const tactics = pickMany(Object.keys(TACTICS) as TacticId[], randomInt(1, 2))
   const speed = randomInt(2, 14)
   const smellStrength = pick(SMELL_STRENGTH_OPTIONS)
+  const gender = isAnimal ? null : pick([...AI_GENDERS])
 
-  return {
+  const draft: FartLog = {
     id: uuidv4(),
     source: 'ai',
     latitude: roundCoordinate(lat),
     longitude: roundCoordinate(lng),
     createdAt: new Date().toISOString(),
     loggedAt: randomLoggedAt(),
-    nickname: isAnimal ? pick(ANIMALS) : pick(AI_NAMES),
-    gender: isAnimal ? null : pick([...AI_GENDERS]),
+    nickname: isAnimal ? pick(ANIMALS) : pickNameForGender(gender!),
+    gender,
     ageDisplay: isAnimal ? null : pick(AI_AGES),
     hideGender: false,
     hideAge: false,
@@ -65,8 +94,8 @@ export function generateAiLog(lat: number, lng: number): FartLog {
     tactics,
     releaseSpeedKmh: speed,
     releaseSpeedComparison: getComparisonForSpeed(speed),
-    dilutionRate: pick(DILUTION_RATES),
-    socialImpact: pick(SOCIAL_IMPACTS),
+    dilutionRate: null,
+    socialImpact: pickSocialImpact(scene),
     entityType,
     animalSpecies: isAnimal ? pick(ANIMALS) : null,
     observedConfirmed: false,
@@ -75,11 +104,21 @@ export function generateAiLog(lat: number, lng: number): FartLog {
     photoTapY: null,
     blurConfirmed: false,
   }
+
+  return {
+    ...draft,
+    dilutionRate: estimateMethaneLevel(draft),
+  }
 }
 
-export function generateAiLogsForLocation(lat: number, lng: number, count?: number): FartLog[] {
+export function generateAiLogsForLocation(
+  lat: number,
+  lng: number,
+  count?: number,
+  options: GenerateAiLogOptions = {},
+): FartLog[] {
   const n = count ?? randomInt(4, 9)
-  return Array.from({ length: n }, () => generateAiLog(lat, lng))
+  return Array.from({ length: n }, () => generateAiLog(lat, lng, options))
 }
 
 export function attachOverlayPositions(

@@ -51,6 +51,76 @@ export async function detectGroundLineY(imageSrc: string): Promise<number> {
   return groundRow / h
 }
 
+export type PhotoScene = 'outdoor' | 'indoor' | 'unknown'
+
+function analyzeImagePixels(imageSrc: string): Promise<ImageData> {
+  return loadImage(imageSrc).then((img) => {
+    const w = Math.min(img.width, 320)
+    const h = Math.floor(img.height * (w / img.width))
+    const canvas = document.createElement('canvas')
+    canvas.width = w
+    canvas.height = h
+    const ctx = canvas.getContext('2d')
+    if (!ctx) throw new Error('canvas unavailable')
+    ctx.drawImage(img, 0, 0, w, h)
+    return ctx.getImageData(0, 0, w, h)
+  })
+}
+
+/** 写真が屋外か室内かを簡易推定（空・緑・壁色などから判定） */
+export async function detectPhotoScene(imageSrc: string): Promise<PhotoScene> {
+  try {
+    const { data, width: w, height: h } = await analyzeImagePixels(imageSrc)
+    let skyHits = 0
+    let skySamples = 0
+    let greenHits = 0
+    let greenSamples = 0
+    let warmWallHits = 0
+    let indoorSamples = 0
+
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const i = (y * w + x) * 4
+        const r = data[i]!
+        const g = data[i + 1]!
+        const b = data[i + 2]!
+        const yNorm = y / h
+
+        if (yNorm < 0.35) {
+          skySamples++
+          if (b > r + 18 && b > g + 8 && b > 95) skyHits++
+        }
+
+        if (yNorm > 0.45) {
+          greenSamples++
+          if (g > r + 12 && g > b + 8 && g > 70) greenHits++
+        }
+
+        if (yNorm > 0.08 && yNorm < 0.92) {
+          indoorSamples++
+          const max = Math.max(r, g, b)
+          const min = Math.min(r, g, b)
+          const sat = max === 0 ? 0 : (max - min) / max
+          if (sat < 0.22 && r > 95 && g > 85 && b > 75 && r >= g && g >= b - 15) {
+            warmWallHits++
+          }
+        }
+      }
+    }
+
+    const skyRatio = skyHits / Math.max(1, skySamples)
+    const greenRatio = greenHits / Math.max(1, greenSamples)
+    const wallRatio = warmWallHits / Math.max(1, indoorSamples)
+
+    if (skyRatio > 0.06 || greenRatio > 0.1) return 'outdoor'
+    if (wallRatio > 0.35 && skyRatio < 0.02 && greenRatio < 0.04) return 'indoor'
+    if (skyRatio < 0.015 && greenRatio < 0.03) return 'indoor'
+    return 'unknown'
+  } catch {
+    return 'unknown'
+  }
+}
+
 /** 地面ラインより少し上（お尻の高さ）に配置 */
 export function positionAtButtHeight(groundY: number, x?: number): { x: number; y: number } {
   const buttOffset = 0.07 + Math.random() * 0.06

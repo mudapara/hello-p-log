@@ -27,5 +27,82 @@
 }
 
 .badge-sm.badge-user {
-  background: #ffd54f;
+  background: #ffeb3b;
+  color: #5d4037;
+  font-weight: 700;
+}
+
+/* Leaflet DivIcon wrapper — default icon chrome を消す */
+.map-log-marker-shell {
+  background: transparent !important;
+  border: none !important;
+}
+
+.map-log-marker {
+  position: relative;
+  width: 28px;
+  height: 28px;
+}
+
+.map-log-marker-user .map-log-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 235, 59, 0.75) 0%, rgba(255, 193, 7, 0.45) 45%, rgba(255, 193, 7, 0) 72%);
+  animation: map-glow-pulse 2s ease-in-out infinite;
+}
+
+.map-log-marker-user .map-log-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff9c4 0%, #ffeb3b 40%, #ffc107 100%);
+  box-shadow:
+    0 0 6px rgba(255, 235, 59, 0.95),
+    0 0 12px rgba(255, 193, 7, 0.65),
+    inset 0 0 2px rgba(255, 255, 255, 0.8);
+  border: 1px solid #fdd835;
+}
+
+.map-log-spark {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #fffde7;
+  box-shadow: 0 0 4px #ffeb3b;
+  opacity: 0;
+  animation: map-sparkle 2.4s ease-in-out infinite;
+}
+
+.map-log-spark-1 {
+  top: 2px;
+  right: 4px;
+  animation-delay: 0s;
+}
+
+.map-log-spark-2 {
+  bottom: 3px;
+  left: 2px;
+  animation-delay: 0.8s;
+}
+
+.map-log-spark-3 {
+  top: 8px;
+  left: 1px;
+  animation-delay: 1.6s;
+}
+
+@keyframes map-glow-pulse {
+  0%, 100% { transform: scale(0.92); opacity: 0.75; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+@keyframes map-sparkle {
+  0%, 70%, 100% { opacity: 0; transform: scale(0.5); }
+  35% { opacity: 1; transform: scale(1.2); }
 }

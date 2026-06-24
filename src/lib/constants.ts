@@ -158,9 +158,23 @@ export const TACTICS: Record<TacticId, { label: string; description: string }> =
   },
 }
 
+export const AI_NAMES_MALE = [
+  'サトシ', 'ケンタ', 'タクヤ', 'リョウ', 'ジロウ', 'コウジ', 'ショウ', 'ダイスケ',
+] as const
+
+export const AI_NAMES_FEMALE = [
+  'ユイ', 'ミサキ', 'アヤ', 'ハルカ', 'サクラ', 'ナナ', 'メイ',
+] as const
+
+export const AI_NAMES_NEUTRAL = [
+  'アキラ', 'ハル', 'ユキ', 'ソラ',
+] as const
+
+/** @deprecated 性別連動の AI_NAMES_* を使用 */
 export const AI_NAMES = [
-  'サトシ', 'ユイ', 'ケンタ', 'ミサキ', 'タクヤ', 'アヤ', 'リョウ', 'ハルカ',
-  'ジロウ', 'サクラ', 'コウジ', 'ナナ', 'ショウ', 'メイ', 'ダイスケ',
+  ...AI_NAMES_MALE,
+  ...AI_NAMES_FEMALE,
+  ...AI_NAMES_NEUTRAL,
 ]
 
 export const AI_AGES = [
@@ -234,16 +248,34 @@ export function getComparisonForSpeed(kmh: number): string {
   return pool[Math.floor(Math.random() * pool.length)]!
 }
 
-export const DILUTION_RATES = [
-  '0.003%', '0.012%', '0.08%', '0.15%', '1.2%',
-]
+/** メタンレベルモーダル用の一言説明 */
+export const METHANE_LEVEL_HINT = '1㎥の空気中に占めるメタンガスのレベル'
+
+export const SOCIAL_IMPACTS_OUTDOOR = [
+  '誰も気づかなかった（成功）',
+  '後方の人が1歩距離を取った',
+  '友人1名に白目をもらった',
+  '周囲2m以内で会話が3秒停止',
+  '隣の人が静かに移動した',
+  '周囲の犬が鼻をひくひくさせた',
+  '近くの家族が一瞬黙った',
+  '周囲の人がペースを落とした',
+  '遠くの鳥が飛び立った',
+] as const
+
+export const SOCIAL_IMPACTS_INDOOR = [
+  '周囲の視線が集まった',
+  '周囲の空気が一瞬変わった',
+  '誰かがウィンドウを開けた',
+  '後方でくすくす笑いが起きた',
+  '周囲で一瞬の沈黙',
+  '隣の席の人がそっと距離を取った',
+  '誰も気づかなかった（成功）',
+] as const
 
 export const SOCIAL_IMPACTS = [
-  '周囲2m以内で会話が3秒停止',
-  '後方の人が1歩距離を取った',
-  '誰も気づかなかった（成功）',
-  '友人1名に白目をもらった',
-  '電車内で視線が集まった',
+  ...SOCIAL_IMPACTS_OUTDOOR,
+  ...SOCIAL_IMPACTS_INDOOR,
 ]
 
 export const JAPAN_BOUNDS = {

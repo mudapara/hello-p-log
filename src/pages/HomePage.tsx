@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { generateAiLogsForLocation, mergeLogsForPhoto } from '../lib/aiLogGenerator'
 import { getCurrentPosition, roundCoordinate } from '../lib/geo'
 import { findNearbyUserLogs } from '../lib/logStore'
-import { detectGroundLineY } from '../lib/photoPosition'
+import { detectGroundLineY, detectPhotoScene } from '../lib/photoPosition'
 import type { PhotoOverlayLog } from '../types'
 import { PhotoCanvas } from '../components/PhotoCanvas'
 import './HomePage.css'
@@ -44,7 +44,10 @@ export function HomePage() {
       }
 
       const groundY = await detectGroundLineY(dataUrl)
-      const aiLogs = generateAiLogsForLocation(lat, lng)
+      const photoScene = await detectPhotoScene(dataUrl)
+      const aiScene =
+        photoScene === 'indoor' ? 'indoor' : photoScene === 'outdoor' ? 'outdoor' : 'any'
+      const aiLogs = generateAiLogsForLocation(lat, lng, undefined, { scene: aiScene })
       const nearbyUsers = await findNearbyUserLogs(lat, lng)
       const merged = mergeLogsForPhoto(aiLogs, nearbyUsers, groundY)
       setOverlayLogs(merged)

@@ -9,6 +9,7 @@ import {
   TACTICS,
   getSoundOption,
 } from '../lib/constants'
+import { estimateMethaneLevel } from '../lib/methaneConcentration'
 import { getCurrentPosition, roundCoordinate } from '../lib/geo'
 import './UserLogForm.css'
 
@@ -388,7 +389,7 @@ export function UserLogForm({ mode, photoDataUrl = null, onSubmit }: Props) {
 
 export function formDataToLog(data: UserLogFormData): FartLog {
   const soundText = getSoundOption(data.soundPreset)?.text ?? ''
-  return {
+  const draft: FartLog = {
     id: uuidv4(),
     source: 'user',
     latitude: data.latitude,
@@ -418,5 +419,9 @@ export function formDataToLog(data: UserLogFormData): FartLog {
     photoTapX: data.photoTapX,
     photoTapY: data.photoTapY,
     blurConfirmed: data.blurConfirmed,
+  }
+  return {
+    ...draft,
+    dilutionRate: estimateMethaneLevel(draft),
   }
 }

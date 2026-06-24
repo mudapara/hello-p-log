@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { FartLog } from '../types'
-import { TACTICS, getSmellStrengthLabel } from '../lib/constants'
+import { TACTICS, METHANE_LEVEL_HINT, getSmellStrengthLabel } from '../lib/constants'
+import { getMethaneLevel } from '../lib/methaneConcentration'
 import { formatDateTime } from '../lib/geo'
 import './LogDetailModal.css'
 
@@ -14,6 +15,7 @@ export function LogDetailModal({ log, onClose }: Props) {
 
   const displayGender = log.hideGender ? '非公開' : (log.gender ?? '—')
   const displayAge = log.hideAge ? '非公開' : (log.ageDisplay ?? '—')
+  const methaneLevel = getMethaneLevel(log)
 
   return (
     <div className="modal-backdrop" onClick={onClose} role="presentation">
@@ -111,12 +113,16 @@ export function LogDetailModal({ log, onClose }: Props) {
               </dd>
             </div>
           )}
-          {log.dilutionRate && (
-            <div>
-              <dt>希釈率</dt>
-              <dd>{log.dilutionRate}</dd>
-            </div>
-          )}
+          <div>
+            <dt>メタンレベル</dt>
+            <dd>
+              {methaneLevel}
+              <span className="sub">{METHANE_LEVEL_HINT}</span>
+              {log.source === 'user' && (
+                <span className="sub">投稿内容から推定</span>
+              )}
+            </dd>
+          </div>
           {log.socialImpact && (
             <div>
               <dt>社会的影響度</dt>
