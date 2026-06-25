@@ -27,7 +27,15 @@ function makeUserMarkerIcon(mistStyle?: string) {
           ? 'map-marker-rainbow'
           : mistStyle === 'ghost'
             ? 'map-marker-ghost'
-            : ''
+            : mistStyle === 'ember'
+              ? 'map-marker-ember'
+              : mistStyle === 'void'
+                ? 'map-marker-void'
+                : mistStyle === 'storm'
+                  ? 'map-marker-storm'
+                  : mistStyle === 'neon'
+                    ? 'map-marker-neon'
+                    : ''
   return L.divIcon({
     className: 'map-log-marker-shell',
     html: `

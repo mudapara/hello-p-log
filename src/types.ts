@@ -58,7 +58,16 @@ export interface UserProfileStats {
   uniquePrefectures: string[]
 }
 
-export type MistStyleId = 'default' | 'royal' | 'toxic' | 'rainbow' | 'ghost'
+export type MistStyleId =
+  | 'default'
+  | 'royal'
+  | 'toxic'
+  | 'rainbow'
+  | 'ghost'
+  | 'ember'
+  | 'void'
+  | 'storm'
+  | 'neon'
 
 export interface UserProfile extends UserProfileStats {
   userId: string

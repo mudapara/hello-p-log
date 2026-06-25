@@ -287,6 +287,14 @@ export function getMistStyleClass(style: MistStyleId | string | undefined): stri
       return 'mist-premium-rainbow'
     case 'ghost':
       return 'mist-premium-ghost'
+    case 'ember':
+      return 'mist-premium-ember'
+    case 'void':
+      return 'mist-premium-void'
+    case 'storm':
+      return 'mist-premium-storm'
+    case 'neon':
+      return 'mist-premium-neon'
     default:
       return ''
   }

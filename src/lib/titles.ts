@@ -1,6 +1,15 @@
 import type { UserProfileStats } from '../types'
 
-export type MistStyleId = 'default' | 'royal' | 'toxic' | 'rainbow' | 'ghost'
+export type MistStyleId =
+  | 'default'
+  | 'royal'
+  | 'toxic'
+  | 'rainbow'
+  | 'ghost'
+  | 'ember'
+  | 'void'
+  | 'storm'
+  | 'neon'
 
 export interface TitleDef {
   id: string
@@ -19,6 +28,10 @@ export const MIST_STYLES: Record<
   toxic: { name: '危険モヤ', description: '赤く脈打つ警告色のモヤ' },
   rainbow: { name: '魔境モヤ', description: '油膜のような不気味な虹色' },
   ghost: { name: '残像モヤ', description: '薄く漂う、消えかけのモヤ' },
+  ember: { name: '焔モヤ', description: '燃え盛るオレンジの炎のようなモヤ' },
+  void: { name: '虚無モヤ', description: '吸い込まれそうな闇のモヤ' },
+  storm: { name: '嵐モヤ', description: '渦を巻く紫黒い暴風のモヤ' },
+  neon: { name: 'ネオンモヤ', description: '不気味に光る緑色のモヤ' },
 }
 
 export const TITLE_DEFS: TitleDef[] = [
@@ -48,10 +61,23 @@ export const TITLE_DEFS: TitleDef[] = [
     check: (s) => s.uniquePrefectures.length >= 5,
   },
   {
+    id: 'pilgrimage',
+    name: '列島巡礼',
+    description: '15の都道府県でログを残した',
+    check: (s) => s.uniquePrefectures.length >= 15,
+  },
+  {
     id: 'nationwide',
     name: '全国制覇の屁',
     description: '10の都道府県でログを残した',
     check: (s) => s.uniquePrefectures.length >= 10,
+  },
+  {
+    id: 'nationwide_20',
+    name: '日本縦断',
+    description: '20の都道府県でログを残した',
+    mistUnlock: 'storm',
+    check: (s) => s.uniquePrefectures.length >= 20,
   },
   {
     id: 'methane_apprentice',
@@ -70,6 +96,7 @@ export const TITLE_DEFS: TitleDef[] = [
     id: 'methane_legend',
     name: 'メタン伝説',
     description: 'メタンレベル95以上を記録した',
+    mistUnlock: 'void',
     check: (s) => s.maxMethaneLevel >= 95,
   },
   {
@@ -83,7 +110,20 @@ export const TITLE_DEFS: TitleDef[] = [
     id: 'prolific',
     name: '泛滥の屁王',
     description: '累計20件以上ログを残した',
+    mistUnlock: 'ember',
     check: (s) => s.totalLogs >= 20,
+  },
+  {
+    id: 'prolific_30',
+    name: '三十屁伝',
+    description: '累計30件以上ログを残した',
+    check: (s) => s.totalLogs >= 30,
+  },
+  {
+    id: 'prolific_50',
+    name: '屁の覇者',
+    description: '累計50件以上ログを残した',
+    check: (s) => s.totalLogs >= 50,
   },
   {
     id: 'photo_pro',
@@ -96,13 +136,26 @@ export const TITLE_DEFS: TitleDef[] = [
     id: 'photo_master',
     name: '鑑識マニア',
     description: '写真付きログを15件投稿した',
+    mistUnlock: 'neon',
     check: (s) => s.photoLogs >= 15,
+  },
+  {
+    id: 'photo_poet',
+    name: '現場の詩人',
+    description: '写真付きログを30件投稿した',
+    check: (s) => s.photoLogs >= 30,
   },
   {
     id: 'silent_ghost',
     name: '消音の亡霊',
     description: '静かなログを7件投稿した',
     check: (s) => s.silentLogs >= 7,
+  },
+  {
+    id: 'silent_ninja',
+    name: '極限消音',
+    description: '静かなログを12件投稿した',
+    check: (s) => s.silentLogs >= 12,
   },
   {
     id: 'veteran',
@@ -115,6 +168,18 @@ export const TITLE_DEFS: TitleDef[] = [
     name: 'メタン財閥',
     description: 'メタンポイント1000を超えた',
     check: (s) => s.methanePoints >= 1000,
+  },
+  {
+    id: 'methane_titan',
+    name: 'メタン巨神',
+    description: 'メタンポイント2000を超えた',
+    check: (s) => s.methanePoints >= 2000,
+  },
+  {
+    id: 'methane_god',
+    name: 'メタン神',
+    description: 'メタンポイント3000を超えた',
+    check: (s) => s.methanePoints >= 3000,
   },
 ]
 

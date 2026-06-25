@@ -222,3 +222,58 @@
   0%, 100% { opacity: 0.45; transform: scale(0.95); }
   50% { opacity: 0.72; transform: scale(1.05); }
 }
+
+.mist-premium-ember .mist-blob-1,
+.mist-premium-ember .mist-blob-2,
+.mist-premium-ember .mist-blob-3 {
+  background: radial-gradient(ellipse, rgba(255, 193, 7, 0.95) 0%, rgba(255, 87, 34, 0.75) 45%, rgba(230, 74, 25, 0.3) 75%, transparent 90%);
+  filter: blur(4px);
+  animation: mist-ember-flicker 2s ease-in-out infinite;
+}
+
+.mist-premium-void .mist-blob-1,
+.mist-premium-void .mist-blob-2,
+.mist-premium-void .mist-blob-3 {
+  background: radial-gradient(ellipse, rgba(74, 20, 140, 0.9) 0%, rgba(26, 10, 36, 0.8) 50%, rgba(0, 0, 0, 0.5) 75%, transparent 92%);
+  filter: blur(5px);
+  animation: mist-void-drain 3.5s ease-in-out infinite;
+}
+
+.mist-premium-storm .mist-blob-1 {
+  background: radial-gradient(ellipse, rgba(96, 125, 139, 0.9) 0%, rgba(55, 71, 79, 0.75) 40%, rgba(38, 50, 56, 0.45) 70%, transparent 90%);
+  animation: mist-storm-swirl 4s linear infinite;
+}
+
+.mist-premium-storm .mist-blob-2,
+.mist-premium-storm .mist-blob-3 {
+  background: radial-gradient(ellipse, rgba(81, 45, 168, 0.55) 0%, rgba(38, 50, 56, 0.4) 60%, transparent 85%);
+  animation: mist-storm-swirl 5s linear infinite reverse;
+}
+
+.mist-premium-neon .mist-blob-1,
+.mist-premium-neon .mist-blob-2,
+.mist-premium-neon .mist-blob-3 {
+  background: radial-gradient(ellipse, rgba(200, 255, 200, 0.95) 0%, rgba(102, 187, 106, 0.75) 40%, rgba(46, 125, 50, 0.35) 70%, transparent 90%);
+  filter: blur(3px);
+  animation: mist-neon-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes mist-ember-flicker {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+@keyframes mist-void-drain {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(0.92); opacity: 0.95; }
+}
+
+@keyframes mist-storm-swirl {
+  from { transform: rotate(0deg) scale(1); }
+  to { transform: rotate(360deg) scale(1.05); }
+}
+
+@keyframes mist-neon-pulse {
+  0%, 100% { opacity: 0.85; filter: brightness(1); }
+  50% { opacity: 1; filter: brightness(1.25); }
+}

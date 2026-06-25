@@ -145,3 +145,61 @@
   0%, 100% { opacity: 0.55; }
   50% { opacity: 0.9; }
 }
+
+.map-marker-ember .map-log-glow {
+  background: radial-gradient(circle, rgba(255, 152, 0, 0.8) 0%, rgba(255, 87, 34, 0.5) 45%, transparent 72%);
+}
+
+.map-marker-ember .map-log-core {
+  background: radial-gradient(circle at 35% 35%, #fff3e0 0%, #ff9800 45%, #e65100 100%);
+  box-shadow: 0 0 12px rgba(255, 152, 0, 0.95);
+  animation: map-ember-flicker 2s ease-in-out infinite;
+}
+
+.map-marker-void .map-log-glow {
+  background: radial-gradient(circle, rgba(49, 27, 66, 0.85) 0%, rgba(20, 10, 30, 0.55) 50%, transparent 75%);
+}
+
+.map-marker-void .map-log-core {
+  background: radial-gradient(circle at 40% 40%, #4a148c 0%, #1a0a24 55%, #000 100%);
+  box-shadow: 0 0 14px rgba(74, 20, 140, 0.9), inset 0 0 4px rgba(0, 0, 0, 0.8);
+  animation: map-void-pulse 3s ease-in-out infinite;
+}
+
+.map-marker-storm .map-log-glow {
+  background: radial-gradient(circle, rgba(81, 45, 168, 0.7) 0%, rgba(38, 50, 56, 0.55) 50%, transparent 75%);
+  animation: map-storm-spin 4s linear infinite;
+}
+
+.map-marker-storm .map-log-core {
+  background: radial-gradient(circle at 35% 35%, #78909c 0%, #455a64 40%, #263238 100%);
+  box-shadow: 0 0 10px rgba(96, 125, 139, 0.85);
+}
+
+.map-marker-neon .map-log-core {
+  background: radial-gradient(circle at 35% 35%, #e8f5e9 0%, #66bb6a 40%, #2e7d32 100%);
+  box-shadow: 0 0 14px rgba(102, 187, 106, 0.95), 0 0 6px rgba(0, 255, 100, 0.4);
+  animation: map-neon-flicker 1.5s ease-in-out infinite;
+}
+
+@keyframes map-ember-flicker {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); filter: brightness(1); }
+  50% { transform: translate(-50%, -50%) scale(1.1); filter: brightness(1.2); }
+}
+
+@keyframes map-void-pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.85; }
+  50% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+}
+
+@keyframes map-storm-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes map-neon-flicker {
+  0%, 100% { opacity: 1; }
+  45% { opacity: 0.75; }
+  50% { opacity: 1; }
+  55% { opacity: 0.8; }
+}
