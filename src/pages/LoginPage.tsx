@@ -1,7 +1,15 @@
 import { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { APP_NAME } from '../lib/constants'
 import './LoginPage.css'
+
+function formatAuthError(message: string): string {
+  if (message.includes('provider is not enabled')) {
+    return 'Googleログインはまだ有効になっていません。メールアドレスでのログインをお試しください。'
+  }
+  return message
+}
 
 export function LoginPage() {
   const { user, authAvailable, signInWithGoogle, signInWithEmail } = useAuth()
@@ -30,7 +38,8 @@ export function LoginPage() {
     try {
       await signInWithGoogle()
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Googleログインに失敗しました')
+      const raw = e instanceof Error ? e.message : 'Googleログインに失敗しました'
+      setError(formatAuthError(raw))
       setLoading(false)
     }
   }
@@ -46,7 +55,7 @@ export function LoginPage() {
     const result = await signInWithEmail(email.trim())
     setLoading(false)
     if (result.error) {
-      setError(result.error)
+      setError(formatAuthError(result.error))
       return
     }
     setSent(true)
@@ -59,6 +68,10 @@ export function LoginPage() {
         <p>
           <strong>{email}</strong> にログイン用リンクを送りました。
           メール内のリンクをタップすると、マイ屁ログ画面に戻ります。
+        </p>
+        <p className="hint">
+          メールの件名や本文が英語の場合があります（送信元は {APP_NAME} のログイン機能です）。
+          リンクが開けないときは、ブラウザで {APP_NAME} を開き直してからもう一度お試しください。
         </p>
         <Link to="/my-logs" className="btn">マイ屁ログへ</Link>
       </div>
@@ -98,7 +111,7 @@ export function LoginPage() {
       {error && <p className="error">{error}</p>}
 
       <section className="login-benefits">
-        <h2>ログインするメリット</h2>
+        <h2>ログインのインセンティブゥ～💨</h2>
         <ul>
           <li>自分のログ一覧を、どの端末からでも見られる</li>
           <li>投稿したログを自分で編集・削除できる</li>

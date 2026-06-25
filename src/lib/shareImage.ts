@@ -1,8 +1,7 @@
 import type { PhotoOverlayLog } from '../types'
-import { APP_NAME } from './constants'
+import { APP_NAME, SITE_URL } from './constants'
 import { getMethaneLevel } from './methaneConcentration'
 
-export const SITE_URL = 'https://hello-p-log.vercel.app'
 export const SHARE_MESSAGE = `この場所に漂う屁ログを検出しました！！\n${SITE_URL}`
 
 const SHARE_WIDTH = 1080

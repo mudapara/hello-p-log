@@ -8,6 +8,7 @@ const ENTRIES = [
   { to: '/map', title: '日本マップ', desc: '全国のおなら痕跡。増えるほど黄色くなる。' },
   { to: '/log/new', title: 'ログ投稿', desc: '地図に痕跡を残す。写真は任意。' },
   { to: '/ranking', title: 'ランキング', desc: '都道府県別・メタンポイント順位。' },
+  { to: '/my-logs', title: 'マイ屁ログ', desc: '自分のログ・メタンポイント・称号・特別モヤ。' },
 ] as const
 
 export function TopPage() {

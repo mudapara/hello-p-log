@@ -11,6 +11,7 @@ import {
 } from '../lib/constants'
 import { estimateMethaneLevel } from '../lib/methaneConcentration'
 import { getCurrentPosition, roundCoordinate } from '../lib/geo'
+import { nowDatetimeLocalValue, toDatetimeLocalValue } from '../lib/datetimeLocal'
 import './UserLogForm.css'
 
 export interface UserLogFormData {
@@ -45,13 +46,6 @@ interface Props {
   onSubmit: (data: UserLogFormData) => Promise<void>
 }
 
-function toDatetimeLocalValue(iso: string): string {
-  const date = new Date(iso)
-  if (Number.isNaN(date.getTime())) return new Date().toISOString().slice(0, 16)
-  const offset = date.getTimezoneOffset()
-  const local = new Date(date.getTime() - offset * 60_000)
-  return local.toISOString().slice(0, 16)
-}
 
 export function logToFormData(log: FartLog): UserLogFormData {
   return {
@@ -90,7 +84,7 @@ export function UserLogForm({
   const [nickname, setNickname] = useState(defaults?.nickname ?? '')
   const [mainComponent, setMainComponent] = useState(defaults?.mainComponent ?? '')
   const [loggedAt, setLoggedAt] = useState(
-    defaults?.loggedAt ?? new Date().toISOString().slice(0, 16),
+    defaults?.loggedAt ?? nowDatetimeLocalValue(),
   )
   const [gender, setGender] = useState(defaults?.gender ?? '')
   const [ageDisplay, setAgeDisplay] = useState(defaults?.ageDisplay ?? '')
@@ -231,7 +225,7 @@ export function UserLogForm({
         />
       </div>
 
-      <div className="field">
+      <div className="field field-datetime">
         <label htmlFor="loggedAt">日時</label>
         <input
           id="loggedAt"

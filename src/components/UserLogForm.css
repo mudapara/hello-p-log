@@ -33,6 +33,13 @@
   display: block;
   width: 100%;
   max-width: 100%;
+  min-width: 0;
+  -webkit-min-logical-width: 0;
+}
+
+.field-datetime {
+  min-width: 0;
+  overflow: hidden;
 }
 
 .field-row {

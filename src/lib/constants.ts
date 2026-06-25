@@ -3,6 +3,21 @@ import type { TacticId } from '../types'
 export const APP_NAME = 'Hello屁ログ'
 export const TAGLINE = 'おならの痕跡を、地図に残すサイト'
 
+export const SITE_URL =
+  (import.meta.env.VITE_SITE_URL as string | undefined)?.replace(/\/$/, '') ||
+  'https://hello-p-log.vercel.app'
+
+/** ログイン後のリダイレクト先（本番は常に公開URL） */
+export function getAuthRedirectUrl(path = '/my-logs'): string {
+  if (typeof window !== 'undefined') {
+    const { origin, hostname } = window.location
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return `${origin}${path}`
+    }
+  }
+  return `${SITE_URL}${path}`
+}
+
 /** AI生成用の食べ物サンプル（ユーザー入力は自由記載） */
 export const AI_FOOD_SAMPLES = [
   '焼き芋', 'ビール', 'ラーメン', 'カレー', '納豆', '牛乳', 'サラダ', 'コンビニ弁当',

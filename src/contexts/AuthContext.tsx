@@ -9,6 +9,7 @@ import {
 } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { getSupabaseClient, isAuthAvailable } from '../lib/supabase'
+import { getAuthRedirectUrl } from '../lib/constants'
 import { recordDailyLogin } from '../lib/profileStore'
 
 interface AuthContextValue {
@@ -58,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!supabase) throw new Error('ログイン機能が利用できません')
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/my-logs` },
+      options: { redirectTo: getAuthRedirectUrl() },
     })
     if (error) throw error
   }, [])
@@ -68,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!supabase) return { error: 'ログイン機能が利用できません' }
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/my-logs` },
+      options: { emailRedirectTo: getAuthRedirectUrl() },
     })
     return { error: error?.message ?? null }
   }, [])

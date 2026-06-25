@@ -159,20 +159,33 @@ export function HomePage() {
       </section>
 
       <div className="upload-actions upload-actions--stack">
-        <label className="exif-consent">
-          <input
-            type="checkbox"
-            checked={exifConsent}
-            onChange={(e) => {
-              const checked = e.target.checked
-              setExifConsent(checked)
-              localStorage.setItem(EXIF_CONSENT_KEY, String(checked))
-            }}
-          />
-          <span>
-            写真に含まれる位置情報（EXIF）を、この鑑識のためだけに使用することに同意する
-          </span>
-        </label>
+        <fieldset className="exif-choice">
+          <legend>写真の位置情報</legend>
+          <label className="exif-option">
+            <input
+              type="radio"
+              name="exif-consent"
+              checked={exifConsent}
+              onChange={() => {
+                setExifConsent(true)
+                localStorage.setItem(EXIF_CONSENT_KEY, 'true')
+              }}
+            />
+            <span>写真に含まれる位置情報を使用する</span>
+          </label>
+          <label className="exif-option">
+            <input
+              type="radio"
+              name="exif-consent"
+              checked={!exifConsent}
+              onChange={() => {
+                setExifConsent(false)
+                localStorage.setItem(EXIF_CONSENT_KEY, 'false')
+              }}
+            />
+            <span>写真に含まれる位置情報を使用しない</span>
+          </label>
+        </fieldset>
         <button type="button" className="btn btn-primary btn-block" onClick={() => fileRef.current?.click()}>
           写真を選ぶ
         </button>
@@ -187,9 +200,6 @@ export function HomePage() {
             e.target.value = ''
           }}
         />
-        <p className="hint-sub">
-          位置情報はブラウザの許可、または上記同意時のみ写真内のEXIFから取得します。
-        </p>
       </div>
 
       {loading && <p className="status">解析中…ログを生成しています</p>}

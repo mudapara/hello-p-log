@@ -12,7 +12,7 @@
 
 .upload-actions {
   margin: 1.5rem auto;
-  max-width: 280px;
+  max-width: 360px;
 }
 
 .upload-actions--stack {
@@ -25,21 +25,34 @@
   width: 100%;
 }
 
-.exif-consent {
+.exif-choice {
+  border: 1px solid #ffe082;
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+  margin: 0;
+  background: #fffef5;
+  text-align: left;
+}
+
+.exif-choice legend {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #5d4037;
+  padding: 0 0.25rem;
+}
+
+.exif-option {
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
   font-size: 0.78rem;
   line-height: 1.45;
   color: #5d4037;
-  text-align: left;
-  padding: 0.65rem 0.75rem;
-  background: #fffef5;
-  border: 1px solid #ffe082;
-  border-radius: 10px;
+  margin-top: 0.4rem;
+  cursor: pointer;
 }
 
-.exif-consent input {
+.exif-option input {
   margin-top: 0.2rem;
   flex-shrink: 0;
 }

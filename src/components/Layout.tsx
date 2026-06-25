@@ -6,6 +6,7 @@ import './Layout.css'
 const NAV = [
   { to: '/', label: 'TOP' },
   { to: '/photo', label: '写真鑑識' },
+  { to: '/ar', label: '現場AR' },
   { to: '/map', label: '日本マップ' },
   { to: '/log/new', label: 'ログ投稿' },
   { to: '/my-logs', label: 'マイ屁ログ' },
@@ -19,6 +20,9 @@ function isNavActive(pathname: string, to: string): boolean {
   }
   if (to === '/log/new') {
     return pathname === '/log/new'
+  }
+  if (to === '/ar') {
+    return pathname === '/ar'
   }
   return pathname === to
 }
