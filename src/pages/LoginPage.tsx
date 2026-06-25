@@ -1,22 +1,19 @@
 import { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { APP_NAME } from '../lib/constants'
 import { getErrorMessage } from '../lib/errors'
 import './LoginPage.css'
 
 function formatAuthError(error: unknown): string {
   const message = getErrorMessage(error, 'ログインに失敗しました')
   if (message.includes('provider is not enabled')) {
-    return 'Googleログインはまだ有効になっていません。メールアドレスでのログインをお試しください。'
+    return 'Googleログインは現在利用できません。しばらくしてからもう一度お試しください。'
   }
   return message
 }
 
 export function LoginPage() {
-  const { user, authAvailable, signInWithGoogle, signInWithEmail } = useAuth()
-  const [email, setEmail] = useState('')
-  const [sent, setSent] = useState(false)
+  const { user, authAvailable, signInWithGoogle } = useAuth()
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -40,50 +37,15 @@ export function LoginPage() {
     try {
       await signInWithGoogle()
     } catch (e) {
-      const raw = e instanceof Error ? e.message : 'Googleログインに失敗しました'
-      setError(formatAuthError(raw))
+      setError(formatAuthError(e))
       setLoading(false)
     }
-  }
-
-  const handleEmail = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!email.trim()) {
-      setError('メールアドレスを入力してください')
-      return
-    }
-    setLoading(true)
-    setError(null)
-    const result = await signInWithEmail(email.trim())
-    setLoading(false)
-    if (result.error) {
-      setError(formatAuthError(result.error))
-      return
-    }
-    setSent(true)
-  }
-
-  if (sent) {
-    return (
-      <div className="login-page">
-        <h1>メールを確認してください</h1>
-        <p>
-          <strong>{email}</strong> にログイン用リンクを送りました。
-          メール内のリンクをタップすると、マイ屁ログ画面に戻ります。
-        </p>
-        <p className="hint">
-          送信元は {APP_NAME} です。届かない場合は迷惑メールフォルダも確認してください。
-          Resend のテスト送信（onboarding@resend.dev）では、Resend に登録したメールアドレス宛のみ届く場合があります。
-        </p>
-        <Link to="/my-logs" className="btn">マイ屁ログへ</Link>
-      </div>
-    )
   }
 
   return (
     <div className="login-page">
       <h1>ログイン</h1>
-      <p className="lead">Googleアカウントまたはメールアドレスでログインできます。</p>
+      <p className="lead">Googleアカウントでログインできます。</p>
 
       <button
         type="button"
@@ -91,27 +53,8 @@ export function LoginPage() {
         disabled={loading}
         onClick={() => void handleGoogle()}
       >
-        Googleでログイン
+        {loading ? 'Googleに移動中…' : 'Googleでログイン'}
       </button>
-
-      <div className="login-divider">または</div>
-
-      <form onSubmit={(e) => void handleEmail(e)} className="login-email-form">
-        <label htmlFor="email">メールアドレス</label>
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
-        />
-        <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? '送信中…' : 'ログインリンクを送る'}
-        </button>
-        <p className="hint">
-          テスト中は Resend 登録メールと同じアドレスで試すと届きやすいです。
-        </p>
-      </form>
 
       {error && <p className="error">{error}</p>}
 

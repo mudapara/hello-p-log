@@ -25,7 +25,7 @@ export function AboutPage() {
           <li><strong>日本マップ</strong> — AIとユーザーのログが表示されます。増えるほど地図が黄色く染まります。</li>
           <li><strong>ログ投稿</strong> — ログだけ、または写真付きで投稿できます。写真付きの場合は合成画像をダウンロードできます。</li>
           <li><strong>ランキング</strong> — 都道府県別とメタンポイント順位</li>
-          <li><strong>マイ屁ログ</strong> — ログインで投稿一覧・メタンポイント・称号・特別モヤ</li>
+          <li><strong>マイ屁ログ</strong> — Googleログインで投稿一覧・メタンポイント・称号・特別モヤ</li>
         </ol>
       </section>
 

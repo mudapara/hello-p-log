@@ -91,7 +91,7 @@ export function MyLogsPage() {
             ログインするとメタンポイント・称号・特別モヤが使えます。
             ログインしていなくても、この端末で投稿した分は表示されます。
           </p>
-          <Link to="/login" className="btn btn-primary">ログイン / 新規登録</Link>
+          <Link to="/login" className="btn btn-primary">Googleでログイン</Link>
         </div>
       )}
 
