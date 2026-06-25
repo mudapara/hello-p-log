@@ -22,6 +22,13 @@ Supabase Dashboard → **Authentication** → **Emails**
 
 `{{ .ConfirmationURL }}` は**そのまま残す**（リンク用の変数です）。
 
+### Resend 利用時の注意（テスト段階）
+
+送信元が `onboarding@resend.dev` のとき、**Resend に登録したメールアドレス宛にしか送れない**ことがあります。  
+別のアドレス（例: 友人の Gmail）には届きません。
+
+誰にでも送るには Resend でドメインを認証し、Sender email を `noreply@あなたのドメイン` に変更してください。
+
 ---
 
 ## 2. リダイレクト URL

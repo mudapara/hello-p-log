@@ -2,9 +2,11 @@ import { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { APP_NAME } from '../lib/constants'
+import { getErrorMessage } from '../lib/errors'
 import './LoginPage.css'
 
-function formatAuthError(message: string): string {
+function formatAuthError(error: unknown): string {
+  const message = getErrorMessage(error, 'ログインに失敗しました')
   if (message.includes('provider is not enabled')) {
     return 'Googleログインはまだ有効になっていません。メールアドレスでのログインをお試しください。'
   }
@@ -70,8 +72,8 @@ export function LoginPage() {
           メール内のリンクをタップすると、マイ屁ログ画面に戻ります。
         </p>
         <p className="hint">
-          メールの件名や本文が英語の場合があります（送信元は {APP_NAME} のログイン機能です）。
-          リンクが開けないときは、ブラウザで {APP_NAME} を開き直してからもう一度お試しください。
+          送信元は {APP_NAME} です。届かない場合は迷惑メールフォルダも確認してください。
+          Resend のテスト送信（onboarding@resend.dev）では、Resend に登録したメールアドレス宛のみ届く場合があります。
         </p>
         <Link to="/my-logs" className="btn">マイ屁ログへ</Link>
       </div>
@@ -106,6 +108,9 @@ export function LoginPage() {
         <button type="submit" className="btn btn-primary" disabled={loading}>
           {loading ? '送信中…' : 'ログインリンクを送る'}
         </button>
+        <p className="hint">
+          テスト中は Resend 登録メールと同じアドレスで試すと届きやすいです。
+        </p>
       </form>
 
       {error && <p className="error">{error}</p>}
