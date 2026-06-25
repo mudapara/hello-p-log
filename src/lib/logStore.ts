@@ -133,19 +133,26 @@ export async function fetchMyLogs(userId: string | null): Promise<FartLog[]> {
       .eq('user_id', userId)
       .eq('source', 'user')
       .order('created_at', { ascending: false })
-    if (error) throw error
-    for (const row of data ?? []) {
-      byId.set(row.id as string, rowToLog(row))
+    if (error) {
+      console.warn('fetchMyLogs by user_id:', error)
+    } else {
+      for (const row of data ?? []) {
+        byId.set(row.id as string, rowToLog(row))
+      }
     }
   }
 
   const localIds = getMyLogIds()
   if (localIds.length > 0) {
-    const all = supabase ? await fetchAllLogs() : readLocalLogs()
-    for (const log of all) {
-      if (log.source === 'user' && localIds.includes(log.id)) {
-        byId.set(log.id, log)
+    try {
+      const all = supabase ? await fetchAllLogs() : readLocalLogs()
+      for (const log of all) {
+        if (log.source === 'user' && localIds.includes(log.id)) {
+          byId.set(log.id, log)
+        }
       }
+    } catch (e) {
+      console.warn('fetchMyLogs local merge:', e)
     }
   }
 

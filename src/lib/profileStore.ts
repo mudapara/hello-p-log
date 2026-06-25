@@ -85,7 +85,9 @@ function writeLocalProfile(profile: UserProfile): void {
 async function saveProfile(profile: UserProfile): Promise<UserProfile> {
   const supabase = getSupabaseClient()
   if (supabase) {
-    const { error } = await supabase.from('user_profiles').upsert(profileToRow(profile))
+    const { error } = await supabase
+      .from('user_profiles')
+      .upsert(profileToRow(profile), { onConflict: 'user_id' })
     if (error) throw error
     return profile
   }
@@ -138,7 +140,10 @@ export async function getUserProfile(userId: string): Promise<UserProfile> {
       .select('*')
       .eq('user_id', userId)
       .maybeSingle()
-    if (error) throw error
+    if (error) {
+      console.warn('getUserProfile:', error)
+      return defaultProfile(userId)
+    }
     return data ? rowToProfile(data) : defaultProfile(userId)
   }
   return readLocalProfile(userId)

@@ -32,3 +32,6 @@ create policy "Users update own profile"
   on user_profiles for update
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
+
+-- API（anon / authenticated）から読み書きできるようにする
+grant select, insert, update on public.user_profiles to anon, authenticated;

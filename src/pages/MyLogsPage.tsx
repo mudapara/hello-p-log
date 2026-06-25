@@ -22,19 +22,17 @@ export function MyLogsPage() {
   const load = async () => {
     setLoading(true)
     setError(null)
-    try {
-      const data = await fetchMyLogs(user?.id ?? null)
-      setLogs(data)
-      if (user?.id) {
-        setProfile(await getUserProfile(user.id))
-      } else {
-        setProfile(null)
-      }
-    } catch (e) {
-      setError(e instanceof Error ? e.message : '読み込みに失敗しました')
-    } finally {
-      setLoading(false)
+    setSettingsMsg(null)
+    const data = await fetchMyLogs(user?.id ?? null)
+    setLogs(data)
+
+    if (user?.id) {
+      setProfile(await getUserProfile(user.id))
+    } else {
+      setProfile(null)
     }
+
+    setLoading(false)
   }
 
   useEffect(() => {

@@ -39,7 +39,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(data.session?.user ?? null)
       setLoading(false)
       if (data.session?.user) {
-        void recordDailyLogin(data.session.user.id)
+        void recordDailyLogin(data.session.user.id).catch(() => {
+          // プロフィール未設定時もログイン自体は続行
+        })
       }
     })
 
@@ -47,7 +49,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(session?.user ?? null)
       setLoading(false)
       if (session?.user) {
-        void recordDailyLogin(session.user.id)
+        void recordDailyLogin(session.user.id).catch(() => {
+          // プロフィール未設定時もログイン自体は続行
+        })
       }
     })
 
