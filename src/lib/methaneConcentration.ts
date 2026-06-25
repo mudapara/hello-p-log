@@ -109,3 +109,8 @@ export function getMethaneLevel(log: FartLog): string {
 
 /** @deprecated getMethaneLevel を使用 */
 export const getMethaneConcentration = getMethaneLevel
+
+export function parseMethaneLevel(value: string): number {
+  const num = Number.parseFloat(value.replace(/[^\d.]/g, ''))
+  return Number.isNaN(num) ? 0 : num
+}

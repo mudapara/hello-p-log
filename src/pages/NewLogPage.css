@@ -85,6 +85,13 @@
   border: 2px solid #ffe082;
 }
 
+.points-toast {
+  color: #e65100;
+  font-weight: 800;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+
 .success-actions {
   display: flex;
   gap: 0.75rem;

@@ -1,17 +1,15 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { v4 as uuidv4 } from 'uuid'
 import type { ContactSubmission, FartLog } from '../types'
 import { isWithinRadius, roundCoordinate } from './geo'
 import { MATCH_RADIUS_METERS } from './constants'
+import { canManageLog, getMyLogIds, removeMyLogId, trackMyLogId } from './myLogs'
+import { getSupabaseClient } from './supabase'
 
 const LOGS_KEY = 'hello-p-log:logs'
 const CONTACTS_KEY = 'hello-p-log:contacts'
 
-function getSupabase(): SupabaseClient | null {
-  const url = import.meta.env.VITE_SUPABASE_URL
-  const key = import.meta.env.VITE_SUPABASE_ANON_KEY
-  if (!url || !key) return null
-  return createClient(url, key)
+function getSupabase() {
+  return getSupabaseClient()
 }
 
 function readLocalLogs(): FartLog[] {
@@ -30,6 +28,7 @@ function writeLocalLogs(logs: FartLog[]): void {
 function rowToLog(row: Record<string, unknown>): FartLog {
   return {
     id: row.id as string,
+    userId: (row.user_id as string | null) ?? null,
     source: row.source as FartLog['source'],
     latitude: row.latitude as number,
     longitude: row.longitude as number,
@@ -64,6 +63,7 @@ function rowToLog(row: Record<string, unknown>): FartLog {
 function logToRow(log: FartLog): Record<string, unknown> {
   return {
     id: log.id,
+    user_id: log.userId,
     source: log.source,
     latitude: log.latitude,
     longitude: log.longitude,
@@ -112,6 +112,48 @@ export async function fetchAllLogs(): Promise<FartLog[]> {
   return readLocalLogs()
 }
 
+export async function fetchLogById(id: string): Promise<FartLog | null> {
+  const supabase = getSupabase()
+  if (supabase) {
+    const { data, error } = await supabase.from('fart_logs').select('*').eq('id', id).maybeSingle()
+    if (error) throw error
+    return data ? rowToLog(data) : null
+  }
+  return readLocalLogs().find((log) => log.id === id) ?? null
+}
+
+export async function fetchMyLogs(userId: string | null): Promise<FartLog[]> {
+  const supabase = getSupabase()
+  const byId = new Map<string, FartLog>()
+
+  if (supabase && userId) {
+    const { data, error } = await supabase
+      .from('fart_logs')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('source', 'user')
+      .order('created_at', { ascending: false })
+    if (error) throw error
+    for (const row of data ?? []) {
+      byId.set(row.id as string, rowToLog(row))
+    }
+  }
+
+  const localIds = getMyLogIds()
+  if (localIds.length > 0) {
+    const all = supabase ? await fetchAllLogs() : readLocalLogs()
+    for (const log of all) {
+      if (log.source === 'user' && localIds.includes(log.id)) {
+        byId.set(log.id, log)
+      }
+    }
+  }
+
+  return [...byId.values()].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  )
+}
+
 export async function saveLog(log: FartLog): Promise<FartLog> {
   const normalized: FartLog = {
     ...log,
@@ -123,11 +165,40 @@ export async function saveLog(log: FartLog): Promise<FartLog> {
   if (supabase) {
     const { error } = await supabase.from('fart_logs').insert(logToRow(normalized))
     if (error) throw error
+  } else {
+    const logs = readLocalLogs()
+    logs.unshift(normalized)
+    writeLocalLogs(logs)
+  }
+
+  if (normalized.source === 'user') {
+    trackMyLogId(normalized.id)
+  }
+  return normalized
+}
+
+export async function updateLog(log: FartLog, userId: string | null): Promise<FartLog> {
+  if (!canManageLog(log, userId)) {
+    throw new Error('このログを編集する権限がありません')
+  }
+
+  const normalized: FartLog = {
+    ...log,
+    latitude: roundCoordinate(log.latitude),
+    longitude: roundCoordinate(log.longitude),
+  }
+
+  const supabase = getSupabase()
+  if (supabase) {
+    const { error } = await supabase.from('fart_logs').update(logToRow(normalized)).eq('id', log.id)
+    if (error) throw error
     return normalized
   }
 
   const logs = readLocalLogs()
-  logs.unshift(normalized)
+  const index = logs.findIndex((item) => item.id === log.id)
+  if (index === -1) throw new Error('ログが見つかりません')
+  logs[index] = normalized
   writeLocalLogs(logs)
   return normalized
 }
@@ -140,6 +211,15 @@ export async function deleteLog(id: string): Promise<void> {
     return
   }
   writeLocalLogs(readLocalLogs().filter((l) => l.id !== id))
+}
+
+export async function deleteOwnLog(id: string, userId: string | null): Promise<void> {
+  const log = await fetchLogById(id)
+  if (!log || !canManageLog(log, userId)) {
+    throw new Error('このログを削除する権限がありません')
+  }
+  await deleteLog(id)
+  removeMyLogId(id)
 }
 
 export async function findNearbyUserLogs(lat: number, lng: number): Promise<FartLog[]> {

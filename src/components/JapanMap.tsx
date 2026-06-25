@@ -1,6 +1,5 @@
-import { useMemo } from 'react'
+import { useMemo, useEffect } from 'react'
 import { MapContainer, TileLayer, CircleMarker, Popup, Marker, useMap } from 'react-leaflet'
-import { useEffect } from 'react'
 import L from 'leaflet'
 import type { FartLog } from '../types'
 import { JAPAN_BOUNDS } from '../lib/constants'
@@ -15,6 +14,34 @@ interface Props {
   interactive?: boolean
   center?: [number, number]
   zoom?: number
+  userMistStyles?: Map<string, string>
+}
+
+function makeUserMarkerIcon(mistStyle?: string) {
+  const premium =
+    mistStyle === 'royal'
+      ? 'map-marker-royal'
+      : mistStyle === 'toxic'
+        ? 'map-marker-toxic'
+        : mistStyle === 'rainbow'
+          ? 'map-marker-rainbow'
+          : mistStyle === 'ghost'
+            ? 'map-marker-ghost'
+            : ''
+  return L.divIcon({
+    className: 'map-log-marker-shell',
+    html: `
+    <div class="map-log-marker map-log-marker-user ${premium}" aria-hidden="true">
+      <span class="map-log-glow"></span>
+      <span class="map-log-core"></span>
+      <span class="map-log-spark map-log-spark-1"></span>
+      <span class="map-log-spark map-log-spark-2"></span>
+      <span class="map-log-spark map-log-spark-3"></span>
+    </div>
+  `,
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+  })
 }
 
 function FitJapanBounds() {
@@ -27,21 +54,6 @@ function FitJapanBounds() {
   }, [map])
   return null
 }
-
-const userMarkerIcon = L.divIcon({
-  className: 'map-log-marker-shell',
-  html: `
-    <div class="map-log-marker map-log-marker-user" aria-hidden="true">
-      <span class="map-log-glow"></span>
-      <span class="map-log-core"></span>
-      <span class="map-log-spark map-log-spark-1"></span>
-      <span class="map-log-spark map-log-spark-2"></span>
-      <span class="map-log-spark map-log-spark-3"></span>
-    </div>
-  `,
-  iconSize: [28, 28],
-  iconAnchor: [14, 14],
-})
 
 function LogPopup({ log }: { log: FartLog }) {
   return (
@@ -66,6 +78,7 @@ export function JapanMap({
   interactive = true,
   center,
   zoom = 5,
+  userMistStyles,
 }: Props) {
   const filtered = useMemo(
     () =>
@@ -98,7 +111,9 @@ export function JapanMap({
             <Marker
               key={log.id}
               position={[log.latitude, log.longitude]}
-              icon={userMarkerIcon}
+              icon={makeUserMarkerIcon(
+                log.userId ? userMistStyles?.get(log.userId) : undefined,
+              )}
               eventHandlers={{
                 click: () => onSelectLog?.(log),
               }}

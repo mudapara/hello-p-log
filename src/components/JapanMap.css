@@ -106,3 +106,42 @@
   0%, 70%, 100% { opacity: 0; transform: scale(0.5); }
   35% { opacity: 1; transform: scale(1.2); }
 }
+
+.map-marker-royal .map-log-core {
+  background: radial-gradient(circle at 35% 35%, #fff8e1 0%, #ffd54f 45%, #ff8f00 100%);
+  box-shadow: 0 0 10px rgba(255, 193, 7, 0.95);
+}
+
+.map-marker-toxic .map-log-core {
+  background: radial-gradient(circle at 35% 35%, #ffebee 0%, #ef5350 45%, #c62828 100%);
+  box-shadow: 0 0 12px rgba(244, 67, 54, 0.95);
+  animation: map-danger-pulse 1.6s ease-in-out infinite;
+}
+
+.map-marker-rainbow .map-log-core {
+  background: radial-gradient(circle at 30% 30%, #4a4038 0%, #5c6b5a 35%, #4a3d52 65%, #2a2520 100%);
+  box-shadow: 0 0 10px rgba(80, 70, 90, 0.8);
+  animation: map-oil-shimmer 4.5s ease-in-out infinite;
+}
+
+.map-marker-ghost .map-log-core {
+  background: radial-gradient(circle at 35% 35%, rgba(255, 253, 231, 0.95) 0%, rgba(255, 241, 118, 0.55) 50%, rgba(255, 235, 59, 0.25) 100%);
+  box-shadow: 0 0 8px rgba(255, 245, 157, 0.5);
+  opacity: 0.75;
+  animation: map-ghost-fade 3s ease-in-out infinite;
+}
+
+@keyframes map-danger-pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.12); }
+}
+
+@keyframes map-oil-shimmer {
+  0%, 100% { filter: hue-rotate(-6deg) saturate(0.9); }
+  50% { filter: hue-rotate(10deg) saturate(1.15); }
+}
+
+@keyframes map-ghost-fade {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 0.9; }
+}

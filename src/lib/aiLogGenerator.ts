@@ -67,6 +67,7 @@ export function generateAiLog(
   const scene = options.scene ?? 'any'
   const isAnimal = Math.random() < 0.2
   const entityType: EntityType = isAnimal ? 'animal' : 'human'
+  const animal = isAnimal ? pick(ANIMALS) : null
   const sound = pick(SOUND_OPTIONS)
   const tactics = pickMany(Object.keys(TACTICS) as TacticId[], randomInt(1, 2))
   const speed = randomInt(2, 14)
@@ -75,12 +76,13 @@ export function generateAiLog(
 
   const draft: FartLog = {
     id: uuidv4(),
+    userId: null,
     source: 'ai',
     latitude: roundCoordinate(lat),
     longitude: roundCoordinate(lng),
     createdAt: new Date().toISOString(),
     loggedAt: randomLoggedAt(),
-    nickname: isAnimal ? pick(ANIMALS) : pickNameForGender(gender!),
+    nickname: isAnimal ? animal! : pickNameForGender(gender!),
     gender,
     ageDisplay: isAnimal ? null : pick(AI_AGES),
     hideGender: false,
@@ -97,7 +99,7 @@ export function generateAiLog(
     dilutionRate: null,
     socialImpact: pickSocialImpact(scene),
     entityType,
-    animalSpecies: isAnimal ? pick(ANIMALS) : null,
+    animalSpecies: animal,
     observedConfirmed: false,
     photoDataUrl: null,
     photoTapX: null,

@@ -1,4 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 import { APP_NAME, TAGLINE } from '../lib/constants'
 import './Layout.css'
 
@@ -7,11 +8,24 @@ const NAV = [
   { to: '/photo', label: '写真鑑識' },
   { to: '/map', label: '日本マップ' },
   { to: '/log/new', label: 'ログ投稿' },
+  { to: '/my-logs', label: 'マイ屁ログ' },
+  { to: '/ranking', label: 'ランキング' },
   { to: '/about', label: '使い方・注意' },
 ]
 
+function isNavActive(pathname: string, to: string): boolean {
+  if (to === '/my-logs') {
+    return pathname === '/my-logs' || pathname.startsWith('/log/edit/')
+  }
+  if (to === '/log/new') {
+    return pathname === '/log/new'
+  }
+  return pathname === to
+}
+
 export function Layout() {
   const { pathname } = useLocation()
+  const { user, authAvailable, signOut } = useAuth()
 
   return (
     <div className="layout">
@@ -25,12 +39,26 @@ export function Layout() {
             <Link
               key={item.to}
               to={item.to}
-              className={pathname === item.to ? 'nav-link active' : 'nav-link'}
+              className={isNavActive(pathname, item.to) ? 'nav-link active' : 'nav-link'}
             >
               {item.label}
             </Link>
           ))}
         </nav>
+        {authAvailable && (
+          <div className="auth-bar">
+            {user ? (
+              <>
+                <span className="auth-email">{user.email}</span>
+                <button type="button" className="auth-btn" onClick={() => void signOut()}>
+                  ログアウト
+                </button>
+              </>
+            ) : (
+              <Link to="/login" className="auth-btn auth-btn--link">ログイン</Link>
+            )}
+          </div>
+        )}
       </header>
       <main className="main">
         <Outlet />

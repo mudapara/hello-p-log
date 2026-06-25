@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { formDataToLog, UserLogForm, type UserLogFormData } from '../components/UserLogForm'
+import { useAuth } from '../contexts/AuthContext'
+import { awardMethanePointsForLog, getUserProfile } from '../lib/profileStore'
 import { saveLog } from '../lib/logStore'
 import { renderCompositeImage } from '../components/PhotoCanvas'
 import { CameraIcon } from '../components/CameraIcon'
@@ -11,10 +13,12 @@ import './NewLogPage.css'
 type Mode = 'choose' | 'log_only' | 'with_photo'
 
 export function NewLogPage() {
+  const { user } = useAuth()
   const fileRef = useRef<HTMLInputElement>(null)
   const [mode, setMode] = useState<Mode>('choose')
   const [photoDataUrl, setPhotoDataUrl] = useState<string | null>(null)
   const [successId, setSuccessId] = useState<string | null>(null)
+  const [pointsEarned, setPointsEarned] = useState<number | null>(null)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
 
   const handlePhotoSelect = (file: File) => {
@@ -28,8 +32,18 @@ export function NewLogPage() {
 
   const handleSubmit = async (data: UserLogFormData) => {
     const log = formDataToLog(data)
+    if (user?.id) {
+      log.userId = user.id
+    }
     await saveLog(log)
     setSuccessId(log.id)
+    setPointsEarned(null)
+
+    if (user?.id) {
+      const before = await getUserProfile(user.id)
+      const after = await awardMethanePointsForLog(user.id, log)
+      setPointsEarned(after.methanePoints - before.methanePoints)
+    }
 
     if (data.photoDataUrl && data.photoTapX != null && data.photoTapY != null) {
       const overlay: PhotoOverlayLog = {
@@ -48,6 +62,9 @@ export function NewLogPage() {
         <div className="success-card">
           <h1>投稿完了</h1>
           <p>ログが日本マップに反映されました。</p>
+          {pointsEarned != null && pointsEarned > 0 && (
+            <p className="points-toast">メタンポイント +{pointsEarned} pt</p>
+          )}
           {downloadUrl && (
             <a className="btn btn-primary" href={downloadUrl} download={`hello-p-log-${successId}.jpg`}>
               合成画像をダウンロード
@@ -57,6 +74,7 @@ export function NewLogPage() {
             <Link to="/map" className="btn">マップを見る</Link>
             <button type="button" className="btn btn-ghost" onClick={() => {
               setSuccessId(null)
+              setPointsEarned(null)
               setDownloadUrl(null)
               setMode('choose')
               setPhotoDataUrl(null)

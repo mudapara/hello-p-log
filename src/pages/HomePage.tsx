@@ -1,8 +1,10 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { generateAiLogsForLocation, mergeLogsForPhoto } from '../lib/aiLogGenerator'
 import { getCurrentPosition, roundCoordinate } from '../lib/geo'
 import { findNearbyUserLogs } from '../lib/logStore'
 import { detectGroundLineY, detectPhotoScene } from '../lib/photoPosition'
+import { getProfilesByUserIds, getMistStyleClass } from '../lib/profileStore'
+import { extractGpsFromImageFile } from '../lib/exifGps'
 import { renderShareImage, shareOrDownloadImage } from '../lib/shareImage'
 import type { PhotoOverlayLog } from '../types'
 import { PhotoCanvas } from '../components/PhotoCanvas'
@@ -20,6 +22,8 @@ function isImageFile(file: File): boolean {
   return /\.(jpe?g|png|gif|webp|heic|heif)$/i.test(file.name)
 }
 
+const EXIF_CONSENT_KEY = 'hello-p-log:exif-consent'
+
 export function HomePage() {
   const fileRef = useRef<HTMLInputElement>(null)
   const [photoUrl, setPhotoUrl] = useState<string | null>(null)
@@ -29,8 +33,32 @@ export function HomePage() {
   const [locationLabel, setLocationLabel] = useState<string | null>(null)
   const [sharing, setSharing] = useState(false)
   const [shareMessage, setShareMessage] = useState<string | null>(null)
+  const [mistStyles, setMistStyles] = useState<Map<string, string>>(new Map())
+  const [exifConsent, setExifConsent] = useState(
+    () => localStorage.getItem(EXIF_CONSENT_KEY) === 'true',
+  )
 
-  const analyzePhoto = async (dataUrl: string) => {
+  useEffect(() => {
+    if (!overlayLogs) {
+      setMistStyles(new Map())
+      return
+    }
+    const userIds = overlayLogs
+      .filter((log) => log.source === 'user' && log.userId)
+      .map((log) => log.userId!)
+    if (userIds.length === 0) return
+    void getProfilesByUserIds(userIds).then((profiles) => {
+      const map = new Map<string, string>()
+      for (const [userId, profile] of profiles) {
+        if (profile.activeMistStyle !== 'default') {
+          map.set(userId, getMistStyleClass(profile.activeMistStyle))
+        }
+      }
+      setMistStyles(map)
+    })
+  }, [overlayLogs])
+
+  const analyzePhoto = async (dataUrl: string, file?: File) => {
     setLoading(true)
     setError(null)
     setPhotoUrl(dataUrl)
@@ -38,26 +66,33 @@ export function HomePage() {
     setLocationLabel(null)
 
     try {
-      const [pos, groundY, photoScene] = await Promise.all([
+      const [geoPos, exifGps, groundY, photoScene] = await Promise.all([
         withTimeout(
-          getCurrentPosition({ timeout: 5000, highAccuracy: false }).catch(() => null),
-          6000,
+          getCurrentPosition({ timeout: 8000, highAccuracy: false }).catch(() => null),
+          9000,
           null,
         ),
+        file ? (exifConsent ? extractGpsFromImageFile(file) : Promise.resolve(null)) : Promise.resolve(null),
         detectGroundLineY(dataUrl),
         detectPhotoScene(dataUrl),
       ])
 
       let lat: number
       let lng: number
-      if (pos) {
-        lat = roundCoordinate(pos.coords.latitude)
-        lng = roundCoordinate(pos.coords.longitude)
+      if (exifGps) {
+        lat = roundCoordinate(exifGps.latitude)
+        lng = roundCoordinate(exifGps.longitude)
+        setLocationLabel(`写真の位置情報（EXIF）: ${lat}, ${lng}`)
+      } else if (geoPos) {
+        lat = roundCoordinate(geoPos.coords.latitude)
+        lng = roundCoordinate(geoPos.coords.longitude)
         setLocationLabel(`現在地（概算）: ${lat}, ${lng}`)
       } else {
         lat = 35.6812
         lng = 139.7671
-        setLocationLabel('位置情報なし → 東京駅付近として生成')
+        setLocationLabel(
+          '位置情報なし → 東京駅付近として生成（ブラウザの位置許可、または撮影時の位置情報オンをお試しください）',
+        )
       }
 
       const aiScene =
@@ -82,7 +117,7 @@ export function HomePage() {
     const reader = new FileReader()
     reader.onload = () => {
       if (typeof reader.result === 'string') {
-        void analyzePhoto(reader.result)
+        void analyzePhoto(reader.result, file)
       } else {
         setError('画像の読み込みに失敗しました')
       }
@@ -101,7 +136,11 @@ export function HomePage() {
     try {
       const blob = await renderShareImage(photoUrl, overlayLogs)
       const result = await shareOrDownloadImage(blob, `hello-p-log-${Date.now()}.jpg`)
-      setShareMessage(result === 'shared' ? 'シェアしました' : '画像を保存しました（SNSに貼り付けてください）')
+      setShareMessage(
+        result === 'shared'
+          ? 'シェアしました（文言とURL付き）'
+          : '画像を保存しました。SNSに貼り付けてください',
+      )
     } catch (e) {
       if (e instanceof Error && e.name === 'AbortError') return
       setError(e instanceof Error ? e.message : 'シェア画像の作成に失敗しました')
@@ -120,6 +159,20 @@ export function HomePage() {
       </section>
 
       <div className="upload-actions upload-actions--stack">
+        <label className="exif-consent">
+          <input
+            type="checkbox"
+            checked={exifConsent}
+            onChange={(e) => {
+              const checked = e.target.checked
+              setExifConsent(checked)
+              localStorage.setItem(EXIF_CONSENT_KEY, String(checked))
+            }}
+          />
+          <span>
+            写真に含まれる位置情報（EXIF）を、この鑑識のためだけに使用することに同意する
+          </span>
+        </label>
         <button type="button" className="btn btn-primary btn-block" onClick={() => fileRef.current?.click()}>
           写真を選ぶ
         </button>
@@ -134,6 +187,9 @@ export function HomePage() {
             e.target.value = ''
           }}
         />
+        <p className="hint-sub">
+          位置情報はブラウザの許可、または上記同意時のみ写真内のEXIFから取得します。
+        </p>
       </div>
 
       {loading && <p className="status">解析中…ログを生成しています</p>}
@@ -146,7 +202,7 @@ export function HomePage() {
           <p className="hint">
             黄色いモヤをタップするとメタン情報が見られます（全{overlayLogs.length}件）
           </p>
-          <PhotoCanvas photoUrl={photoUrl} logs={overlayLogs} />
+          <PhotoCanvas photoUrl={photoUrl} logs={overlayLogs} mistStyles={mistStyles} />
           <p className="legend">
             <span className="dot dot-ai" /> 淡い黄色＝AI
             <span className="dot dot-user" /> 濃い黄色＋キラキラ＝ユーザー

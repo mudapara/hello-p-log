@@ -1,0 +1,82 @@
+.login-page h1 {
+  font-size: 1.3rem;
+  color: #e65100;
+}
+
+.login-page .lead {
+  color: #5d4037;
+  margin-bottom: 1.25rem;
+}
+
+.btn-google {
+  width: 100%;
+  background: #fff;
+  border: 2px solid #ffe082;
+  color: #3e2723;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.login-divider {
+  text-align: center;
+  color: #8d6e63;
+  font-size: 0.85rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.login-email-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.login-email-form label {
+  font-size: 0.85rem;
+  color: #5d4037;
+  font-weight: 600;
+}
+
+.login-email-form input {
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #ffe082;
+  border-radius: 8px;
+}
+
+.login-benefits {
+  background: #fffef5;
+  border: 1px solid #ffe082;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.login-benefits h2 {
+  font-size: 1rem;
+  color: #e65100;
+  margin: 0 0 0.5rem;
+}
+
+.login-benefits ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: #5d4037;
+  font-size: 0.9rem;
+}
+
+.login-benefits li {
+  margin-bottom: 0.35rem;
+}
+
+.login-benefits .hint {
+  margin: 0.75rem 0 0;
+  font-size: 0.8rem;
+  color: #8d6e63;
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 1.25rem;
+  color: #e65100;
+  font-size: 0.9rem;
+}

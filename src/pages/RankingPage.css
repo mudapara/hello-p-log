@@ -1,0 +1,93 @@
+.ranking-page h1 {
+  font-size: 1.3rem;
+  color: #e65100;
+}
+
+.ranking-page .lead {
+  color: #5d4037;
+  margin-bottom: 1.25rem;
+}
+
+.ranking-section {
+  margin-bottom: 1.75rem;
+}
+
+.ranking-section h2 {
+  font-size: 1.05rem;
+  color: #e65100;
+  margin: 0 0 0.25rem;
+}
+
+.section-desc {
+  font-size: 0.85rem;
+  color: #8d6e63;
+  margin: 0 0 0.75rem;
+}
+
+.ranking-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #ffe082;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fffef5;
+}
+
+.ranking-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid #fff3c4;
+  font-size: 0.9rem;
+}
+
+.ranking-list li:last-child {
+  border-bottom: none;
+}
+
+.rank {
+  width: 1.5rem;
+  font-weight: 800;
+  color: #f57f17;
+  flex-shrink: 0;
+}
+
+.name {
+  flex: 1;
+  color: #5d4037;
+  font-weight: 600;
+}
+
+.score {
+  color: #e65100;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.user-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.title-badge {
+  font-size: 0.7rem;
+  color: #6d4c41;
+  background: #fff9c4;
+  border-radius: 999px;
+  padding: 0.1rem 0.45rem;
+  width: fit-content;
+}
+
+.ranking-note {
+  font-size: 0.85rem;
+  color: #6d4c41;
+  line-height: 1.5;
+}
+
+.ranking-note a {
+  color: #e65100;
+}

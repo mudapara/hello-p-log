@@ -130,9 +130,7 @@ export function positionAtButtHeight(groundY: number, x?: number): { x: number; 
   }
 }
 
-const MIN_MARKER_GAP = 0.13
-
-/** 写真上のログが重ならないよう、地面付近に横方向へ分散 */
+/** 写真上のログが重ならないよう、複数行に分散配置 */
 export function spreadPhotoOverlays<T extends { overlayX: number; overlayY: number; source: string; photoTapX?: number | null }>(
   logs: T[],
   groundY: number,
@@ -144,30 +142,48 @@ export function spreadPhotoOverlays<T extends { overlayX: number; overlayY: numb
     return a.overlayX - b.overlayX
   })
 
-  const yBase = Math.max(0.48, Math.min(0.86, groundY - 0.09))
+  const yBase = Math.max(0.42, Math.min(0.82, groundY - 0.1))
+  const rowCount = sorted.length <= 3 ? 1 : sorted.length <= 6 ? 2 : 3
+  const minGapX = 0.17
+
   const placed = sorted.map((log, i) => {
-    const useTap = log.source === 'user' && log.photoTapX != null
-    const x = useTap ? log.photoTapX! : 0.12 + (i * 0.76) / Math.max(1, sorted.length - 1)
-    const y = yBase - (i % 2) * 0.035
-    return { ...log, overlayX: x, overlayY: y }
+    if (log.source === 'user' && log.photoTapX != null) {
+      const row = i % rowCount
+      return {
+        ...log,
+        overlayX: log.photoTapX,
+        overlayY: Math.max(0.38, yBase - row * 0.11 - (i % 3) * 0.04),
+      }
+    }
+
+    const row = Math.floor(i / Math.ceil(sorted.length / rowCount))
+    const colInRow = i % Math.ceil(sorted.length / rowCount)
+    const colsThisRow = Math.min(
+      Math.ceil(sorted.length / rowCount),
+      sorted.length - row * Math.ceil(sorted.length / rowCount),
+    )
+    const x = 0.1 + ((colInRow + 0.5) / Math.max(1, colsThisRow)) * 0.8
+    const y = yBase - row * 0.12 - (colInRow % 2) * 0.05 - (i % 3) * 0.025
+
+    return { ...log, overlayX: x, overlayY: Math.max(0.35, y) }
   })
 
   placed.sort((a, b) => a.overlayX - b.overlayX)
   for (let i = 1; i < placed.length; i++) {
     const prev = placed[i - 1]!
     const cur = placed[i]!
-    if (cur.overlayX - prev.overlayX < MIN_MARKER_GAP) {
-      placed[i] = { ...cur, overlayX: prev.overlayX + MIN_MARKER_GAP }
+    if (Math.abs(cur.overlayY - prev.overlayY) < 0.06 && cur.overlayX - prev.overlayX < minGapX) {
+      placed[i] = { ...cur, overlayX: prev.overlayX + minGapX }
     }
   }
 
-  const maxX = 0.92
+  const maxX = 0.9
   const overflow = placed[placed.length - 1]!.overlayX - maxX
   if (overflow > 0) {
     for (let i = 0; i < placed.length; i++) {
       placed[i] = {
         ...placed[i]!,
-        overlayX: Math.max(0.08, placed[i]!.overlayX - overflow),
+        overlayX: Math.max(0.1, placed[i]!.overlayX - overflow),
       }
     }
   }

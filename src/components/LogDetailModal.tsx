@@ -45,7 +45,9 @@ export function LogDetailModal({ log, onClose }: Props) {
             <dt>名前</dt>
             <dd>
               {log.nickname}
-              {log.entityType === 'animal' && log.animalSpecies && (
+              {log.entityType === 'animal' &&
+                log.animalSpecies &&
+                log.animalSpecies !== log.nickname && (
                 <span className="sub">（{log.animalSpecies}）</span>
               )}
             </dd>

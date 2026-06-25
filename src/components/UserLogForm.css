@@ -17,11 +17,22 @@
 .field select,
 .fieldset input[type='text'] {
   width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
   padding: 0.5rem 0.65rem;
   border: 1px solid #ffe082;
   border-radius: 8px;
   font-size: 0.95rem;
+}
+
+.field {
+  min-width: 0;
+}
+
+.datetime-input {
+  display: block;
+  width: 100%;
+  max-width: 100%;
 }
 
 .field-row {

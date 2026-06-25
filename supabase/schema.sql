@@ -3,6 +3,7 @@
 
 create table if not exists fart_logs (
   id uuid primary key,
+  user_id uuid references auth.users(id) on delete set null,
   source text not null check (source in ('ai', 'user')),
   latitude double precision not null,
   longitude double precision not null,
@@ -36,6 +37,8 @@ create table if not exists fart_logs (
 create index if not exists fart_logs_created_at_idx on fart_logs (created_at desc);
 create index if not exists fart_logs_location_idx on fart_logs (latitude, longitude);
 
+create index if not exists fart_logs_user_id_idx on fart_logs (user_id);
+
 create table if not exists contact_submissions (
   id uuid primary key,
   type text not null check (type in ('report', 'delete', 'other')),
@@ -57,5 +60,13 @@ create policy "Anyone can insert fart_logs"
 create policy "Anyone can insert contact_submissions"
   on contact_submissions for insert with check (true);
 
--- Delete only via service role / admin (not exposed to anon key)
--- Use Supabase dashboard or admin API for deletions
+create policy "Users update own logs"
+  on fart_logs for update
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+create policy "Users delete own logs"
+  on fart_logs for delete
+  using (auth.uid() = user_id);
+
+-- Admin delete: use Supabase dashboard or service role

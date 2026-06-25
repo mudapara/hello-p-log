@@ -25,6 +25,25 @@
   width: 100%;
 }
 
+.exif-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: #5d4037;
+  text-align: left;
+  padding: 0.65rem 0.75rem;
+  background: #fffef5;
+  border: 1px solid #ffe082;
+  border-radius: 10px;
+}
+
+.exif-consent input {
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+}
+
 .hint-sub {
   font-size: 0.75rem;
   text-align: center;

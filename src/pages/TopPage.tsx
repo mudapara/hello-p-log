@@ -4,8 +4,10 @@ import './TopPage.css'
 
 const ENTRIES = [
   { to: '/photo', title: '写真鑑識', desc: '写真に黄色いログが浮かぶ。タップでメタン情報。' },
+  { to: '/ar', title: '現場AR', desc: 'カメラ越しにモヤを出す。写真鑑識のAR版。' },
   { to: '/map', title: '日本マップ', desc: '全国のおなら痕跡。増えるほど黄色くなる。' },
   { to: '/log/new', title: 'ログ投稿', desc: '地図に痕跡を残す。写真は任意。' },
+  { to: '/ranking', title: 'ランキング', desc: '都道府県別・メタンポイント順位。' },
 ] as const
 
 export function TopPage() {

@@ -1,0 +1,198 @@
+.my-logs-page h1 {
+  font-size: 1.3rem;
+  color: #e65100;
+}
+
+.my-logs-page .lead {
+  color: #5d4037;
+  margin-bottom: 1rem;
+}
+
+.profile-card {
+  background: linear-gradient(135deg, #fff9c4 0%, #fffef5 100%);
+  border: 2px solid #ffe082;
+  border-radius: 14px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.profile-points {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.points-label {
+  font-size: 0.85rem;
+  color: #6d4c41;
+  font-weight: 600;
+}
+
+.points-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #e65100;
+  line-height: 1;
+}
+
+.points-unit {
+  font-size: 0.9rem;
+  color: #e65100;
+  font-weight: 700;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+
+.profile-stats div {
+  background: rgba(255, 255, 255, 0.65);
+  border-radius: 8px;
+  padding: 0.45rem 0.6rem;
+}
+
+.profile-stats dt {
+  font-size: 0.7rem;
+  color: #8d6e63;
+  margin: 0;
+}
+
+.profile-stats dd {
+  margin: 0.1rem 0 0;
+  font-weight: 700;
+  color: #5d4037;
+}
+
+.profile-titles h2,
+.profile-mist h2 {
+  font-size: 0.9rem;
+  color: #e65100;
+  margin: 0 0 0.5rem;
+}
+
+.title-chips,
+.mist-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.title-chip,
+.mist-option {
+  border: 1px solid #ffe082;
+  background: #fff;
+  color: #5d4037;
+  border-radius: 999px;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.title-chip.active,
+.mist-option.active {
+  background: #ffca28;
+  border-color: #ffa000;
+  color: #3e2723;
+}
+
+.my-logs-toolbar {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.success {
+  color: #2e7d32;
+  font-size: 0.85rem;
+}
+
+.my-logs-notice {
+  background: #fff9c4;
+  border: 1px solid #ffe082;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.my-logs-notice p {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  color: #5d4037;
+}
+
+.my-logs-user {
+  font-size: 0.85rem;
+  color: #6d4c41;
+  margin-bottom: 0.75rem;
+}
+
+.my-logs-empty {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.my-logs-empty p {
+  margin-bottom: 0.75rem;
+  color: #6d4c41;
+}
+
+.my-logs-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+}
+
+.my-logs-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid #f0e6c8;
+}
+
+.my-logs-info strong {
+  color: #e65100;
+}
+
+.my-logs-date {
+  display: block;
+  font-size: 0.8rem;
+  color: #8d6e63;
+  margin: 0.15rem 0 0.35rem;
+}
+
+.my-logs-info p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #5d4037;
+}
+
+.my-logs-badge {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  background: #fff3e0;
+  color: #e65100;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+.my-logs-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.btn-danger {
+  background: #ffcdd2;
+  border-color: #e57373;
+  color: #b71c1c;
+}

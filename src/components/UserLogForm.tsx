@@ -40,31 +40,78 @@ export interface UserLogFormData {
 interface Props {
   mode: 'log_only' | 'with_photo'
   photoDataUrl?: string | null
+  initialLog?: FartLog
+  submitLabel?: string
   onSubmit: (data: UserLogFormData) => Promise<void>
 }
 
-export function UserLogForm({ mode, photoDataUrl = null, onSubmit }: Props) {
-  const [nickname, setNickname] = useState('')
-  const [mainComponent, setMainComponent] = useState('')
-  const [loggedAt, setLoggedAt] = useState(() => new Date().toISOString().slice(0, 16))
-  const [gender, setGender] = useState('')
-  const [ageDisplay, setAgeDisplay] = useState('')
-  const [hideGender, setHideGender] = useState(false)
-  const [hideAge, setHideAge] = useState(false)
-  const [smellType, setSmellType] = useState<typeof SMELL_TYPES[number]>(SMELL_TYPES[0])
-  const [smellIntensity, setSmellIntensity] = useState(3)
-  const [soundPreset, setSoundPreset] = useState('small_pu')
-  const [bustedCount, setBustedCount] = useState(0)
-  const [tactics, setTactics] = useState<TacticId[]>([])
-  const [entityType, setEntityType] = useState<EntityType>('human')
-  const [animalSpecies, setAnimalSpecies] = useState('')
-  const [observedConfirmed, setObservedConfirmed] = useState(false)
-  const [latitude, setLatitude] = useState<number | null>(null)
-  const [longitude, setLongitude] = useState<number | null>(null)
-  const [photoTapX, setPhotoTapX] = useState<number | null>(null)
-  const [photoTapY, setPhotoTapY] = useState<number | null>(null)
-  const [blurConfirmed, setBlurConfirmed] = useState(false)
-  const [agreed, setAgreed] = useState(false)
+function toDatetimeLocalValue(iso: string): string {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return new Date().toISOString().slice(0, 16)
+  const offset = date.getTimezoneOffset()
+  const local = new Date(date.getTime() - offset * 60_000)
+  return local.toISOString().slice(0, 16)
+}
+
+export function logToFormData(log: FartLog): UserLogFormData {
+  return {
+    nickname: log.nickname,
+    loggedAt: toDatetimeLocalValue(log.loggedAt),
+    mainComponent: log.mainComponent,
+    latitude: log.latitude,
+    longitude: log.longitude,
+    gender: log.gender ?? '',
+    ageDisplay: log.ageDisplay ?? '',
+    hideGender: log.hideGender,
+    hideAge: log.hideAge,
+    smellType: log.smellType,
+    smellIntensity: log.smellIntensity,
+    soundPreset: log.soundPreset,
+    bustedCount: log.bustedCount,
+    tactics: log.tactics,
+    entityType: log.entityType,
+    animalSpecies: log.animalSpecies ?? '',
+    observedConfirmed: log.observedConfirmed,
+    photoDataUrl: log.photoDataUrl,
+    photoTapX: log.photoTapX,
+    photoTapY: log.photoTapY,
+    blurConfirmed: log.blurConfirmed,
+  }
+}
+
+export function UserLogForm({
+  mode,
+  photoDataUrl = null,
+  initialLog,
+  submitLabel = 'ログを投稿',
+  onSubmit,
+}: Props) {
+  const defaults = initialLog ? logToFormData(initialLog) : null
+  const [nickname, setNickname] = useState(defaults?.nickname ?? '')
+  const [mainComponent, setMainComponent] = useState(defaults?.mainComponent ?? '')
+  const [loggedAt, setLoggedAt] = useState(
+    defaults?.loggedAt ?? new Date().toISOString().slice(0, 16),
+  )
+  const [gender, setGender] = useState(defaults?.gender ?? '')
+  const [ageDisplay, setAgeDisplay] = useState(defaults?.ageDisplay ?? '')
+  const [hideGender, setHideGender] = useState(defaults?.hideGender ?? false)
+  const [hideAge, setHideAge] = useState(defaults?.hideAge ?? false)
+  const [smellType, setSmellType] = useState<typeof SMELL_TYPES[number]>(
+    (defaults?.smellType as typeof SMELL_TYPES[number]) ?? SMELL_TYPES[0],
+  )
+  const [smellIntensity, setSmellIntensity] = useState(defaults?.smellIntensity ?? 3)
+  const [soundPreset, setSoundPreset] = useState(defaults?.soundPreset ?? 'small_pu')
+  const [bustedCount, setBustedCount] = useState(defaults?.bustedCount ?? 0)
+  const [tactics, setTactics] = useState<TacticId[]>(defaults?.tactics ?? [])
+  const [entityType, setEntityType] = useState<EntityType>(defaults?.entityType ?? 'human')
+  const [animalSpecies, setAnimalSpecies] = useState(defaults?.animalSpecies ?? '')
+  const [observedConfirmed, setObservedConfirmed] = useState(defaults?.observedConfirmed ?? false)
+  const [latitude, setLatitude] = useState<number | null>(defaults?.latitude ?? null)
+  const [longitude, setLongitude] = useState<number | null>(defaults?.longitude ?? null)
+  const [photoTapX, setPhotoTapX] = useState<number | null>(defaults?.photoTapX ?? null)
+  const [photoTapY, setPhotoTapY] = useState<number | null>(defaults?.photoTapY ?? null)
+  const [blurConfirmed, setBlurConfirmed] = useState(defaults?.blurConfirmed ?? false)
+  const [agreed, setAgreed] = useState(Boolean(initialLog))
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [locating, setLocating] = useState(false)
@@ -184,27 +231,27 @@ export function UserLogForm({ mode, photoDataUrl = null, onSubmit }: Props) {
         />
       </div>
 
-      <div className="field-row">
-        <div className="field">
-          <label htmlFor="loggedAt">日時</label>
-          <input
-            id="loggedAt"
-            type="datetime-local"
-            value={loggedAt}
-            onChange={(e) => setLoggedAt(e.target.value)}
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="food">直前に食べたもの *</label>
-          <input
-            id="food"
-            value={mainComponent}
-            onChange={(e) => setMainComponent(e.target.value)}
-            placeholder="例: 焼き芋、ラーメン、ビール"
-            required
-          />
-          <p className="hint">詳細画面では「主成分」として表示されます</p>
-        </div>
+      <div className="field">
+        <label htmlFor="loggedAt">日時</label>
+        <input
+          id="loggedAt"
+          type="datetime-local"
+          className="datetime-input"
+          value={loggedAt}
+          onChange={(e) => setLoggedAt(e.target.value)}
+        />
+      </div>
+
+      <div className="field">
+        <label htmlFor="food">直前に食べたもの *</label>
+        <input
+          id="food"
+          value={mainComponent}
+          onChange={(e) => setMainComponent(e.target.value)}
+          placeholder="例: 焼き芋、ラーメン、ビール"
+          required
+        />
+        <p className="hint">詳細画面では「主成分」として表示されます</p>
       </div>
 
       <div className="field">
@@ -381,20 +428,24 @@ export function UserLogForm({ mode, photoDataUrl = null, onSubmit }: Props) {
       {error && <p className="error">{error}</p>}
 
       <button type="submit" className="btn btn-primary" disabled={loading}>
-        {loading ? '投稿中…' : 'ログを投稿'}
+        {loading ? '保存中…' : submitLabel}
       </button>
     </form>
   )
 }
 
-export function formDataToLog(data: UserLogFormData): FartLog {
+export function formDataToLog(
+  data: UserLogFormData,
+  existing?: Pick<FartLog, 'id' | 'createdAt' | 'userId'>,
+): FartLog {
   const soundText = getSoundOption(data.soundPreset)?.text ?? ''
   const draft: FartLog = {
-    id: uuidv4(),
+    id: existing?.id ?? uuidv4(),
+    userId: existing?.userId ?? null,
     source: 'user',
     latitude: data.latitude,
     longitude: data.longitude,
-    createdAt: new Date().toISOString(),
+    createdAt: existing?.createdAt ?? new Date().toISOString(),
     loggedAt: data.loggedAt,
     nickname: data.nickname,
     gender: data.gender || null,

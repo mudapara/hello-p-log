@@ -2,6 +2,9 @@ import type { PhotoOverlayLog } from '../types'
 import { APP_NAME } from './constants'
 import { getMethaneLevel } from './methaneConcentration'
 
+export const SITE_URL = 'https://hello-p-log.vercel.app'
+export const SHARE_MESSAGE = `この場所に漂う屁ログを検出しました！！\n${SITE_URL}`
+
 const SHARE_WIDTH = 1080
 
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -141,7 +144,7 @@ export async function renderShareImage(photoUrl: string, logs: PhotoOverlayLog[]
 
   ctx.fillStyle = '#e65100'
   ctx.font = '18px "Segoe UI", Meiryo, sans-serif'
-  ctx.fillText('hello-p-log.vercel.app', 28, totalH - 20)
+  ctx.fillText(SITE_URL.replace('https://', ''), 28, totalH - 20)
 
   return new Promise((resolve, reject) => {
     canvas.toBlob(
@@ -158,7 +161,8 @@ export async function shareOrDownloadImage(blob: Blob, filename: string): Promis
     await navigator.share({
       files: [file],
       title: APP_NAME,
-      text: '写真鑑識でメタンログを検出しました',
+      text: SHARE_MESSAGE,
+      url: SITE_URL,
     })
     return 'shared'
   }
