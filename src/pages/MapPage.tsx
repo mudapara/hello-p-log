@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react'
 import { JapanMap } from '../components/JapanMap'
 import { LogDetailModal } from '../components/LogDetailModal'
 import { useLogs } from '../hooks/useLogs'
+import { useAuth } from '../contexts/AuthContext'
 import { seedAiLogsIfEmpty } from '../lib/logStore'
-import { getProfilesByUserIds } from '../lib/profileStore'
+import { buildUserMistStyleMap } from '../lib/profileStore'
 import type { FartLog } from '../types'
 import './MapPage.css'
 
 export function MapPage() {
+  const { user } = useAuth()
   const { logs, loading, error, reload } = useLogs()
   const [filter, setFilter] = useState<'all' | 'ai' | 'user'>('all')
   const [selected, setSelected] = useState<FartLog | null>(null)
@@ -23,19 +25,8 @@ export function MapPage() {
   }, [reload])
 
   useEffect(() => {
-    const userIds = logs.filter((l) => l.source === 'user' && l.userId).map((l) => l.userId!)
-    if (userIds.length === 0) {
-      setUserMistStyles(new Map())
-      return
-    }
-    void getProfilesByUserIds(userIds).then((profiles) => {
-      const map = new Map<string, string>()
-      for (const [userId, profile] of profiles) {
-        map.set(userId, profile.activeMistStyle)
-      }
-      setUserMistStyles(map)
-    })
-  }, [logs])
+    void buildUserMistStyleMap(logs, user?.id ?? null).then(setUserMistStyles)
+  }, [logs, user?.id])
 
   const aiCount = logs.filter((l) => l.source === 'ai').length
   const userCount = logs.filter((l) => l.source === 'user').length

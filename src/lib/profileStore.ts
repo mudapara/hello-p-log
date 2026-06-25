@@ -8,6 +8,8 @@ import {
   NEW_PREFECTURE_POINTS,
 } from './methanePoints'
 import { getPrefectureFromCoords } from './prefectures'
+import { getOrCreateLocalUserId, getProfileUserId, isLocalUserId } from './localUserId'
+import { getMyLogIds } from './myLogs'
 import { getSupabaseClient } from './supabase'
 import {
   computeUnlockedMistStyles,
@@ -83,6 +85,10 @@ function writeLocalProfile(profile: UserProfile): void {
 }
 
 async function saveProfile(profile: UserProfile): Promise<UserProfile> {
+  if (isLocalUserId(profile.userId)) {
+    writeLocalProfile(profile)
+    return profile
+  }
   const supabase = getSupabaseClient()
   if (supabase) {
     const { error } = await supabase
@@ -133,6 +139,9 @@ function applyLogToProfile(profile: UserProfile, log: FartLog, prefecture: strin
 }
 
 export async function getUserProfile(userId: string): Promise<UserProfile> {
+  if (isLocalUserId(userId)) {
+    return readLocalProfile(userId)
+  }
   const supabase = getSupabaseClient()
   if (supabase) {
     const { data, error } = await supabase
@@ -154,22 +163,62 @@ export async function getProfilesByUserIds(userIds: string[]): Promise<Map<strin
   const map = new Map<string, UserProfile>()
   if (unique.length === 0) return map
 
+  for (const id of unique) {
+    if (isLocalUserId(id)) {
+      map.set(id, readLocalProfile(id))
+    }
+  }
+
+  const serverIds = unique.filter((id) => !isLocalUserId(id))
+  if (serverIds.length === 0) return map
+
   const supabase = getSupabaseClient()
   if (supabase) {
-    const { data, error } = await supabase.from('user_profiles').select('*').in('user_id', unique)
+    const { data, error } = await supabase.from('user_profiles').select('*').in('user_id', serverIds)
     if (error) throw error
     for (const row of data ?? []) {
       const profile = rowToProfile(row)
       map.set(profile.userId, profile)
     }
-    for (const id of unique) {
+    for (const id of serverIds) {
       if (!map.has(id)) map.set(id, defaultProfile(id))
     }
     return map
   }
 
-  for (const id of unique) {
+  for (const id of serverIds) {
     map.set(id, readLocalProfile(id))
+  }
+  return map
+}
+
+/** マップ用。キーは userId または匿名ログの log.id */
+export async function buildUserMistStyleMap(
+  logs: FartLog[],
+  authUserId: string | null,
+): Promise<Map<string, string>> {
+  const map = new Map<string, string>()
+  const userIds = logs.filter((l) => l.source === 'user' && l.userId).map((l) => l.userId!)
+  const profiles = await getProfilesByUserIds(userIds)
+  for (const [userId, profile] of profiles) {
+    if (profile.activeMistStyle !== 'default') {
+      map.set(userId, profile.activeMistStyle)
+    }
+  }
+
+  const profileUserId = getProfileUserId(authUserId)
+  const ownProfile = await getUserProfile(profileUserId)
+  if (ownProfile.activeMistStyle === 'default') return map
+
+  const style = ownProfile.activeMistStyle
+  if (authUserId) {
+    map.set(authUserId, style)
+  }
+  const myLogIds = getMyLogIds()
+  for (const log of logs) {
+    if (log.source === 'user' && myLogIds.includes(log.id)) {
+      map.set(log.id, style)
+    }
   }
   return map
 }
@@ -218,6 +267,19 @@ export async function updateUserProfileSettings(
   }
 
   return saveProfile(updated)
+}
+
+/** 未ログイン時に溜めたローカルプロフィールを、初回ログイン時にサーバーへ移す */
+export async function mergeLocalProfileIntoAuthUser(authUserId: string): Promise<void> {
+  const localId = getOrCreateLocalUserId()
+  const local = readLocalProfile(localId)
+  if (local.totalLogs === 0) return
+
+  const server = await getUserProfile(authUserId)
+  if (server.totalLogs > 0) return
+
+  await saveProfile({ ...local, userId: authUserId })
+  writeLocalProfile(defaultProfile(localId))
 }
 
 export async function fetchPrefectureRanking(limit = 10): Promise<PrefectureRankingEntry[]> {

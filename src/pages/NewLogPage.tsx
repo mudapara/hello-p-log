@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { formDataToLog, UserLogForm, type UserLogFormData } from '../components/UserLogForm'
 import { useAuth } from '../contexts/AuthContext'
 import { awardMethanePointsForLog, getUserProfile } from '../lib/profileStore'
+import { getProfileUserId } from '../lib/localUserId'
 import { saveLog } from '../lib/logStore'
 import { renderCompositeImage } from '../components/PhotoCanvas'
 import { CameraIcon } from '../components/CameraIcon'
@@ -39,11 +40,10 @@ export function NewLogPage() {
     setSuccessId(log.id)
     setPointsEarned(null)
 
-    if (user?.id) {
-      const before = await getUserProfile(user.id)
-      const after = await awardMethanePointsForLog(user.id, log)
-      setPointsEarned(after.methanePoints - before.methanePoints)
-    }
+    const profileUserId = getProfileUserId(user?.id)
+    const before = await getUserProfile(profileUserId)
+    const after = await awardMethanePointsForLog(profileUserId, log)
+    setPointsEarned(after.methanePoints - before.methanePoints)
 
     if (data.photoDataUrl && data.photoTapX != null && data.photoTapY != null) {
       const overlay: PhotoOverlayLog = {

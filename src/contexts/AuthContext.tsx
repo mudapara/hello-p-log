@@ -10,7 +10,7 @@ import {
 import type { User } from '@supabase/supabase-js'
 import { getSupabaseClient, isAuthAvailable } from '../lib/supabase'
 import { getAuthRedirectUrl } from '../lib/constants'
-import { recordDailyLogin } from '../lib/profileStore'
+import { recordDailyLogin, mergeLocalProfileIntoAuthUser } from '../lib/profileStore'
 
 interface AuthContextValue {
   user: User | null
@@ -38,9 +38,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(data.session?.user ?? null)
       setLoading(false)
       if (data.session?.user) {
-        void recordDailyLogin(data.session.user.id).catch(() => {
-          // プロフィール未設定時もログイン自体は続行
-        })
+        void mergeLocalProfileIntoAuthUser(data.session.user.id).catch(() => undefined)
+        void recordDailyLogin(data.session.user.id).catch(() => undefined)
       }
     })
 
@@ -48,9 +47,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(session?.user ?? null)
       setLoading(false)
       if (session?.user) {
-        void recordDailyLogin(session.user.id).catch(() => {
-          // プロフィール未設定時もログイン自体は続行
-        })
+        void mergeLocalProfileIntoAuthUser(session.user.id).catch(() => undefined)
+        void recordDailyLogin(session.user.id).catch(() => undefined)
       }
     })
 

@@ -1,9 +1,10 @@
 import { useRef, useState, useEffect } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 import { generateAiLogsForLocation, mergeLogsForPhoto } from '../lib/aiLogGenerator'
 import { getCurrentPosition, roundCoordinate } from '../lib/geo'
 import { findNearbyUserLogs } from '../lib/logStore'
 import { detectGroundLineY, detectPhotoScene } from '../lib/photoPosition'
-import { getProfilesByUserIds, getMistStyleClass } from '../lib/profileStore'
+import { buildUserMistStyleMap, getMistStyleClass } from '../lib/profileStore'
 import { extractGpsFromImageFile } from '../lib/exifGps'
 import { renderShareImage, shareOrDownloadImage } from '../lib/shareImage'
 import type { PhotoOverlayLog } from '../types'
@@ -25,6 +26,7 @@ function isImageFile(file: File): boolean {
 const EXIF_CONSENT_KEY = 'hello-p-log:exif-consent'
 
 export function HomePage() {
+  const { user } = useAuth()
   const fileRef = useRef<HTMLInputElement>(null)
   const [photoUrl, setPhotoUrl] = useState<string | null>(null)
   const [overlayLogs, setOverlayLogs] = useState<PhotoOverlayLog[] | null>(null)
@@ -43,20 +45,15 @@ export function HomePage() {
       setMistStyles(new Map())
       return
     }
-    const userIds = overlayLogs
-      .filter((log) => log.source === 'user' && log.userId)
-      .map((log) => log.userId!)
-    if (userIds.length === 0) return
-    void getProfilesByUserIds(userIds).then((profiles) => {
+    void buildUserMistStyleMap(overlayLogs, user?.id ?? null).then((styleMap) => {
       const map = new Map<string, string>()
-      for (const [userId, profile] of profiles) {
-        if (profile.activeMistStyle !== 'default') {
-          map.set(userId, getMistStyleClass(profile.activeMistStyle))
-        }
+      for (const [key, style] of styleMap) {
+        const cls = getMistStyleClass(style)
+        if (cls) map.set(key, cls)
       }
       setMistStyles(map)
     })
-  }, [overlayLogs])
+  }, [overlayLogs, user?.id])
 
   const analyzePhoto = async (dataUrl: string, file?: File) => {
     setLoading(true)

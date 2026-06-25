@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { deleteOwnLog, fetchMyLogs } from '../lib/logStore'
+import { getProfileUserId } from '../lib/localUserId'
 import {
   getUserProfile,
+  recordDailyLogin,
   updateUserProfileSettings,
 } from '../lib/profileStore'
 import { formatDateTime } from '../lib/geo'
@@ -19,19 +21,16 @@ export function MyLogsPage() {
   const [error, setError] = useState<string | null>(null)
   const [settingsMsg, setSettingsMsg] = useState<string | null>(null)
 
+  const profileUserId = getProfileUserId(user?.id)
+
   const load = async () => {
     setLoading(true)
     setError(null)
     setSettingsMsg(null)
     const data = await fetchMyLogs(user?.id ?? null)
     setLogs(data)
-
-    if (user?.id) {
-      setProfile(await getUserProfile(user.id))
-    } else {
-      setProfile(null)
-    }
-
+    await recordDailyLogin(profileUserId).catch(() => undefined)
+    setProfile(await getUserProfile(profileUserId))
     setLoading(false)
   }
 
@@ -51,9 +50,8 @@ export function MyLogsPage() {
   }
 
   const handleTitleChange = async (titleId: string) => {
-    if (!user?.id) return
     try {
-      const updated = await updateUserProfileSettings(user.id, {
+      const updated = await updateUserProfileSettings(profileUserId, {
         activeTitle: titleId || null,
       })
       setProfile(updated)
@@ -64,9 +62,8 @@ export function MyLogsPage() {
   }
 
   const handleMistChange = async (style: MistStyleId) => {
-    if (!user?.id) return
     try {
-      const updated = await updateUserProfileSettings(user.id, {
+      const updated = await updateUserProfileSettings(profileUserId, {
         activeMistStyle: style,
       })
       setProfile(updated)
@@ -88,14 +85,14 @@ export function MyLogsPage() {
       {authAvailable && !user && (
         <div className="my-logs-notice">
           <p>
-            ログインするとメタンポイント・称号・特別モヤが使えます。
-            ログインしていなくても、この端末で投稿した分は表示されます。
+            ログインしなくても、この端末でメタンポイント・称号・特別モヤが使えます。
+            Googleでログインすると、別の端末からも続きが見られます。
           </p>
-          <Link to="/login" className="btn btn-primary">Googleでログイン</Link>
+          <Link to="/login" className="btn btn-primary">Googleでログイン（任意）</Link>
         </div>
       )}
 
-      {user && profile && (
+      {profile && (
         <section className="profile-card">
           <div className="profile-points">
             <span className="points-label">メタンポイント</span>

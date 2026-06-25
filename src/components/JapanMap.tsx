@@ -120,7 +120,7 @@ export function JapanMap({
               key={log.id}
               position={[log.latitude, log.longitude]}
               icon={makeUserMarkerIcon(
-                log.userId ? userMistStyles?.get(log.userId) : undefined,
+                userMistStyles?.get(log.userId ?? '') ?? userMistStyles?.get(log.id),
               )}
               eventHandlers={{
                 click: () => onSelectLog?.(log),
