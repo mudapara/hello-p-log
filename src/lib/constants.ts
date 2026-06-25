@@ -1,7 +1,7 @@
 import type { TacticId } from '../types'
 
 export const APP_NAME = 'Hello屁ログ'
-export const TAGLINE = 'おならログで世界を黄色にするサイト'
+export const TAGLINE = 'おならの痕跡を、地図に残すサイト'
 
 /** AI生成用の食べ物サンプル（ユーザー入力は自由記載） */
 export const AI_FOOD_SAMPLES = [

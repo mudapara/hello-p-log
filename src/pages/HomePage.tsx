@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { generateAiLogsForLocation, mergeLogsForPhoto } from '../lib/aiLogGenerator'
 import { getCurrentPosition, roundCoordinate } from '../lib/geo'
 import { findNearbyUserLogs } from '../lib/logStore'
@@ -8,10 +8,20 @@ import type { PhotoOverlayLog } from '../types'
 import { PhotoCanvas } from '../components/PhotoCanvas'
 import './HomePage.css'
 
+function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
+  ])
+}
+
+function isImageFile(file: File): boolean {
+  if (file.type.startsWith('image/')) return true
+  return /\.(jpe?g|png|gif|webp|heic|heif)$/i.test(file.name)
+}
+
 export function HomePage() {
   const fileRef = useRef<HTMLInputElement>(null)
-  const cameraRef = useRef<HTMLInputElement>(null)
-  const [isMobile, setIsMobile] = useState(false)
   const [photoUrl, setPhotoUrl] = useState<string | null>(null)
   const [overlayLogs, setOverlayLogs] = useState<PhotoOverlayLog[] | null>(null)
   const [loading, setLoading] = useState(false)
@@ -20,38 +30,40 @@ export function HomePage() {
   const [sharing, setSharing] = useState(false)
   const [shareMessage, setShareMessage] = useState<string | null>(null)
 
-  useEffect(() => {
-    const ua = navigator.userAgent
-    setIsMobile(/Android|iPhone|iPad|iPod|Mobile/i.test(ua))
-  }, [])
-
   const analyzePhoto = async (dataUrl: string) => {
     setLoading(true)
     setError(null)
     setPhotoUrl(dataUrl)
     setOverlayLogs(null)
+    setLocationLabel(null)
 
     try {
+      const [pos, groundY, photoScene] = await Promise.all([
+        withTimeout(
+          getCurrentPosition({ timeout: 5000, highAccuracy: false }).catch(() => null),
+          6000,
+          null,
+        ),
+        detectGroundLineY(dataUrl),
+        detectPhotoScene(dataUrl),
+      ])
+
       let lat: number
       let lng: number
-
-      try {
-        const pos = await getCurrentPosition()
+      if (pos) {
         lat = roundCoordinate(pos.coords.latitude)
         lng = roundCoordinate(pos.coords.longitude)
         setLocationLabel(`現在地（概算）: ${lat}, ${lng}`)
-      } catch {
+      } else {
         lat = 35.6812
         lng = 139.7671
         setLocationLabel('位置情報なし → 東京駅付近として生成')
       }
 
-      const groundY = await detectGroundLineY(dataUrl)
-      const photoScene = await detectPhotoScene(dataUrl)
       const aiScene =
         photoScene === 'indoor' ? 'indoor' : photoScene === 'outdoor' ? 'outdoor' : 'any'
       const aiLogs = generateAiLogsForLocation(lat, lng, undefined, { scene: aiScene })
-      const nearbyUsers = await findNearbyUserLogs(lat, lng)
+      const nearbyUsers = await withTimeout(findNearbyUserLogs(lat, lng), 8000, [])
       const merged = mergeLogsForPhoto(aiLogs, nearbyUsers, groundY)
       setOverlayLogs(merged)
     } catch (e) {
@@ -62,13 +74,21 @@ export function HomePage() {
   }
 
   const handleFile = (file: File) => {
-    if (!file.type.startsWith('image/')) {
+    if (!isImageFile(file)) {
       setError('画像ファイルを選択してください')
       return
     }
+    setError(null)
     const reader = new FileReader()
     reader.onload = () => {
-      void analyzePhoto(reader.result as string)
+      if (typeof reader.result === 'string') {
+        void analyzePhoto(reader.result)
+      } else {
+        setError('画像の読み込みに失敗しました')
+      }
+    }
+    reader.onerror = () => {
+      setError('画像の読み込みに失敗しました')
     }
     reader.readAsDataURL(file)
   }
@@ -100,28 +120,9 @@ export function HomePage() {
       </section>
 
       <div className="upload-actions upload-actions--stack">
-        {isMobile && (
-          <button type="button" className="btn btn-primary btn-block" onClick={() => cameraRef.current?.click()}>
-            写真を撮影する
-          </button>
-        )}
-        <button type="button" className={`btn btn-block${isMobile ? '' : ' btn-primary'}`} onClick={() => fileRef.current?.click()}>
+        <button type="button" className="btn btn-primary btn-block" onClick={() => fileRef.current?.click()}>
           写真を選ぶ
         </button>
-        {isMobile && (
-          <input
-            ref={cameraRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="hidden-input"
-            onChange={(e) => {
-              const file = e.target.files?.[0]
-              if (file) handleFile(file)
-              e.target.value = ''
-            }}
-          />
-        )}
         <input
           ref={fileRef}
           type="file"
@@ -133,7 +134,6 @@ export function HomePage() {
             e.target.value = ''
           }}
         />
-        {isMobile && <p className="hint">撮影・アルバムのどちらでもOK</p>}
       </div>
 
       {loading && <p className="status">解析中…ログを生成しています</p>}
@@ -149,7 +149,7 @@ export function HomePage() {
           <PhotoCanvas photoUrl={photoUrl} logs={overlayLogs} />
           <p className="legend">
             <span className="dot dot-ai" /> 淡い黄色＝AI
-            <span className="dot dot-user" /> 濃い黄色＋キラキラ＝現地
+            <span className="dot dot-user" /> 濃い黄色＋キラキラ＝ユーザー
           </p>
           <div className="result-actions">
             <button

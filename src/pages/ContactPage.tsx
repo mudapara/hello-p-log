@@ -72,6 +72,11 @@ export function ContactPage() {
             onChange={(e) => setLogId(e.target.value)}
             placeholder="通報ボタンから自動入力されます"
           />
+          <p className="field-hint">
+            ログIDを自分で調べる必要はありません。マップや写真のメタン情報を開き、右下の
+            <strong>「通報」</strong>
+            を押すと、この欄に自動で入ります。削除依頼のときも同じです。
+          </p>
         </div>
 
         <div className="field">

@@ -28,7 +28,7 @@ export function PhotoCanvas({ photoUrl, logs }: Props) {
               animationDelay: `${index * 0.35}s`,
             }}
             onClick={() => setSelected(log)}
-            aria-label={`${log.nickname}のログ（${log.source === 'user' ? '現地' : 'AI'}）`}
+            aria-label={`${log.nickname}のログ（${log.source === 'user' ? 'ユーザー' : 'AI'}）`}
           >
             <span className="mist-blob mist-blob-1" />
             <span className="mist-blob mist-blob-2" />

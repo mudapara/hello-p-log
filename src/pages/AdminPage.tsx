@@ -60,7 +60,7 @@ export function AdminPage() {
             <div>
               <strong>{log.nickname}</strong>
               <span className={`badge-sm badge-${log.source}`}>
-                {log.source === 'ai' ? 'AI' : '現地'}
+                {log.source === 'ai' ? 'AI' : 'ユーザー'}
               </span>
               <br />
               <small>{formatDateTime(log.loggedAt)} · {log.mainComponent}</small>

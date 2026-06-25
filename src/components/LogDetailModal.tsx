@@ -35,7 +35,7 @@ export function LogDetailModal({ log, onClose }: Props) {
 
         <div className="modal-header">
           <span className={`badge badge-${log.source}`}>
-            {log.source === 'ai' ? 'AI' : '現地'}
+            {log.source === 'ai' ? 'AI' : 'ユーザー'}
           </span>
           <h2 id="log-detail-title">メタン情報</h2>
         </div>

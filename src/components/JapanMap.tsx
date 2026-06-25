@@ -49,7 +49,7 @@ function LogPopup({ log }: { log: FartLog }) {
       <div className="map-popup">
         <strong>{log.nickname}</strong>
         <span className={`badge-sm badge-${log.source}`}>
-          {log.source === 'ai' ? 'AI' : '現地'}
+          {log.source === 'ai' ? 'AI' : 'ユーザー'}
         </span>
         <p>{log.mainComponent}</p>
         <small>{formatDateTime(log.loggedAt)}</small>

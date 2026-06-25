@@ -30,15 +30,20 @@ export function isWithinRadius(
   return distanceMeters(lat1, lng1, lat2, lng2) <= radiusMeters
 }
 
-export async function getCurrentPosition(): Promise<GeolocationPosition> {
+export async function getCurrentPosition(options?: {
+  timeout?: number
+  highAccuracy?: boolean
+}): Promise<GeolocationPosition> {
+  const timeout = options?.timeout ?? 15000
+  const enableHighAccuracy = options?.highAccuracy ?? true
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
       reject(new Error('このブラウザは位置情報に対応していません'))
       return
     }
     navigator.geolocation.getCurrentPosition(resolve, reject, {
-      enableHighAccuracy: true,
-      timeout: 15000,
+      enableHighAccuracy,
+      timeout,
       maximumAge: 60000,
     })
   })

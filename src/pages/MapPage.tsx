@@ -33,7 +33,7 @@ export function MapPage() {
       <div className="stats">
         <span>総ログ: <strong>{logs.length}</strong></span>
         <span>AI: {aiCount}</span>
-        <span>現地: {userCount}</span>
+        <span>ユーザー: {userCount}</span>
       </div>
 
       <div className="filters">
@@ -44,7 +44,7 @@ export function MapPage() {
             className={filter === f ? 'filter active' : 'filter'}
             onClick={() => setFilter(f)}
           >
-            {f === 'all' ? 'すべて' : f === 'ai' ? 'AI' : '現地'}
+            {f === 'all' ? 'すべて' : f === 'ai' ? 'AI' : 'ユーザー'}
           </button>
         ))}
       </div>

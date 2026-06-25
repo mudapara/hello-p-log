@@ -19,6 +19,18 @@
   color: #5d4037;
 }
 
+.field-hint {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: #8d6e63;
+}
+
+.field-hint strong {
+  color: #e65100;
+  font-weight: 700;
+}
+
 .contact-form input,
 .contact-form select,
 .contact-form textarea {
