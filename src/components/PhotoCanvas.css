@@ -39,57 +39,75 @@
   cursor: pointer;
   padding: 0;
   animation: mist-hover 3.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(255, 193, 7, 0.55));
 }
 
 .photo-canvas .mist-marker.mist-ai {
-  width: clamp(88px, 13vw, 140px);
-  height: clamp(68px, 10vw, 108px);
-  opacity: 0.92;
-  filter: saturate(0.85);
+  width: clamp(120px, 19vw, 200px);
+  height: clamp(96px, 15vw, 160px);
+  opacity: 1;
+  filter: drop-shadow(0 0 14px rgba(255, 235, 59, 0.7)) saturate(1.1) brightness(1.08);
 }
 
 .photo-canvas .mist-marker.mist-user {
-  width: clamp(104px, 15vw, 160px);
-  height: clamp(82px, 12vw, 124px);
-  filter: saturate(1.15) brightness(1.05);
+  width: clamp(140px, 21vw, 220px);
+  height: clamp(112px, 17vw, 176px);
+  filter: drop-shadow(0 0 16px rgba(255, 152, 0, 0.75)) saturate(1.2) brightness(1.1);
+}
+
+.photo-canvas .mist-blob {
+  filter: blur(5px);
 }
 
 .photo-canvas .mist-ai .mist-blob-1 {
-  width: 58px;
-  height: 46px;
-  top: 12px;
-  left: 18px;
+  width: 82px;
+  height: 66px;
+  top: 16px;
+  left: 24px;
+  opacity: 1;
+  background: radial-gradient(ellipse, rgba(255, 235, 59, 0.98) 0%, rgba(255, 193, 7, 0.72) 42%, rgba(255, 152, 0, 0.35) 68%, transparent 88%);
 }
 
 .photo-canvas .mist-ai .mist-blob-2 {
-  width: 40px;
-  height: 34px;
+  width: 58px;
+  height: 48px;
+  opacity: 0.95;
+  background: radial-gradient(ellipse, rgba(255, 241, 118, 0.95) 0%, rgba(255, 193, 7, 0.58) 50%, transparent 82%);
 }
 
 .photo-canvas .mist-ai .mist-blob-3 {
-  width: 36px;
-  height: 30px;
-  top: 16px;
-  left: 36px;
+  width: 52px;
+  height: 44px;
+  top: 22px;
+  left: 50px;
+  opacity: 0.92;
+  background: radial-gradient(ellipse, rgba(255, 213, 79, 0.92) 0%, rgba(255, 160, 0, 0.5) 58%, transparent 84%);
 }
 
 .photo-canvas .mist-user .mist-blob-1 {
-  width: 68px;
-  height: 54px;
-  top: 14px;
-  left: 20px;
+  width: 96px;
+  height: 76px;
+  top: 18px;
+  left: 28px;
+  filter: blur(4px);
 }
 
 .photo-canvas .mist-user .mist-blob-2 {
-  width: 48px;
-  height: 40px;
+  width: 68px;
+  height: 56px;
 }
 
 .photo-canvas .mist-user .mist-blob-3 {
-  width: 44px;
-  height: 36px;
-  top: 22px;
-  left: 44px;
+  width: 62px;
+  height: 50px;
+  top: 30px;
+  left: 60px;
+}
+
+.photo-canvas .mist-user .mist-spark {
+  width: 7px;
+  height: 7px;
+  box-shadow: 0 0 8px #ffeb3b, 0 0 14px rgba(255, 193, 7, 0.6);
 }
 
 .mist-marker {
