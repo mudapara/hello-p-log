@@ -15,22 +15,28 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   })
 }
 
-function drawMist(ctx: CanvasRenderingContext2D, x: number, y: number, isUser: boolean) {
-  const scale = isUser ? 1.15 : 0.88
+function drawMist(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  isUser: boolean,
+  photoWidth: number,
+) {
+  const scale = Math.max(1.15, photoWidth / 550) * (isUser ? 1.1 : 1)
   const offsets = [
-    { dx: 0, dy: 0, r: 44 * scale },
-    { dx: -16, dy: -10, r: 30 * scale },
-    { dx: 14, dy: 8, r: 26 * scale },
+    { dx: 0, dy: 0, r: 58 * scale },
+    { dx: -20 * scale, dy: -12 * scale, r: 40 * scale },
+    { dx: 18 * scale, dy: 10 * scale, r: 34 * scale },
   ]
   for (const { dx, dy, r } of offsets) {
     const gradient = ctx.createRadialGradient(x + dx, y + dy, 0, x + dx, y + dy, r)
     if (isUser) {
-      gradient.addColorStop(0, 'rgba(255, 213, 79, 0.92)')
-      gradient.addColorStop(0.45, 'rgba(255, 152, 0, 0.62)')
+      gradient.addColorStop(0, 'rgba(255, 193, 7, 0.92)')
+      gradient.addColorStop(0.45, 'rgba(255, 152, 0, 0.65)')
       gradient.addColorStop(1, 'rgba(255, 111, 0, 0)')
     } else {
-      gradient.addColorStop(0, 'rgba(255, 245, 157, 0.82)')
-      gradient.addColorStop(0.45, 'rgba(255, 235, 59, 0.48)')
+      gradient.addColorStop(0, 'rgba(255, 235, 59, 0.95)')
+      gradient.addColorStop(0.45, 'rgba(255, 193, 7, 0.62)')
       gradient.addColorStop(1, 'rgba(255, 193, 7, 0)')
     }
     ctx.fillStyle = gradient
@@ -120,6 +126,7 @@ export async function renderShareImage(photoUrl: string, logs: PhotoOverlayLog[]
       log.overlayX * SHARE_WIDTH,
       headerH + log.overlayY * photoH,
       log.source === 'user',
+      SHARE_WIDTH,
     )
   }
 
