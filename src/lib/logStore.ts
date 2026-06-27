@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { ContactSubmission, FartLog } from '../types'
 import { isWithinRadius, roundCoordinate } from './geo'
 import { MATCH_RADIUS_METERS } from './constants'
+import { PREFECTURES } from './prefectures'
 import { canManageLog, removeMyLogId, trackMyLogId } from './myLogs'
 import { getSupabaseClient } from './supabase'
 
@@ -226,23 +227,22 @@ export async function findNearbyUserLogs(lat: number, lng: number): Promise<Fart
   )
 }
 
+const TARGET_AI_MAP_LOGS = 100
+
+/** 全国マップ用: AIログが TARGET 件未満なら都道府県にばらして追加 */
 export async function seedAiLogsIfEmpty(): Promise<void> {
   const existing = await fetchAllLogs()
-  if (existing.length > 0) return
+  const aiCount = existing.filter((l) => l.source === 'ai').length
+  if (aiCount >= TARGET_AI_MAP_LOGS) return
 
-  const seeds = [
-    { lat: 35.6812, lng: 139.7671 },
-    { lat: 34.6937, lng: 135.5023 },
-    { lat: 43.0621, lng: 141.3544 },
-    { lat: 33.5904, lng: 130.4017 },
-    { lat: 35.1709, lng: 136.8815 },
-  ]
-
+  const needed = TARGET_AI_MAP_LOGS - aiCount
   const { generateAiLog } = await import('./aiLogGenerator')
-  for (const { lat, lng } of seeds) {
-    for (let i = 0; i < 8; i++) {
-      await saveLog(generateAiLog(lat, lng))
-    }
+
+  for (let i = 0; i < needed; i++) {
+    const pref = PREFECTURES[i % PREFECTURES.length]!
+    const lat = roundCoordinate(pref.lat + (Math.random() - 0.5) * 0.12)
+    const lng = roundCoordinate(pref.lng + (Math.random() - 0.5) * 0.12)
+    await saveLog(generateAiLog(lat, lng))
   }
 }
 
