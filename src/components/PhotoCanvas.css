@@ -7,6 +7,24 @@
   background: #000;
 }
 
+.photo-canvas-frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  line-height: 0;
+}
+
+.photo-overlay-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.photo-overlay-layer .mist-marker {
+  pointer-events: auto;
+}
+
 .photo-bg {
   display: block;
   width: 100%;

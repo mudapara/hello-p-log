@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useCallback, useLayoutEffect, useRef, useState } from 'react'
 import type { PhotoOverlayLog } from '../types'
 import { LogDetailModal } from './LogDetailModal'
 import './PhotoCanvas.css'
@@ -11,43 +11,86 @@ interface Props {
 
 export function PhotoCanvas({ photoUrl, logs, mistStyles }: Props) {
   const [selected, setSelected] = useState<PhotoOverlayLog | null>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const imgRef = useRef<HTMLImageElement>(null)
+  const [layout, setLayout] = useState({ w: 0, h: 0 })
+
+  const syncLayout = useCallback(() => {
+    const img = imgRef.current
+    if (!img) return
+    const w = img.clientWidth
+    const h = img.clientHeight
+    if (w > 0 && h > 0) {
+      setLayout((prev) => (prev.w === w && prev.h === h ? prev : { w, h }))
+    }
+  }, [])
+
+  useLayoutEffect(() => {
+    syncLayout()
+    const img = imgRef.current
+    if (!img) return
+
+    const observer = new ResizeObserver(() => syncLayout())
+    observer.observe(img)
+    window.addEventListener('resize', syncLayout)
+    window.addEventListener('orientationchange', syncLayout)
+
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', syncLayout)
+      window.removeEventListener('orientationchange', syncLayout)
+    }
+  }, [photoUrl, syncLayout])
 
   return (
     <>
-      <div className="photo-canvas" ref={containerRef}>
-        <img src={photoUrl} alt="選択した写真" className="photo-bg" />
-        {logs.map((log, index) => {
-          const premium = log.source === 'user'
-            ? (mistStyles?.get(log.userId ?? '') ?? mistStyles?.get(log.id) ?? '')
-            : ''
-          return (
-          <button
-            key={log.id}
-            type="button"
-            className={`mist-marker ${log.source === 'user' ? 'mist-user' : 'mist-ai'} ${premium ?? ''}`}
-            style={{
-              left: `${log.overlayX * 100}%`,
-              top: `${log.overlayY * 100}%`,
-              zIndex: 3 + index,
-              animationDelay: `${index * 0.35}s`,
-            }}
-            onClick={() => setSelected(log)}
-            aria-label={`${log.nickname}のログ（${log.source === 'user' ? 'ユーザー' : 'AI'}）`}
-          >
-            <span className="mist-blob mist-blob-1" />
-            <span className="mist-blob mist-blob-2" />
-            <span className="mist-blob mist-blob-3" />
-            {log.source === 'user' && (
-              <>
-                <span className="mist-spark mist-spark-1" />
-                <span className="mist-spark mist-spark-2" />
-                <span className="mist-spark mist-spark-3" />
-              </>
-            )}
-          </button>
-          )
-        })}
+      <div className="photo-canvas">
+        <div className="photo-canvas-frame">
+          <img
+            ref={imgRef}
+            src={photoUrl}
+            alt="選択した写真"
+            className="photo-bg"
+            onLoad={syncLayout}
+          />
+          {layout.h > 0 && (
+            <div
+              className="photo-overlay-layer"
+              style={{ width: layout.w, height: layout.h }}
+            >
+              {logs.map((log, index) => {
+                const premium = log.source === 'user'
+                  ? (mistStyles?.get(log.userId ?? '') ?? mistStyles?.get(log.id) ?? '')
+                  : ''
+                return (
+                  <button
+                    key={log.id}
+                    type="button"
+                    className={`mist-marker ${log.source === 'user' ? 'mist-user' : 'mist-ai'} ${premium ?? ''}`}
+                    style={{
+                      left: `${log.overlayX * layout.w}px`,
+                      top: `${log.overlayY * layout.h}px`,
+                      zIndex: 3 + index,
+                      animationDelay: `${index * 0.35}s`,
+                    }}
+                    onClick={() => setSelected(log)}
+                    aria-label={`${log.nickname}のログ（${log.source === 'user' ? 'ユーザー' : 'AI'}）`}
+                  >
+                    <span className="mist-blob mist-blob-1" />
+                    <span className="mist-blob mist-blob-2" />
+                    <span className="mist-blob mist-blob-3" />
+                    {log.source === 'user' && (
+                      <>
+                        <span className="mist-spark mist-spark-1" />
+                        <span className="mist-spark mist-spark-2" />
+                        <span className="mist-spark mist-spark-3" />
+                      </>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+        </div>
       </div>
       {selected && <LogDetailModal log={selected} onClose={() => setSelected(null)} />}
     </>
