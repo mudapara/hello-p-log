@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { EntityType, FartLog, TacticId } from '../types'
 import {
   FART_LOCATION_OPTIONS,
+  ABOUT_USAGE_URL,
   SMELL_STRENGTH_OPTIONS,
   SMELL_TYPES,
   SOUND_CATEGORIES,
@@ -454,7 +455,7 @@ export function UserLogForm({
 
       <label className="checkbox agree">
         <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
-        <a href="/about" target="_blank" rel="noreferrer">使い方・注意事項</a>
+        <a href={ABOUT_USAGE_URL} target="_blank" rel="noreferrer">使い方・注意事項</a>
         を読み、投稿内容に問題がないことを確認しました *
       </label>
 

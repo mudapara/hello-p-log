@@ -1,10 +1,32 @@
-import { FEATURE_AR, FEATURE_PHOTO, FEATURE_MAP, FEATURE_LOG_POST } from '../lib/constants'
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
+import { ABOUT_USAGE_SECTION_ID, FEATURE_AR, FEATURE_PHOTO, FEATURE_MAP, FEATURE_LOG_POST } from '../lib/constants'
 import './AboutPage.css'
 
 export function AboutPage() {
+  const { hash } = useLocation()
+
+  useEffect(() => {
+    if (!hash) return
+    const id = hash.slice(1)
+    const el = document.getElementById(id)
+    el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [hash])
+
   return (
     <article className="about-page">
-      <h1>使い方・注意事項</h1>
+      <h1>このサイトについて</h1>
+
+      <section className="about-intro">
+        <p>おならをした場所に、黄色いログを残す——そんなサイトです。</p>
+        <ul>
+          <li>おならをしてしまった反省のため</li>
+          <li>ガスが漂う危険地帯に近づかないよう警告するため</li>
+          <li>おならを催してしまう魔境であることを世に広めるため</li>
+          <li>その他（気まぐれ、記録好き、など）</li>
+        </ul>
+        <p>思い思いの目的でご利用くださいませ</p>
+      </section>
 
       <section>
         <h2>このサイトを作った想い</h2>
@@ -27,19 +49,7 @@ export function AboutPage() {
         </p>
       </section>
 
-      <section>
-        <h2>このサイトについて</h2>
-        <p>おならをした場所に、黄色いログを残す——そんなサイトです。</p>
-        <ul>
-          <li>おならをしてしまった反省のため</li>
-          <li>ガスが漂う危険地帯に近づかないよう警告するため</li>
-          <li>おならを催してしまう魔境であることを世に広めるため</li>
-          <li>その他（気まぐれ、記録好き、など）</li>
-        </ul>
-        <p>思い思いの目的でご利用くださいませ</p>
-      </section>
-
-      <section>
+      <section id={ABOUT_USAGE_SECTION_ID}>
         <h2>使い方</h2>
         <ol>
           <li><strong>{FEATURE_PHOTO.title}</strong> — {FEATURE_PHOTO.desc}位置はブラウザの許可、または写真内の位置情報（EXIF）を使います。</li>

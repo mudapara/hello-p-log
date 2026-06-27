@@ -8,6 +8,14 @@
   margin-bottom: 1.5rem;
 }
 
+.about-intro {
+  margin-bottom: 1.75rem;
+}
+
+#usage {
+  scroll-margin-top: 1rem;
+}
+
 .about-page h2 {
   font-size: 1.05rem;
   color: #5d4037;

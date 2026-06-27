@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { APP_NAME, TAGLINE, FEATURE_PHOTO, FEATURE_AR, FEATURE_MAP, FEATURE_LOG_POST } from '../lib/constants'
+import { APP_NAME, TAGLINE, ABOUT_USAGE_URL, FEATURE_PHOTO, FEATURE_AR, FEATURE_MAP, FEATURE_LOG_POST } from '../lib/constants'
 import './Layout.css'
 
 const NAV = [
@@ -11,7 +11,7 @@ const NAV = [
   { to: '/log/new', label: FEATURE_LOG_POST.nav },
   { to: '/my-logs', label: 'マイ屁ログ' },
   { to: '/ranking', label: 'ランキング' },
-  { to: '/about', label: '使い方・注意' },
+  { to: '/about', label: 'このサイトについて' },
 ]
 
 function isNavActive(pathname: string, to: string): boolean {
@@ -68,7 +68,7 @@ export function Layout() {
         <Outlet />
       </main>
       <footer className="footer">
-        <Link to="/about">使い方・注意事項</Link>
+        <Link to={ABOUT_USAGE_URL}>使い方・注意事項</Link>
         <span>·</span>
         <Link to="/contact">お問い合わせ</Link>
       </footer>

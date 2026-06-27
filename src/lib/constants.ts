@@ -3,6 +3,10 @@ import type { TacticId } from '../types'
 export const APP_NAME = 'Hello屁ログ'
 export const TAGLINE = 'おならの痕跡を、地図に残すサイト'
 
+/** 使い方セクションへのアンカー（フッター・投稿フォームから） */
+export const ABOUT_USAGE_SECTION_ID = 'usage'
+export const ABOUT_USAGE_URL = `/about#${ABOUT_USAGE_SECTION_ID}`
+
 /** 写真を選んで黄色いログを載せる機能 */
 export const FEATURE_PHOTO = {
   nav: '写真アナライズ',
