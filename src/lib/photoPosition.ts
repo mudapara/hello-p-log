@@ -148,9 +148,9 @@ export function spreadPhotoOverlays<T extends { overlayX: number; overlayY: numb
   })
 
   const yBase = Math.max(groundY - 0.05, Math.min(0.9, groundY - 0.02))
-  const rowCount = sorted.length <= 3 ? 1 : sorted.length <= 6 ? 2 : 3
-  const minGapX = 0.17
-  const rowStep = 0.07
+  const rowCount = sorted.length <= 2 ? 1 : sorted.length <= 5 ? 2 : 3
+  const minGapX = 0.24
+  const rowStep = 0.09
 
   const placed = sorted.map((log, i) => {
     if (log.source === 'user' && log.photoTapX != null) {
@@ -178,7 +178,7 @@ export function spreadPhotoOverlays<T extends { overlayX: number; overlayY: numb
   for (let i = 1; i < placed.length; i++) {
     const prev = placed[i - 1]!
     const cur = placed[i]!
-    if (Math.abs(cur.overlayY - prev.overlayY) < 0.06 && cur.overlayX - prev.overlayX < minGapX) {
+    if (Math.abs(cur.overlayY - prev.overlayY) < 0.08 && cur.overlayX - prev.overlayX < minGapX) {
       placed[i] = { ...cur, overlayX: prev.overlayX + minGapX }
     }
   }

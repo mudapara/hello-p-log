@@ -143,21 +143,23 @@ function drawMist(
   y: number,
   isUser: boolean,
 ) {
-  const scale = Math.max(1.15, ctx.canvas.width / 650)
+  const scale = Math.max(1, ctx.canvas.width / 720) * (isUser ? 1.08 : 1)
   const offsets = [
-    { dx: 0, dy: 0, r: 58 * scale },
-    { dx: -20 * scale, dy: -12 * scale, r: 40 * scale },
-    { dx: 18 * scale, dy: 10 * scale, r: 34 * scale },
+    { dx: 0, dy: 0, r: 50 * scale },
+    { dx: -18 * scale, dy: -10 * scale, r: 34 * scale },
+    { dx: 16 * scale, dy: 9 * scale, r: 28 * scale },
   ]
   for (const { dx, dy, r } of offsets) {
     const gradient = ctx.createRadialGradient(x + dx, y + dy, 0, x + dx, y + dy, r)
     if (isUser) {
-      gradient.addColorStop(0, 'rgba(255, 193, 7, 0.85)')
-      gradient.addColorStop(0.45, 'rgba(255, 152, 0, 0.55)')
+      gradient.addColorStop(0, 'rgba(255, 235, 59, 0)')
+      gradient.addColorStop(0.22, 'rgba(255, 213, 79, 0.78)')
+      gradient.addColorStop(0.55, 'rgba(255, 152, 0, 0.42)')
       gradient.addColorStop(1, 'rgba(255, 111, 0, 0)')
     } else {
-      gradient.addColorStop(0, 'rgba(255, 235, 59, 0.8)')
-      gradient.addColorStop(0.45, 'rgba(255, 193, 7, 0.5)')
+      gradient.addColorStop(0, 'rgba(255, 253, 231, 0)')
+      gradient.addColorStop(0.25, 'rgba(255, 249, 196, 0.42)')
+      gradient.addColorStop(0.58, 'rgba(255, 235, 59, 0.26)')
       gradient.addColorStop(1, 'rgba(255, 193, 7, 0)')
     }
     ctx.fillStyle = gradient

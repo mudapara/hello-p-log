@@ -39,75 +39,99 @@
   cursor: pointer;
   padding: 0;
   animation: mist-hover 3.5s ease-in-out infinite;
-  filter: drop-shadow(0 0 10px rgba(255, 193, 7, 0.55));
 }
 
 .photo-canvas .mist-marker.mist-ai {
-  width: clamp(120px, 19vw, 200px);
-  height: clamp(96px, 15vw, 160px);
-  opacity: 1;
-  filter: drop-shadow(0 0 14px rgba(255, 235, 59, 0.7)) saturate(1.1) brightness(1.08);
+  width: clamp(88px, 13vw, 138px);
+  height: clamp(68px, 10vw, 108px);
+  opacity: 0.9;
+  filter: drop-shadow(0 0 8px rgba(255, 249, 196, 0.45)) saturate(0.82) brightness(1.04);
 }
 
 .photo-canvas .mist-marker.mist-user {
-  width: clamp(140px, 21vw, 220px);
-  height: clamp(112px, 17vw, 176px);
-  filter: drop-shadow(0 0 16px rgba(255, 152, 0, 0.75)) saturate(1.2) brightness(1.1);
+  width: clamp(104px, 15vw, 162px);
+  height: clamp(82px, 12vw, 128px);
+  filter: drop-shadow(0 0 12px rgba(255, 193, 7, 0.55)) saturate(1.12) brightness(1.06);
 }
 
 .photo-canvas .mist-blob {
-  filter: blur(5px);
+  filter: blur(7px);
 }
 
 .photo-canvas .mist-ai .mist-blob-1 {
-  width: 82px;
-  height: 66px;
-  top: 16px;
-  left: 24px;
-  opacity: 1;
-  background: radial-gradient(ellipse, rgba(255, 235, 59, 0.98) 0%, rgba(255, 193, 7, 0.72) 42%, rgba(255, 152, 0, 0.35) 68%, transparent 88%);
+  width: 60px;
+  height: 48px;
+  top: 14px;
+  left: 18px;
+  opacity: 0.88;
+  background: radial-gradient(
+    ellipse,
+    rgba(255, 253, 231, 0.15) 0%,
+    rgba(255, 249, 196, 0.42) 32%,
+    rgba(255, 241, 118, 0.28) 58%,
+    transparent 88%
+  );
 }
 
 .photo-canvas .mist-ai .mist-blob-2 {
-  width: 58px;
-  height: 48px;
-  opacity: 0.95;
-  background: radial-gradient(ellipse, rgba(255, 241, 118, 0.95) 0%, rgba(255, 193, 7, 0.58) 50%, transparent 82%);
+  width: 42px;
+  height: 36px;
+  opacity: 0.82;
+  background: radial-gradient(
+    ellipse,
+    rgba(255, 253, 231, 0.1) 0%,
+    rgba(255, 245, 157, 0.38) 35%,
+    rgba(255, 235, 59, 0.2) 62%,
+    transparent 86%
+  );
 }
 
 .photo-canvas .mist-ai .mist-blob-3 {
-  width: 52px;
-  height: 44px;
-  top: 22px;
-  left: 50px;
-  opacity: 0.92;
-  background: radial-gradient(ellipse, rgba(255, 213, 79, 0.92) 0%, rgba(255, 160, 0, 0.5) 58%, transparent 84%);
+  width: 38px;
+  height: 32px;
+  top: 18px;
+  left: 38px;
+  opacity: 0.8;
+  background: radial-gradient(
+    ellipse,
+    rgba(255, 253, 231, 0.1) 0%,
+    rgba(255, 241, 118, 0.35) 38%,
+    rgba(255, 235, 59, 0.18) 65%,
+    transparent 88%
+  );
 }
 
 .photo-canvas .mist-user .mist-blob-1 {
-  width: 96px;
-  height: 76px;
-  top: 18px;
-  left: 28px;
-  filter: blur(4px);
+  width: 68px;
+  height: 54px;
+  top: 14px;
+  left: 20px;
+  filter: blur(5px);
+  background: radial-gradient(
+    ellipse,
+    rgba(255, 253, 231, 0.25) 0%,
+    rgba(255, 235, 59, 0.82) 30%,
+    rgba(255, 193, 7, 0.45) 62%,
+    transparent 90%
+  );
 }
 
 .photo-canvas .mist-user .mist-blob-2 {
-  width: 68px;
-  height: 56px;
+  width: 48px;
+  height: 40px;
 }
 
 .photo-canvas .mist-user .mist-blob-3 {
-  width: 62px;
-  height: 50px;
-  top: 30px;
-  left: 60px;
+  width: 44px;
+  height: 36px;
+  top: 22px;
+  left: 44px;
 }
 
 .photo-canvas .mist-user .mist-spark {
-  width: 7px;
-  height: 7px;
-  box-shadow: 0 0 8px #ffeb3b, 0 0 14px rgba(255, 193, 7, 0.6);
+  width: 6px;
+  height: 6px;
+  box-shadow: 0 0 6px #ffeb3b, 0 0 10px rgba(255, 193, 7, 0.5);
 }
 
 .mist-marker {
