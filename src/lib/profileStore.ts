@@ -8,8 +8,7 @@ import {
   NEW_PREFECTURE_POINTS,
 } from './methanePoints'
 import { getPrefectureFromCoords } from './prefectures'
-import { getOrCreateLocalUserId, getProfileUserId, isLocalUserId } from './localUserId'
-import { getMyLogIds } from './myLogs'
+import { getOrCreateLocalUserId, isLocalUserId } from './localUserId'
 import { getSupabaseClient } from './supabase'
 import {
   computeUnlockedMistStyles,
@@ -206,24 +205,20 @@ export async function buildUserMistStyleMap(
     }
   }
 
-  const profileUserId = getProfileUserId(authUserId)
-  const ownProfile = await getUserProfile(profileUserId)
+  if (!authUserId) return map
+
+  const ownProfile = await getUserProfile(authUserId)
   if (ownProfile.activeMistStyle === 'default') return map
 
   const style = ownProfile.activeMistStyle
-  if (authUserId) {
-    map.set(authUserId, style)
-  }
-  const myLogIds = getMyLogIds()
-  for (const log of logs) {
-    if (log.source === 'user' && myLogIds.includes(log.id)) {
-      map.set(log.id, style)
-    }
-  }
+  map.set(authUserId, style)
   return map
 }
 
 export async function awardMethanePointsForLog(userId: string, log: FartLog): Promise<UserProfile> {
+  if (isLocalUserId(userId)) {
+    return getUserProfile(userId)
+  }
   const profile = await getUserProfile(userId)
   const prefecture = getPrefectureFromCoords(log.latitude, log.longitude)
   const updated = applyLogToProfile(profile, log, prefecture)
@@ -231,6 +226,9 @@ export async function awardMethanePointsForLog(userId: string, log: FartLog): Pr
 }
 
 export async function recordDailyLogin(userId: string): Promise<UserProfile> {
+  if (isLocalUserId(userId)) {
+    return getUserProfile(userId)
+  }
   const profile = await getUserProfile(userId)
   const today = new Date().toISOString().slice(0, 10)
   if (profile.lastLoginDate === today) return profile
@@ -326,6 +324,7 @@ export async function fetchUserRanking(limit = 10): Promise<UserRankingEntry[]> 
 
   const entries: UserRankingEntry[] = []
   for (const [userId, userLogs] of byUser) {
+    if (isLocalUserId(userId)) continue
     const profile = readLocalProfile(userId)
     entries.push({
       userId,

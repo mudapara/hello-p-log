@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { ContactSubmission, FartLog } from '../types'
 import { isWithinRadius, roundCoordinate } from './geo'
 import { MATCH_RADIUS_METERS } from './constants'
-import { canManageLog, getMyLogIds, removeMyLogId, trackMyLogId } from './myLogs'
+import { canManageLog, removeMyLogId, trackMyLogId } from './myLogs'
 import { getSupabaseClient } from './supabase'
 
 const LOGS_KEY = 'hello-p-log:logs'
@@ -57,6 +57,8 @@ function rowToLog(row: Record<string, unknown>): FartLog {
     photoTapX: (row.photo_tap_x as number | null) ?? null,
     photoTapY: (row.photo_tap_y as number | null) ?? null,
     blurConfirmed: Boolean(row.blur_confirmed),
+    fartLocation: (row.fart_location as string | null) ?? null,
+    fartLocationOther: (row.fart_location_other as string | null) ?? null,
   }
 }
 
@@ -92,6 +94,8 @@ function logToRow(log: FartLog): Record<string, unknown> {
     photo_tap_x: log.photoTapX,
     photo_tap_y: log.photoTapY,
     blur_confirmed: log.blurConfirmed,
+    fart_location: log.fartLocation,
+    fart_location_other: log.fartLocationOther,
   }
 }
 
@@ -123,10 +127,10 @@ export async function fetchLogById(id: string): Promise<FartLog | null> {
 }
 
 export async function fetchMyLogs(userId: string | null): Promise<FartLog[]> {
-  const supabase = getSupabase()
-  const byId = new Map<string, FartLog>()
+  if (!userId) return []
 
-  if (supabase && userId) {
+  const supabase = getSupabase()
+  if (supabase) {
     const { data, error } = await supabase
       .from('fart_logs')
       .select('*')
@@ -135,30 +139,14 @@ export async function fetchMyLogs(userId: string | null): Promise<FartLog[]> {
       .order('created_at', { ascending: false })
     if (error) {
       console.warn('fetchMyLogs by user_id:', error)
-    } else {
-      for (const row of data ?? []) {
-        byId.set(row.id as string, rowToLog(row))
-      }
+      return []
     }
+    return (data ?? []).map(rowToLog)
   }
 
-  const localIds = getMyLogIds()
-  if (localIds.length > 0) {
-    try {
-      const all = supabase ? await fetchAllLogs() : readLocalLogs()
-      for (const log of all) {
-        if (log.source === 'user' && localIds.includes(log.id)) {
-          byId.set(log.id, log)
-        }
-      }
-    } catch (e) {
-      console.warn('fetchMyLogs local merge:', e)
-    }
-  }
-
-  return [...byId.values()].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  )
+  return readLocalLogs()
+    .filter((log) => log.source === 'user' && log.userId === userId)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 }
 
 export async function saveLog(log: FartLog): Promise<FartLog> {
@@ -178,7 +166,7 @@ export async function saveLog(log: FartLog): Promise<FartLog> {
     writeLocalLogs(logs)
   }
 
-  if (normalized.source === 'user') {
+  if (normalized.source === 'user' && normalized.userId) {
     trackMyLogId(normalized.id)
   }
   return normalized

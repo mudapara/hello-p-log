@@ -3,6 +3,35 @@ import type { TacticId } from '../types'
 export const APP_NAME = 'Hello屁ログ'
 export const TAGLINE = 'おならの痕跡を、地図に残すサイト'
 
+/** 写真を選んで黄色いログを載せる機能 */
+export const FEATURE_PHOTO = {
+  nav: '写真アナライズ',
+  title: '写真アナライズ',
+  desc: '写真を選ぶと黄色いログが浮かぶ。タップでメタン情報。',
+  resultHeading: 'アナライズ結果',
+} as const
+
+/** カメラ映像の上に黄色いモヤを出す機能 */
+export const FEATURE_AR = {
+  nav: 'ARログ検出',
+  title: 'ARログ検出',
+  desc: 'カメラを向けてタップ。映像の上に黄色いモヤが出る。',
+} as const
+
+/** 全国のログを地図表示 */
+export const FEATURE_MAP = {
+  nav: '全国マップ',
+  title: '全国マップ',
+  desc: '全国のログ分布。増えるほど黄色くなる。',
+} as const
+
+/** 地図に痕跡を残す投稿 */
+export const FEATURE_LOG_POST = {
+  nav: 'ログ投稿',
+  title: 'ログ投稿',
+  desc: '地図に痕跡を残す。写真は任意。',
+} as const
+
 export const SITE_URL =
   (import.meta.env.VITE_SITE_URL as string | undefined)?.replace(/\/$/, '') ||
   'https://hello-p-log.vercel.app'
@@ -55,6 +84,38 @@ export const SMELL_STRENGTH_OPTIONS = [
 export function getSmellStrengthLabel(intensity: number): string {
   const found = SMELL_STRENGTH_OPTIONS.find((o) => o.value === intensity)
   return found?.label ?? `レベル${intensity}`
+}
+
+/** ログ投稿時の放屁場所（公共の場 + 自宅 + その他） */
+export const FART_LOCATION_OPTIONS = [
+  '道路',
+  '電車',
+  'バス',
+  '車',
+  '新幹線',
+  'エレベーター',
+  '学校',
+  '会社',
+  'スーパー',
+  'コンビニ',
+  '駅',
+  '病院',
+  'レストラン・カフェ',
+  '公園',
+  'トイレ',
+  '自宅',
+  'その他',
+] as const
+
+export type FartLocationOption = (typeof FART_LOCATION_OPTIONS)[number]
+
+export function formatFartLocation(
+  location: string | null | undefined,
+  other: string | null | undefined,
+): string {
+  if (!location) return '—'
+  if (location === 'その他') return other?.trim() || 'その他'
+  return location
 }
 
 export interface SoundOption {

@@ -31,7 +31,9 @@ create table if not exists fart_logs (
   photo_data_url text,
   photo_tap_x double precision,
   photo_tap_y double precision,
-  blur_confirmed boolean not null default false
+  blur_confirmed boolean not null default false,
+  fart_location text,
+  fart_location_other text
 );
 
 create index if not exists fart_logs_created_at_idx on fart_logs (created_at desc);

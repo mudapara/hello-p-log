@@ -1,5 +1,5 @@
 import type { PhotoOverlayLog } from '../types'
-import { APP_NAME, SITE_URL } from './constants'
+import { APP_NAME, FEATURE_PHOTO, SITE_URL } from './constants'
 import { getMethaneLevel } from './methaneConcentration'
 
 export const SHARE_MESSAGE = `この場所に漂う屁ログを検出しました！！\n${SITE_URL}`
@@ -111,7 +111,7 @@ export async function renderShareImage(photoUrl: string, logs: PhotoOverlayLog[]
 
   ctx.fillStyle = '#f57f17'
   ctx.font = 'bold 34px "Segoe UI", Meiryo, sans-serif'
-  ctx.fillText(`${APP_NAME} — 鑑識結果`, 28, 42)
+  ctx.fillText(`${APP_NAME} — ${FEATURE_PHOTO.resultHeading}`, 28, 42)
 
   ctx.drawImage(img, 0, headerH, SHARE_WIDTH, photoH)
   for (const log of logs) {

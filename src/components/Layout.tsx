@@ -1,14 +1,14 @@
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { APP_NAME, TAGLINE } from '../lib/constants'
+import { APP_NAME, TAGLINE, FEATURE_PHOTO, FEATURE_AR, FEATURE_MAP, FEATURE_LOG_POST } from '../lib/constants'
 import './Layout.css'
 
 const NAV = [
   { to: '/', label: 'TOP' },
-  { to: '/photo', label: '写真鑑識' },
-  { to: '/ar', label: '現場AR' },
-  { to: '/map', label: '日本マップ' },
-  { to: '/log/new', label: 'ログ投稿' },
+  { to: '/photo', label: FEATURE_PHOTO.nav },
+  { to: '/ar', label: FEATURE_AR.nav },
+  { to: '/map', label: FEATURE_MAP.nav },
+  { to: '/log/new', label: FEATURE_LOG_POST.nav },
   { to: '/my-logs', label: 'マイ屁ログ' },
   { to: '/ranking', label: 'ランキング' },
   { to: '/about', label: '使い方・注意' },

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { FartLog } from '../types'
-import { TACTICS, METHANE_LEVEL_HINT, getSmellStrengthLabel } from '../lib/constants'
+import { TACTICS, METHANE_LEVEL_HINT, getSmellStrengthLabel, formatFartLocation } from '../lib/constants'
 import { getMethaneLevel } from '../lib/methaneConcentration'
 import { formatDateTime } from '../lib/geo'
 import './LogDetailModal.css'
@@ -71,6 +71,10 @@ export function LogDetailModal({ log, onClose }: Props) {
           <div>
             <dt>主成分</dt>
             <dd>{log.mainComponent}</dd>
+          </div>
+          <div>
+            <dt>放屁場所</dt>
+            <dd>{formatFartLocation(log.fartLocation, log.fartLocationOther)}</dd>
           </div>
           <div>
             <dt>匂い</dt>

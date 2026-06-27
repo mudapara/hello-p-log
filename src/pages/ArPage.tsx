@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { FEATURE_AR, FEATURE_PHOTO } from '../lib/constants'
 import { generateAiLog } from '../lib/aiLogGenerator'
 import { getCurrentPosition, roundCoordinate } from '../lib/geo'
 import type { FartLog } from '../types'
@@ -76,15 +77,15 @@ export function ArPage() {
   return (
     <div className="ar-page">
       <div className="ar-header">
-        <h1>現場AR</h1>
-        <p>カメラを向けて画面をタップ。黄色いモヤが浮かびます（写真鑑識のAR版）。</p>
+        <h1>{FEATURE_AR.title}</h1>
+        <p>カメラを向けて画面をタップ。映像の上に黄色いモヤが浮かび、タップでメタン情報が見られます。</p>
       </div>
 
       {error && (
         <div className="ar-error">
           <p>{error}</p>
           <p className="hint">HTTPSで開いているか、カメラ許可を確認してください。</p>
-          <Link to="/photo" className="btn">写真鑑識へ</Link>
+          <Link to="/photo" className="btn">{FEATURE_PHOTO.nav}へ</Link>
         </div>
       )}
 
@@ -117,7 +118,7 @@ export function ArPage() {
 
       <div className="ar-actions">
         <Link to="/log/new" className="btn btn-primary">ここにログを投稿する</Link>
-        <Link to="/photo" className="btn">写真鑑識へ</Link>
+        <Link to="/photo" className="btn">{FEATURE_PHOTO.nav}へ</Link>
       </div>
 
       <p className="ar-note">

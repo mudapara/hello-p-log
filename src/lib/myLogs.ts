@@ -27,7 +27,5 @@ export function removeMyLogId(id: string): void {
 
 export function canManageLog(log: FartLog, userId: string | null): boolean {
   if (log.source !== 'user') return false
-  if (userId && log.userId === userId) return true
-  if (!log.userId && getMyLogIds().includes(log.id)) return true
-  return false
+  return Boolean(userId && log.userId === userId)
 }

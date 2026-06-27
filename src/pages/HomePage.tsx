@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
+import { FEATURE_PHOTO } from '../lib/constants'
 import { useAuth } from '../contexts/AuthContext'
 import { generateAiLogsForLocation, mergeLogsForPhoto } from '../lib/aiLogGenerator'
 import { getCurrentPosition, roundCoordinate } from '../lib/geo'
@@ -149,9 +150,9 @@ export function HomePage() {
   return (
     <div className="home-page">
       <section className="hero">
-        <h1>写真鑑識</h1>
+        <h1>{FEATURE_PHOTO.title}</h1>
         <p className="lead">
-          写真をアップすると、オナラログが浮かび上がります。
+          写真を選ぶと、黄色いログが浮かび上がります。モヤをタップするとメタン情報が見られます。
         </p>
       </section>
 
@@ -199,13 +200,13 @@ export function HomePage() {
         />
       </div>
 
-      {loading && <p className="status">解析中…ログを生成しています</p>}
+      {loading && <p className="status">生成中…黄色いログを浮かべています</p>}
       {error && <p className="error">{error}</p>}
       {locationLabel && <p className="hint">{locationLabel}</p>}
 
       {photoUrl && overlayLogs && (
         <section className="result">
-          <h2>鑑識結果</h2>
+          <h2>{FEATURE_PHOTO.resultHeading}</h2>
           <p className="hint">
             黄色いモヤをタップするとメタン情報が見られます（全{overlayLogs.length}件）
           </p>

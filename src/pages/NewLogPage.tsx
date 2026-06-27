@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { formDataToLog, UserLogForm, type UserLogFormData } from '../components/UserLogForm'
 import { useAuth } from '../contexts/AuthContext'
 import { awardMethanePointsForLog, getUserProfile } from '../lib/profileStore'
-import { getProfileUserId } from '../lib/localUserId'
+import { FEATURE_LOG_POST, FEATURE_MAP } from '../lib/constants'
 import { saveLog } from '../lib/logStore'
 import { renderCompositeImage } from '../components/PhotoCanvas'
 import { CameraIcon } from '../components/CameraIcon'
@@ -40,10 +40,11 @@ export function NewLogPage() {
     setSuccessId(log.id)
     setPointsEarned(null)
 
-    const profileUserId = getProfileUserId(user?.id)
-    const before = await getUserProfile(profileUserId)
-    const after = await awardMethanePointsForLog(profileUserId, log)
-    setPointsEarned(after.methanePoints - before.methanePoints)
+    if (user?.id) {
+      const before = await getUserProfile(user.id)
+      const after = await awardMethanePointsForLog(user.id, log)
+      setPointsEarned(after.methanePoints - before.methanePoints)
+    }
 
     if (data.photoDataUrl && data.photoTapX != null && data.photoTapY != null) {
       const overlay: PhotoOverlayLog = {
@@ -61,9 +62,16 @@ export function NewLogPage() {
       <div className="new-log-page">
         <div className="success-card">
           <h1>投稿完了</h1>
-          <p>ログが日本マップに反映されました。</p>
+          <p>ログが{FEATURE_MAP.title}に反映されました。</p>
           {pointsEarned != null && pointsEarned > 0 && (
             <p className="points-toast">メタンポイント +{pointsEarned} pt</p>
+          )}
+          {!user && (
+            <p className="hint">
+              メタンポイント・称号は
+              <Link to="/login">Googleログイン</Link>
+              すると溜まります。
+            </p>
           )}
           {downloadUrl && (
             <a className="btn btn-primary" href={downloadUrl} download={`hello-p-log-${successId}.jpg`}>
@@ -90,7 +98,7 @@ export function NewLogPage() {
   if (mode === 'choose') {
     return (
       <div className="new-log-page">
-        <h1>ログ投稿</h1>
+        <h1>{FEATURE_LOG_POST.title}</h1>
         <p className="lead">ログだけ残すか、写真付きで残すか選んでください。</p>
         <div className="mode-cards">
           <button type="button" className="mode-card" onClick={() => setMode('log_only')}>

@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom'
-import { APP_NAME } from '../lib/constants'
+import { APP_NAME, FEATURE_PHOTO, FEATURE_AR, FEATURE_MAP, FEATURE_LOG_POST } from '../lib/constants'
 import './TopPage.css'
 
 const ENTRIES = [
-  { to: '/photo', title: '写真鑑識', desc: '写真に黄色いログが浮かぶ。タップでメタン情報。' },
-  { to: '/ar', title: '現場AR', desc: 'カメラ越しにモヤを出す。写真鑑識のAR版。' },
-  { to: '/map', title: '日本マップ', desc: '全国のおなら痕跡。増えるほど黄色くなる。' },
-  { to: '/log/new', title: 'ログ投稿', desc: '地図に痕跡を残す。写真は任意。' },
+  { to: '/photo', title: FEATURE_PHOTO.title, desc: FEATURE_PHOTO.desc },
+  { to: '/ar', title: FEATURE_AR.title, desc: FEATURE_AR.desc },
+  { to: '/map', title: FEATURE_MAP.title, desc: FEATURE_MAP.desc },
+  { to: '/log/new', title: FEATURE_LOG_POST.title, desc: FEATURE_LOG_POST.desc },
   { to: '/ranking', title: 'ランキング', desc: '都道府県別・メタンポイント順位。' },
   { to: '/my-logs', title: 'マイ屁ログ', desc: '自分のログ・メタンポイント・称号・特別モヤ。' },
 ] as const

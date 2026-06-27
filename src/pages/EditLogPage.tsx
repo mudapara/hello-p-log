@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { formDataToLog, UserLogForm } from '../components/UserLogForm'
 import { useAuth } from '../contexts/AuthContext'
 import { canManageLog } from '../lib/myLogs'
@@ -10,7 +10,7 @@ import './NewLogPage.css'
 export function EditLogPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, authAvailable } = useAuth()
   const [log, setLog] = useState<FartLog | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -47,6 +47,10 @@ export function EditLogPage() {
     })
     await updateLog(updated, user?.id ?? null)
     setSaved(true)
+  }
+
+  if (authAvailable && !user) {
+    return <Navigate to="/login" replace />
   }
 
   if (loading) {

@@ -59,7 +59,7 @@ export function LoginPage() {
       {error && <p className="error">{error}</p>}
 
       <section className="login-benefits">
-        <h2>ログインのインセンティブゥ～💨</h2>
+        <h2>ログインのインセンティブ💨</h2>
         <ul>
           <li>自分のログ一覧を、どの端末からでも見られる</li>
           <li>投稿したログを自分で編集・削除できる</li>
@@ -68,7 +68,7 @@ export function LoginPage() {
           <li>ランキングに名前が載る</li>
         </ul>
         <p className="hint">
-          ログインしなくても投稿はできます。その場合は、この端末に保存されたログだけ管理できます。
+          ログインなしでもマップへの投稿はできます。マイ屁ログ・メタンポイント・称号・ランキングは Google ログインが必要です。
         </p>
       </section>
 

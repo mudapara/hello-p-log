@@ -2,16 +2,24 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { deleteOwnLog, fetchMyLogs } from '../lib/logStore'
-import { getProfileUserId } from '../lib/localUserId'
 import {
   getUserProfile,
   recordDailyLogin,
   updateUserProfileSettings,
 } from '../lib/profileStore'
+import { FEATURE_LOG_POST } from '../lib/constants'
 import { formatDateTime } from '../lib/geo'
 import { getTitleById, MIST_STYLES, computeUnlockedMistStyles, type MistStyleId } from '../lib/titles'
 import type { FartLog, UserProfile } from '../types'
 import './MyLogsPage.css'
+
+const LOGIN_BENEFITS = [
+  '自分のログ一覧を、どの端末からでも見られる',
+  '投稿したログを自分で編集・削除できる',
+  'メタンポイントが溜まる（投稿・写真・新しい都道府県など）',
+  '称号と特別モヤが解放される',
+  'ランキングに名前が載る',
+] as const
 
 export function MyLogsPage() {
   const { user, loading: authLoading, authAvailable } = useAuth()
@@ -21,16 +29,21 @@ export function MyLogsPage() {
   const [error, setError] = useState<string | null>(null)
   const [settingsMsg, setSettingsMsg] = useState<string | null>(null)
 
-  const profileUserId = getProfileUserId(user?.id)
-
   const load = async () => {
+    if (!user?.id) {
+      setLogs([])
+      setProfile(null)
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
     setError(null)
     setSettingsMsg(null)
-    const data = await fetchMyLogs(user?.id ?? null)
+    const data = await fetchMyLogs(user.id)
     setLogs(data)
-    await recordDailyLogin(profileUserId).catch(() => undefined)
-    setProfile(await getUserProfile(profileUserId))
+    await recordDailyLogin(user.id).catch(() => undefined)
+    setProfile(await getUserProfile(user.id))
     setLoading(false)
   }
 
@@ -40,9 +53,10 @@ export function MyLogsPage() {
   }, [authLoading, user?.id])
 
   const handleDelete = async (id: string) => {
+    if (!user?.id) return
     if (!confirm('このログを削除しますか？マップからも消えます。')) return
     try {
-      await deleteOwnLog(id, user?.id ?? null)
+      await deleteOwnLog(id, user.id)
       await load()
     } catch (e) {
       setError(e instanceof Error ? e.message : '削除に失敗しました')
@@ -50,8 +64,9 @@ export function MyLogsPage() {
   }
 
   const handleTitleChange = async (titleId: string) => {
+    if (!user?.id) return
     try {
-      const updated = await updateUserProfileSettings(profileUserId, {
+      const updated = await updateUserProfileSettings(user.id, {
         activeTitle: titleId || null,
       })
       setProfile(updated)
@@ -62,8 +77,9 @@ export function MyLogsPage() {
   }
 
   const handleMistChange = async (style: MistStyleId) => {
+    if (!user?.id) return
     try {
-      const updated = await updateUserProfileSettings(profileUserId, {
+      const updated = await updateUserProfileSettings(user.id, {
         activeMistStyle: style,
       })
       setProfile(updated)
@@ -77,20 +93,36 @@ export function MyLogsPage() {
     ? computeUnlockedMistStyles(profile.unlockedTitles)
     : (['default'] as MistStyleId[])
 
+  if (authAvailable && !user) {
+    return (
+      <div className="my-logs-page">
+        <h1>マイ屁ログ</h1>
+        <p className="lead">ログインすると、ポイント・称号・自分のログ管理が使えます。</p>
+
+        <div className="my-logs-notice my-logs-login-gate">
+          <h2>Googleでログインすると…</h2>
+          <ul className="login-benefits-list">
+            {LOGIN_BENEFITS.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+          <p className="hint">
+            ログインなしでもマップへの投稿はできます。編集・削除やポイント・ランキングはログインが必要です。
+          </p>
+          <Link to="/login" className="btn btn-primary">Googleでログイン</Link>
+        </div>
+
+        <p className="my-logs-post-link">
+          まずは投稿だけ試す → <Link to="/log/new">{FEATURE_LOG_POST.nav}</Link>
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="my-logs-page">
       <h1>マイ屁ログ</h1>
       <p className="lead">自分のログ一覧・メタンポイント・称号・特別モヤ</p>
-
-      {authAvailable && !user && (
-        <div className="my-logs-notice">
-          <p>
-            ログインしなくても、この端末でメタンポイント・称号・特別モヤが使えます。
-            Googleでログインすると、別の端末からも続きが見られます。
-          </p>
-          <Link to="/login" className="btn btn-primary">Googleでログイン（任意）</Link>
-        </div>
-      )}
 
       {profile && (
         <section className="profile-card">

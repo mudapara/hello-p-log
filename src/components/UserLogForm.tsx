@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import type { EntityType, FartLog, TacticId } from '../types'
 import {
+  FART_LOCATION_OPTIONS,
   SMELL_STRENGTH_OPTIONS,
   SMELL_TYPES,
   SOUND_CATEGORIES,
@@ -36,6 +37,8 @@ export interface UserLogFormData {
   photoTapX: number | null
   photoTapY: number | null
   blurConfirmed: boolean
+  fartLocation: string
+  fartLocationOther: string
 }
 
 interface Props {
@@ -70,6 +73,8 @@ export function logToFormData(log: FartLog): UserLogFormData {
     photoTapX: log.photoTapX,
     photoTapY: log.photoTapY,
     blurConfirmed: log.blurConfirmed,
+    fartLocation: log.fartLocation ?? FART_LOCATION_OPTIONS[0],
+    fartLocationOther: log.fartLocationOther ?? '',
   }
 }
 
@@ -105,6 +110,10 @@ export function UserLogForm({
   const [photoTapX, setPhotoTapX] = useState<number | null>(defaults?.photoTapX ?? null)
   const [photoTapY, setPhotoTapY] = useState<number | null>(defaults?.photoTapY ?? null)
   const [blurConfirmed, setBlurConfirmed] = useState(defaults?.blurConfirmed ?? false)
+  const [fartLocation, setFartLocation] = useState(
+    defaults?.fartLocation ?? FART_LOCATION_OPTIONS[0],
+  )
+  const [fartLocationOther, setFartLocationOther] = useState(defaults?.fartLocationOther ?? '')
   const [agreed, setAgreed] = useState(Boolean(initialLog))
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -157,6 +166,10 @@ export function UserLogForm({
       setError('位置情報を取得してください')
       return
     }
+    if (fartLocation === 'その他' && !fartLocationOther.trim()) {
+      setError('「その他」を選んだ場合は場所を入力してください')
+      return
+    }
     if (!agreed) {
       setError('使い方・注意事項への同意が必要です')
       return
@@ -204,6 +217,8 @@ export function UserLogForm({
         photoTapX: mode === 'with_photo' ? photoTapX : null,
         photoTapY: mode === 'with_photo' ? photoTapY : null,
         blurConfirmed: mode === 'with_photo' ? blurConfirmed : false,
+        fartLocation,
+        fartLocationOther: fartLocation === 'その他' ? fartLocationOther.trim() : '',
       })
     } catch (err) {
       setError(err instanceof Error ? err.message : '投稿に失敗しました')
@@ -256,6 +271,30 @@ export function UserLogForm({
         {latitude != null && longitude != null && (
           <p className="hint">概算: {latitude}, {longitude}</p>
         )}
+      </div>
+
+      <div className="field">
+        <label htmlFor="fartLocation">放屁場所 *</label>
+        <select
+          id="fartLocation"
+          value={fartLocation}
+          onChange={(e) => setFartLocation(e.target.value)}
+          required
+        >
+          {FART_LOCATION_OPTIONS.map((option) => (
+            <option key={option} value={option}>{option}</option>
+          ))}
+        </select>
+        {fartLocation === 'その他' && (
+          <input
+            className="fart-location-other"
+            value={fartLocationOther}
+            onChange={(e) => setFartLocationOther(e.target.value)}
+            placeholder="場所を自由記述（例: 映画館、図書館）"
+            required
+          />
+        )}
+        <p className="hint">公共の場でのおならを推奨するものではありません。記録用の選択です。</p>
       </div>
 
       <fieldset className="fieldset">
@@ -464,6 +503,8 @@ export function formDataToLog(
     photoTapX: data.photoTapX,
     photoTapY: data.photoTapY,
     blurConfirmed: data.blurConfirmed,
+    fartLocation: data.fartLocation,
+    fartLocationOther: data.fartLocationOther || null,
   }
   return {
     ...draft,

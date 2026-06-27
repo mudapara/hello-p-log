@@ -16,7 +16,7 @@ export function PhotoCanvas({ photoUrl, logs, mistStyles }: Props) {
   return (
     <>
       <div className="photo-canvas" ref={containerRef}>
-        <img src={photoUrl} alt="鑑識対象の写真" className="photo-bg" />
+        <img src={photoUrl} alt="選択した写真" className="photo-bg" />
         {logs.map((log, index) => {
           const premium = log.source === 'user'
             ? (mistStyles?.get(log.userId ?? '') ?? mistStyles?.get(log.id) ?? '')

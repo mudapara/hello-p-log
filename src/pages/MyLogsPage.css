@@ -126,6 +126,29 @@
   color: #5d4037;
 }
 
+.my-logs-login-gate h2 {
+  font-size: 1rem;
+  color: #e65100;
+  margin: 0 0 0.75rem;
+}
+
+.login-benefits-list {
+  margin: 0 0 0.75rem;
+  padding-left: 1.25rem;
+  color: #5d4037;
+  font-size: 0.9rem;
+}
+
+.login-benefits-list li {
+  margin-bottom: 0.35rem;
+}
+
+.my-logs-post-link {
+  margin-top: 1.25rem;
+  font-size: 0.9rem;
+  color: #6d4c41;
+}
+
 .my-logs-user {
   font-size: 0.85rem;
   color: #6d4c41;

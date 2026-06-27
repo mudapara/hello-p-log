@@ -33,6 +33,8 @@ export interface FartLog {
   photoTapX: number | null
   photoTapY: number | null
   blurConfirmed: boolean
+  fartLocation: string | null
+  fartLocationOther: string | null
 }
 
 export interface ContactSubmission {

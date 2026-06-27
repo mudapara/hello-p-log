@@ -4,6 +4,7 @@ import { LogDetailModal } from '../components/LogDetailModal'
 import { useLogs } from '../hooks/useLogs'
 import { useAuth } from '../contexts/AuthContext'
 import { seedAiLogsIfEmpty } from '../lib/logStore'
+import { FEATURE_MAP } from '../lib/constants'
 import { buildUserMistStyleMap } from '../lib/profileStore'
 import type { FartLog } from '../types'
 import './MapPage.css'
@@ -33,7 +34,7 @@ export function MapPage() {
 
   return (
     <div className="map-page">
-      <h1>日本マップ</h1>
+      <h1>{FEATURE_MAP.title}</h1>
       <p className="lead">
         ログ1件＝黄色い光る点1つ。増えるほど、日本が黄色く見えてきます。
       </p>

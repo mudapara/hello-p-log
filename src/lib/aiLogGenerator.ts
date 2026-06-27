@@ -13,6 +13,7 @@ import {
   SOCIAL_IMPACTS,
   SOCIAL_IMPACTS_INDOOR,
   SOCIAL_IMPACTS_OUTDOOR,
+  FART_LOCATION_OPTIONS,
   getComparisonForSpeed,
   SOUND_OPTIONS,
   TACTICS,
@@ -43,7 +44,7 @@ function randomLoggedAt(): string {
 export type AiLogScene = 'outdoor' | 'indoor' | 'any'
 
 export interface GenerateAiLogOptions {
-  /** 写真鑑識などシーンに合わせた社会的影響度を選ぶ */
+  /** 写真アナライズなどシーンに合わせた社会的影響度を選ぶ */
   scene?: AiLogScene
 }
 
@@ -105,6 +106,8 @@ export function generateAiLog(
     photoTapX: null,
     photoTapY: null,
     blurConfirmed: false,
+    fartLocation: pick(FART_LOCATION_OPTIONS.filter((o) => o !== 'その他')),
+    fartLocationOther: null,
   }
 
   return {
