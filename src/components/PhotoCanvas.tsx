@@ -100,10 +100,11 @@ function drawMist(
   y: number,
   isUser: boolean,
 ) {
+  const scale = Math.max(1, ctx.canvas.width / 900)
   const offsets = [
-    { dx: 0, dy: 0, r: 44 },
-    { dx: -16, dy: -10, r: 30 },
-    { dx: 14, dy: 8, r: 26 },
+    { dx: 0, dy: 0, r: 44 * scale },
+    { dx: -16 * scale, dy: -10 * scale, r: 30 * scale },
+    { dx: 14 * scale, dy: 8 * scale, r: 26 * scale },
   ]
   for (const { dx, dy, r } of offsets) {
     const gradient = ctx.createRadialGradient(x + dx, y + dy, 0, x + dx, y + dy, r)

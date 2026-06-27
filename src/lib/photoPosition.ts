@@ -35,20 +35,25 @@ export async function detectGroundLineY(imageSrc: string): Promise<number> {
     rowBrightness.push(sum / w)
   }
 
-  const bottomStart = Math.floor(h * 0.82)
+  const bottomStart = Math.floor(h * 0.72)
   const bottomSlice = rowBrightness.slice(bottomStart)
   const bottomAvg =
     bottomSlice.reduce((a, b) => a + b, 0) / Math.max(1, bottomSlice.length)
 
+  // 下から上へ走査し、路面付近（下端と似た明るさ）の最も下の行を地面とする
   let groundRow = h - 2
-  for (let y = Math.floor(h * 0.5); y < h - 1; y++) {
-    if (Math.abs(rowBrightness[y]! - bottomAvg) < 22) {
+  for (let y = h - 2; y >= Math.floor(h * 0.58); y--) {
+    if (Math.abs(rowBrightness[y]! - bottomAvg) < 28) {
       groundRow = y
       break
     }
   }
 
-  return groundRow / h
+  // 透視のある屋外写真では誤検出で中央寄りになりやすい → 下端寄りに補正
+  let groundY = groundRow / h
+  groundY = Math.max(groundY, 0.78)
+  groundY = Math.min(groundY, 0.96)
+  return groundY
 }
 
 export type PhotoScene = 'outdoor' | 'indoor' | 'unknown'
@@ -123,10 +128,10 @@ export async function detectPhotoScene(imageSrc: string): Promise<PhotoScene> {
 
 /** 地面ラインより少し上（お尻の高さ）に配置 */
 export function positionAtButtHeight(groundY: number, x?: number): { x: number; y: number } {
-  const buttOffset = 0.07 + Math.random() * 0.06
+  const buttOffset = 0.02 + Math.random() * 0.04
   return {
     x: x ?? 0.12 + Math.random() * 0.76,
-    y: Math.max(0.48, Math.min(0.9, groundY - buttOffset)),
+    y: Math.max(groundY - 0.1, Math.min(0.94, groundY - buttOffset)),
   }
 }
 
@@ -142,9 +147,10 @@ export function spreadPhotoOverlays<T extends { overlayX: number; overlayY: numb
     return a.overlayX - b.overlayX
   })
 
-  const yBase = Math.max(0.42, Math.min(0.82, groundY - 0.1))
+  const yBase = Math.max(groundY - 0.05, Math.min(0.9, groundY - 0.02))
   const rowCount = sorted.length <= 3 ? 1 : sorted.length <= 6 ? 2 : 3
   const minGapX = 0.17
+  const rowStep = 0.07
 
   const placed = sorted.map((log, i) => {
     if (log.source === 'user' && log.photoTapX != null) {
@@ -152,7 +158,7 @@ export function spreadPhotoOverlays<T extends { overlayX: number; overlayY: numb
       return {
         ...log,
         overlayX: log.photoTapX,
-        overlayY: Math.max(0.38, yBase - row * 0.11 - (i % 3) * 0.04),
+        overlayY: Math.max(groundY - 0.12, yBase - row * rowStep),
       }
     }
 
@@ -163,9 +169,9 @@ export function spreadPhotoOverlays<T extends { overlayX: number; overlayY: numb
       sorted.length - row * Math.ceil(sorted.length / rowCount),
     )
     const x = 0.1 + ((colInRow + 0.5) / Math.max(1, colsThisRow)) * 0.8
-    const y = yBase - row * 0.12 - (colInRow % 2) * 0.05 - (i % 3) * 0.025
+    const y = yBase - row * rowStep - (colInRow % 2) * 0.03
 
-    return { ...log, overlayX: x, overlayY: Math.max(0.35, y) }
+    return { ...log, overlayX: x, overlayY: Math.max(groundY - 0.14, y) }
   })
 
   placed.sort((a, b) => a.overlayX - b.overlayX)
@@ -196,8 +202,8 @@ export function clampTapToButtHeight(
   tapY: number,
   groundY: number,
 ): { x: number; y: number } {
-  const maxY = Math.min(0.9, groundY - 0.04)
-  const minY = Math.max(0.48, groundY - 0.18)
+  const maxY = Math.min(0.94, groundY - 0.01)
+  const minY = Math.max(groundY - 0.14, groundY - 0.08)
   return {
     x: tapX,
     y: Math.max(minY, Math.min(maxY, tapY)),

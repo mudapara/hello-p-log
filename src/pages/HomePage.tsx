@@ -97,7 +97,9 @@ export function HomePage() {
         photoScene === 'indoor' ? 'indoor' : photoScene === 'outdoor' ? 'outdoor' : 'any'
       const aiLogs = generateAiLogsForLocation(lat, lng, undefined, { scene: aiScene })
       const nearbyUsers = await withTimeout(findNearbyUserLogs(lat, lng), 8000, [])
-      const merged = mergeLogsForPhoto(aiLogs, nearbyUsers, groundY)
+      const adjustedGroundY =
+        photoScene === 'outdoor' ? Math.max(groundY, 0.84) : Math.max(groundY, 0.78)
+      const merged = mergeLogsForPhoto(aiLogs, nearbyUsers, adjustedGroundY)
       setOverlayLogs(merged)
     } catch (e) {
       setError(e instanceof Error ? e.message : '解析に失敗しました')
