@@ -70,6 +70,16 @@ export type MistStyleId =
   | 'void'
   | 'storm'
   | 'neon'
+  | 'bud'
+  | 'whisper'
+  | 'ninja'
+  | 'travel'
+  | 'sovereign'
+  | 'poetic'
+  | 'veteran'
+  | 'fortune'
+  | 'titan'
+  | 'divine'
 
 export interface UserProfile extends UserProfileStats {
   userId: string

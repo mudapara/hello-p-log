@@ -4,6 +4,7 @@ import L from 'leaflet'
 import type { FartLog } from '../types'
 import { JAPAN_BOUNDS } from '../lib/constants'
 import { formatDateTime } from '../lib/geo'
+import { getMapMistClass } from '../lib/profileStore'
 import './JapanMap.css'
 
 interface Props {
@@ -18,24 +19,7 @@ interface Props {
 }
 
 function makeUserMarkerIcon(mistStyle?: string) {
-  const premium =
-    mistStyle === 'royal'
-      ? 'map-marker-royal'
-      : mistStyle === 'toxic'
-        ? 'map-marker-toxic'
-        : mistStyle === 'rainbow'
-          ? 'map-marker-rainbow'
-          : mistStyle === 'ghost'
-            ? 'map-marker-ghost'
-            : mistStyle === 'ember'
-              ? 'map-marker-ember'
-              : mistStyle === 'void'
-                ? 'map-marker-void'
-                : mistStyle === 'storm'
-                  ? 'map-marker-storm'
-                  : mistStyle === 'neon'
-                    ? 'map-marker-neon'
-                    : ''
+  const premium = getMapMistClass(mistStyle)
   return L.divIcon({
     className: 'map-log-marker-shell',
     html: `

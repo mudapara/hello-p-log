@@ -10,6 +10,16 @@ export type MistStyleId =
   | 'void'
   | 'storm'
   | 'neon'
+  | 'bud'
+  | 'whisper'
+  | 'ninja'
+  | 'travel'
+  | 'sovereign'
+  | 'poetic'
+  | 'veteran'
+  | 'fortune'
+  | 'titan'
+  | 'divine'
 
 export interface TitleDef {
   id: string
@@ -32,25 +42,38 @@ export const MIST_STYLES: Record<
   void: { name: '虚無モヤ', description: '吸い込まれそうな闇のモヤ' },
   storm: { name: '嵐モヤ', description: '渦を巻く紫黒い暴風のモヤ' },
   neon: { name: 'ネオンモヤ', description: '不気味に光る緑色のモヤ' },
+  bud: { name: '芽吹きモヤ', description: 'はじめての淡い新緑が混じったモヤ' },
+  whisper: { name: '囁きモヤ', description: 'ほとんど聞こえない薄いモヤ' },
+  ninja: { name: '忍びモヤ', description: '闇に溶ける消音のモヤ' },
+  travel: { name: '旅路モヤ', description: '旅の記憶をまとった青緑のモヤ' },
+  sovereign: { name: '覇王モヤ', description: '深い金の威圧感あるモヤ' },
+  poetic: { name: '詩情モヤ', description: '夕暮れのようなロマンチックなモヤ' },
+  veteran: { name: '歴戦モヤ', description: '銅色に燻った百戦錬磨のモヤ' },
+  fortune: { name: '財閥モヤ', description: '金と翡翠色に輝く富裕のモヤ' },
+  titan: { name: '巨神モヤ', description: '巨大な岩肌のような重厚モヤ' },
+  divine: { name: '神聖モヤ', description: '白金色に輝く至高のモヤ' },
 }
 
 export const TITLE_DEFS: TitleDef[] = [
   {
     id: 'first_log',
-    name: '初屁',
+    name: '初屁の出',
     description: 'はじめてログを投稿した',
+    mistUnlock: 'bud',
     check: (s) => s.totalLogs >= 1,
   },
   {
     id: 'silent_master',
     name: '無音の策士',
     description: '静かなログを3件投稿した',
+    mistUnlock: 'whisper',
     check: (s) => s.silentLogs >= 3,
   },
   {
     id: 'prefecture_hopper',
     name: '都道府県通',
     description: '3つの都道府県でログを残した',
+    mistUnlock: 'travel',
     check: (s) => s.uniquePrefectures.length >= 3,
   },
   {
@@ -123,6 +146,7 @@ export const TITLE_DEFS: TitleDef[] = [
     id: 'prolific_50',
     name: '屁の覇者',
     description: '累計50件以上ログを残した',
+    mistUnlock: 'sovereign',
     check: (s) => s.totalLogs >= 50,
   },
   {
@@ -143,6 +167,7 @@ export const TITLE_DEFS: TitleDef[] = [
     id: 'photo_poet',
     name: '現場の詩人',
     description: '写真付きログを30件投稿した',
+    mistUnlock: 'poetic',
     check: (s) => s.photoLogs >= 30,
   },
   {
@@ -155,30 +180,35 @@ export const TITLE_DEFS: TitleDef[] = [
     id: 'silent_ninja',
     name: '極限消音',
     description: '静かなログを12件投稿した',
+    mistUnlock: 'ninja',
     check: (s) => s.silentLogs >= 12,
   },
   {
     id: 'veteran',
     name: '歴戦の屁王',
     description: 'メタンポイント500を超えた',
+    mistUnlock: 'veteran',
     check: (s) => s.methanePoints >= 500,
   },
   {
     id: 'point_tycoon',
     name: 'メタン財閥',
     description: 'メタンポイント1000を超えた',
+    mistUnlock: 'fortune',
     check: (s) => s.methanePoints >= 1000,
   },
   {
     id: 'methane_titan',
     name: 'メタン巨神',
     description: 'メタンポイント2000を超えた',
+    mistUnlock: 'titan',
     check: (s) => s.methanePoints >= 2000,
   },
   {
     id: 'methane_god',
     name: 'メタン神',
     description: 'メタンポイント3000を超えた',
+    mistUnlock: 'divine',
     check: (s) => s.methanePoints >= 3000,
   },
 ]

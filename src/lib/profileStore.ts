@@ -356,6 +356,69 @@ export function getMistStyleClass(style: MistStyleId | string | undefined): stri
       return 'mist-premium-storm'
     case 'neon':
       return 'mist-premium-neon'
+    case 'bud':
+      return 'mist-premium-bud'
+    case 'whisper':
+      return 'mist-premium-whisper'
+    case 'ninja':
+      return 'mist-premium-ninja'
+    case 'travel':
+      return 'mist-premium-travel'
+    case 'sovereign':
+      return 'mist-premium-sovereign'
+    case 'poetic':
+      return 'mist-premium-poetic'
+    case 'veteran':
+      return 'mist-premium-veteran'
+    case 'fortune':
+      return 'mist-premium-fortune'
+    case 'titan':
+      return 'mist-premium-titan'
+    case 'divine':
+      return 'mist-premium-divine'
+    default:
+      return ''
+  }
+}
+
+export function getMapMistClass(style: MistStyleId | string | undefined): string {
+  switch (style) {
+    case 'royal':
+      return 'map-marker-royal'
+    case 'toxic':
+      return 'map-marker-toxic'
+    case 'rainbow':
+      return 'map-marker-rainbow'
+    case 'ghost':
+      return 'map-marker-ghost'
+    case 'ember':
+      return 'map-marker-ember'
+    case 'void':
+      return 'map-marker-void'
+    case 'storm':
+      return 'map-marker-storm'
+    case 'neon':
+      return 'map-marker-neon'
+    case 'bud':
+      return 'map-marker-bud'
+    case 'whisper':
+      return 'map-marker-whisper'
+    case 'ninja':
+      return 'map-marker-ninja'
+    case 'travel':
+      return 'map-marker-travel'
+    case 'sovereign':
+      return 'map-marker-sovereign'
+    case 'poetic':
+      return 'map-marker-poetic'
+    case 'veteran':
+      return 'map-marker-veteran'
+    case 'fortune':
+      return 'map-marker-fortune'
+    case 'titan':
+      return 'map-marker-titan'
+    case 'divine':
+      return 'map-marker-divine'
     default:
       return ''
   }

@@ -203,3 +203,61 @@
   50% { opacity: 1; }
   55% { opacity: 0.8; }
 }
+
+.map-marker-bud .map-log-core {
+  background: radial-gradient(circle at 35% 35%, #f1f8e9 0%, #aed581 45%, #c0ca33 100%);
+  box-shadow: 0 0 10px rgba(174, 213, 129, 0.85);
+}
+
+.map-marker-whisper .map-log-core {
+  background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 249, 196, 0.4) 60%, transparent 100%);
+  box-shadow: 0 0 6px rgba(255, 253, 231, 0.4);
+  opacity: 0.6;
+}
+
+.map-marker-ninja .map-log-core {
+  background: radial-gradient(circle at 40% 40%, #424242 0%, #212121 55%, #000 100%);
+  box-shadow: 0 0 8px rgba(33, 33, 33, 0.9);
+  opacity: 0.85;
+}
+
+.map-marker-travel .map-log-core {
+  background: radial-gradient(circle at 35% 35%, #e0f7fa 0%, #4db6ac 45%, #00897b 100%);
+  box-shadow: 0 0 10px rgba(77, 182, 172, 0.85);
+}
+
+.map-marker-sovereign .map-log-core {
+  background: radial-gradient(circle at 35% 35%, #fff8e1 0%, #ffb300 40%, #7b1fa2 100%);
+  box-shadow: 0 0 12px rgba(255, 179, 0, 0.95);
+}
+
+.map-marker-poetic .map-log-core {
+  background: radial-gradient(circle at 35% 35%, #fce4ec 0%, #f48fb1 45%, #ff8a65 100%);
+  box-shadow: 0 0 10px rgba(244, 143, 177, 0.85);
+}
+
+.map-marker-veteran .map-log-core {
+  background: radial-gradient(circle at 35% 35%, #d7ccc8 0%, #a1887f 45%, #5d4037 100%);
+  box-shadow: 0 0 10px rgba(141, 110, 99, 0.85);
+}
+
+.map-marker-fortune .map-log-core {
+  background: radial-gradient(circle at 35% 35%, #fff9c4 0%, #009688 45%, #ffd54f 100%);
+  box-shadow: 0 0 12px rgba(0, 150, 136, 0.9);
+}
+
+.map-marker-titan .map-log-core {
+  background: radial-gradient(circle at 35% 35%, #b0bec5 0%, #546e7a 45%, #263238 100%);
+  box-shadow: 0 0 12px rgba(69, 90, 100, 0.9);
+}
+
+.map-marker-divine .map-log-core {
+  background: radial-gradient(circle at 35% 35%, #fff 0%, #fff9c4 40%, #ffd700 100%);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.95), 0 0 8px rgba(255, 215, 0, 0.7);
+  animation: map-divine-glow 2.5s ease-in-out infinite;
+}
+
+@keyframes map-divine-glow {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.25); }
+}
