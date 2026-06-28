@@ -158,7 +158,7 @@ export function formatFartLocation(
 
 export interface SoundOption {
   id: string
-  category: 'すかし' | '小' | '中' | '大'
+  category: 'すかし' | '小' | '中' | '大' | 'その他'
   label: string
   text: string
 }
@@ -245,10 +245,10 @@ export const SOUND_OPTIONS: SoundOption[] = [
   { id: 'large_zudoon', category: '大', label: 'ズドォォン！！', text: 'ズドォォン！！' },
   { id: 'large_gyaa', category: '大', label: 'ギャァァァ！！', text: 'ギャァァァ！！' },
   { id: 'large_dodon', category: '大', label: 'ドドドドドン！！', text: 'ドドドドドン！！' },
-  { id: SOUND_PRESET_OTHER, category: '小', label: 'その他（自由記述）', text: '' },
+  { id: SOUND_PRESET_OTHER, category: 'その他', label: 'その他（自由記述）', text: '' },
 ]
 
-export const SOUND_CATEGORIES = ['すかし', '小', '中', '大'] as const
+export const SOUND_CATEGORIES = ['すかし', '小', '中', '大', 'その他'] as const
 
 export function getSoundOption(id: string): SoundOption | undefined {
   return SOUND_OPTIONS.find((s) => s.id === id)

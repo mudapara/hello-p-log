@@ -9,6 +9,7 @@ const SOUND_CATEGORY_FACTOR: Record<string, number> = {
   小: 0.88,
   中: 1.0,
   大: 1.22,
+  その他: 1.0,
 }
 
 const SMELLY_FOOD_KEYWORDS = [
