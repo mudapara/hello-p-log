@@ -181,3 +181,9 @@
   font-size: 0.9rem;
   margin: 0;
 }
+
+.manual-location {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}

@@ -39,7 +39,10 @@ create table if not exists fart_logs (
   photo_tap_y double precision,
   blur_confirmed boolean not null default false,
   fart_location text,
-  fart_location_other text
+  fart_location_other text,
+  location_source text,
+  map_prefecture text,
+  map_city text
 );
 
 create index if not exists fart_logs_created_at_idx on fart_logs (created_at desc);

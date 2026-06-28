@@ -31,6 +31,9 @@ function normalizeLog(log: FartLog): FartLog {
     soundOther: log.soundOther ?? null,
     bustedOther: log.bustedOther ?? null,
     tacticsOther: log.tacticsOther ?? null,
+    locationSource: log.locationSource ?? null,
+    mapPrefecture: log.mapPrefecture ?? null,
+    mapCity: log.mapCity ?? null,
   }
 }
 
@@ -77,6 +80,9 @@ function rowToLog(row: Record<string, unknown>): FartLog {
     blurConfirmed: Boolean(row.blur_confirmed),
     fartLocation: (row.fart_location as string | null) ?? null,
     fartLocationOther: (row.fart_location_other as string | null) ?? null,
+    locationSource: (row.location_source as FartLog['locationSource']) ?? null,
+    mapPrefecture: (row.map_prefecture as string | null) ?? null,
+    mapCity: (row.map_city as string | null) ?? null,
   })
 }
 
@@ -119,6 +125,9 @@ function logToRow(log: FartLog): Record<string, unknown> {
     blur_confirmed: log.blurConfirmed,
     fart_location: log.fartLocation,
     fart_location_other: log.fartLocationOther,
+    location_source: log.locationSource,
+    map_prefecture: log.mapPrefecture,
+    map_city: log.mapCity,
   }
 }
 

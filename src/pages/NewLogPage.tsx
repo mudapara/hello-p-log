@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { formDataToLog, UserLogForm, type UserLogFormData } from '../components/UserLogForm'
 import { useAuth } from '../contexts/AuthContext'
@@ -6,10 +6,11 @@ import { awardMethanePointsForLog, getUserProfile } from '../lib/profileStore'
 import { FEATURE_LOG_POST, FEATURE_MAP } from '../lib/constants'
 import { saveLog } from '../lib/logStore'
 import { renderCompositeImage } from '../components/PhotoCanvas'
-import { getPlaceLabelFromCoords, shareLogPost } from '../lib/logShare'
+import { formatPlaceLabel } from '../lib/geocode'
+import { shareLogPost } from '../lib/logShare'
 import { CameraIcon } from '../components/CameraIcon'
 import { MistIcon } from '../components/MistIcon'
-import type { PhotoOverlayLog } from '../types'
+import type { FartLog, PhotoOverlayLog } from '../types'
 import './NewLogPage.css'
 
 type Mode = 'choose' | 'log_only' | 'with_photo'
@@ -22,15 +23,11 @@ export function NewLogPage() {
   const [successId, setSuccessId] = useState<string | null>(null)
   const [pointsEarned, setPointsEarned] = useState<number | null>(null)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
-  const [sharePlace, setSharePlace] = useState<string | null>(null)
+  const [lastPostedLog, setLastPostedLog] = useState<FartLog | null>(null)
   const [sharing, setSharing] = useState(false)
   const [shareMessage, setShareMessage] = useState<string | null>(null)
-  const [lastPostCoords, setLastPostCoords] = useState<{ lat: number; lng: number } | null>(null)
 
-  useEffect(() => {
-    if (!successId || !lastPostCoords) return
-    setSharePlace(getPlaceLabelFromCoords(lastPostCoords.lat, lastPostCoords.lng))
-  }, [successId, lastPostCoords])
+  const sharePlace = lastPostedLog ? formatPlaceLabel(lastPostedLog) : null
 
   const handlePhotoSelect = (file: File) => {
     const reader = new FileReader()
@@ -49,9 +46,8 @@ export function NewLogPage() {
     await saveLog(log)
     setSuccessId(log.id)
     setPointsEarned(null)
-    setSharePlace(null)
     setShareMessage(null)
-    setLastPostCoords({ lat: log.latitude, lng: log.longitude })
+    setLastPostedLog(log)
 
     if (user?.id) {
       const before = await getUserProfile(user.id)
@@ -71,15 +67,17 @@ export function NewLogPage() {
   }
 
   const handleShareLog = async () => {
-    if (!sharePlace) return
+    if (!lastPostedLog) return
     setSharing(true)
     setShareMessage(null)
     try {
-      const result = await shareLogPost(sharePlace)
+      const result = await shareLogPost(lastPostedLog)
       setShareMessage(
         result === 'shared'
-          ? 'シェアしました'
-          : '文言をコピーしました。SNSに貼り付けてください',
+          ? 'メタン情報の画像付きでシェアしました'
+          : result === 'downloaded'
+            ? 'メタン情報の画像を保存しました。SNSに貼り付けてください'
+            : '文言をコピーしました。画像は保存できない場合があります',
       )
     } catch (e) {
       if (e instanceof Error && e.name === 'AbortError') return
@@ -119,9 +117,9 @@ export function NewLogPage() {
             type="button"
             className="btn btn-primary share-log-btn"
             onClick={() => void handleShareLog()}
-            disabled={!sharePlace || sharing}
+            disabled={!lastPostedLog || sharing}
           >
-            {sharing ? '準備中…' : 'SNSでシェア'}
+            {sharing ? '準備中…' : 'SNSでシェア（メタン情報画像付き）'}
           </button>
           {shareMessage && <p className="share-message">{shareMessage}</p>}
           <div className="success-actions">
@@ -130,9 +128,8 @@ export function NewLogPage() {
               setSuccessId(null)
               setPointsEarned(null)
               setDownloadUrl(null)
-              setSharePlace(null)
+              setLastPostedLog(null)
               setShareMessage(null)
-              setLastPostCoords(null)
               setMode('choose')
               setPhotoDataUrl(null)
             }}>

@@ -13,13 +13,15 @@ export function MistPreview({ style }: Props) {
 
   return (
     <div className="mist-preview" aria-label={`現在のモヤ: ${meta.name}`}>
-      <div className={`mist-marker mist-user mist-preview-marker ${premium}`}>
-        <span className="mist-blob mist-blob-1" />
-        <span className="mist-blob mist-blob-2" />
-        <span className="mist-blob mist-blob-3" />
-        <span className="mist-spark mist-spark-1" />
-        <span className="mist-spark mist-spark-2" />
-        <span className="mist-spark mist-spark-3" />
+      <div className="mist-preview-stage">
+        <div className={`mist-marker mist-user mist-preview-marker ${premium}`}>
+          <span className="mist-blob mist-blob-1" />
+          <span className="mist-blob mist-blob-2" />
+          <span className="mist-blob mist-blob-3" />
+          <span className="mist-spark mist-spark-1" />
+          <span className="mist-spark mist-spark-2" />
+          <span className="mist-spark mist-spark-3" />
+        </div>
       </div>
       <p className="mist-preview-name">{meta.name}</p>
       <p className="mist-preview-desc">{meta.description}</p>

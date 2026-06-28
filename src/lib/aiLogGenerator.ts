@@ -116,6 +116,9 @@ export function generateAiLog(
     blurConfirmed: false,
     fartLocation: pick(FART_LOCATION_OPTIONS.filter((o) => o !== 'その他')),
     fartLocationOther: null,
+    locationSource: null,
+    mapPrefecture: null,
+    mapCity: null,
   }
 
   return {

@@ -16,7 +16,9 @@ import {
   getSoundOption,
 } from '../lib/constants'
 import { estimateMethaneLevel } from '../lib/methaneConcentration'
+import { geocodeManualPlace, reverseGeocodePlace } from '../lib/geocode'
 import { getCurrentPosition, roundCoordinate } from '../lib/geo'
+import { PREFECTURES, type PrefectureName } from '../lib/prefectures'
 import { nowDatetimeLocalValue, toDatetimeLocalValue } from '../lib/datetimeLocal'
 import './UserLogForm.css'
 
@@ -49,6 +51,9 @@ export interface UserLogFormData {
   blurConfirmed: boolean
   fartLocation: string
   fartLocationOther: string
+  locationSource: 'gps' | 'manual'
+  mapPrefecture: string | null
+  mapCity: string | null
 }
 
 interface Props {
@@ -90,6 +95,9 @@ export function logToFormData(log: FartLog): UserLogFormData {
     blurConfirmed: log.blurConfirmed,
     fartLocation: log.fartLocation ?? FART_LOCATION_OPTIONS[0],
     fartLocationOther: log.fartLocationOther ?? '',
+    locationSource: log.locationSource ?? 'gps',
+    mapPrefecture: log.mapPrefecture,
+    mapCity: log.mapCity,
   }
 }
 
@@ -134,6 +142,14 @@ export function UserLogForm({
     defaults?.fartLocation ?? FART_LOCATION_OPTIONS[0],
   )
   const [fartLocationOther, setFartLocationOther] = useState(defaults?.fartLocationOther ?? '')
+  const [locationMode, setLocationMode] = useState<'gps' | 'manual'>(
+    defaults?.locationSource === 'manual' ? 'manual' : 'gps',
+  )
+  const [manualPrefecture, setManualPrefecture] = useState<PrefectureName>(
+    (defaults?.mapPrefecture as PrefectureName | null) ?? '東京都',
+  )
+  const [manualCity, setManualCity] = useState(defaults?.mapCity ?? '')
+  const [resolvedPlaceLabel, setResolvedPlaceLabel] = useState<string | null>(null)
   const [agreed, setAgreed] = useState(Boolean(initialLog))
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -152,12 +168,21 @@ export function UserLogForm({
   const handleLocate = async () => {
     setLocating(true)
     setError(null)
+    setResolvedPlaceLabel(null)
     try {
-      const pos = await getCurrentPosition()
-      setLatitude(roundCoordinate(pos.coords.latitude))
-      setLongitude(roundCoordinate(pos.coords.longitude))
+      const pos = await getCurrentPosition({ highAccuracy: true, timeout: 20000 })
+      const lat = roundCoordinate(pos.coords.latitude, 5)
+      const lng = roundCoordinate(pos.coords.longitude, 5)
+      setLatitude(lat)
+      setLongitude(lng)
+      const place = await reverseGeocodePlace(lat, lng)
+      if (place.prefecture) {
+        setResolvedPlaceLabel(
+          place.city ? `${place.prefecture}（${place.city}）` : place.prefecture,
+        )
+      }
     } catch {
-      setError('位置情報を取得できませんでした。ブラウザの設定を確認してください。')
+      setError('位置情報を取得できませんでした。都道府県＋市町村での入力も使えます。')
     } finally {
       setLocating(false)
     }
@@ -184,8 +209,13 @@ export function UserLogForm({
       setError('直前に食べたものを入力してください')
       return
     }
-    if (latitude == null || longitude == null) {
-      setError('位置情報を取得してください')
+    if (locationMode === 'gps') {
+      if (latitude == null || longitude == null) {
+        setError('現在地を取得するか、都道府県＋市町村を選んでください')
+        return
+      }
+    } else if (!manualCity.trim()) {
+      setError('市町村を入力してください')
       return
     }
     if (fartLocation === 'その他' && !fartLocationOther.trim()) {
@@ -237,12 +267,36 @@ export function UserLogForm({
 
     setLoading(true)
     try {
+      let submitLat = latitude
+      let submitLng = longitude
+      let mapPrefecture: string | null = null
+      let mapCity: string | null = null
+      let locationSource: 'gps' | 'manual' = locationMode
+
+      if (locationMode === 'gps') {
+        submitLat = latitude!
+        submitLng = longitude!
+        const place = await reverseGeocodePlace(submitLat, submitLng)
+        mapPrefecture = place.prefecture
+        mapCity = place.city
+      } else {
+        const coords = await geocodeManualPlace(manualPrefecture, manualCity.trim())
+        if (!coords) {
+          setError('場所の座標を取得できませんでした。市町村名を見直してください。')
+          return
+        }
+        submitLat = roundCoordinate(coords.lat, 5)
+        submitLng = roundCoordinate(coords.lng, 5)
+        mapPrefecture = manualPrefecture
+        mapCity = manualCity.trim()
+      }
+
       await onSubmit({
         nickname: nickname.trim(),
         loggedAt: new Date(loggedAt).toISOString(),
         mainComponent: mainComponent.trim(),
-        latitude,
-        longitude,
+        latitude: submitLat,
+        longitude: submitLng,
         gender,
         ageDisplay,
         hideGender,
@@ -266,6 +320,9 @@ export function UserLogForm({
         blurConfirmed: mode === 'with_photo' ? blurConfirmed : false,
         fartLocation,
         fartLocationOther: fartLocation === 'その他' ? fartLocationOther.trim() : '',
+        locationSource,
+        mapPrefecture,
+        mapCity,
       })
     } catch (err) {
       setError(err instanceof Error ? err.message : '投稿に失敗しました')
@@ -310,15 +367,66 @@ export function UserLogForm({
         <p className="hint">詳細画面では「主成分」として表示されます</p>
       </div>
 
-      <div className="field">
-        <label>位置情報 *</label>
-        <button type="button" className="btn" onClick={() => void handleLocate()} disabled={locating}>
-          {locating ? '取得中…' : '現在地を取得'}
-        </button>
-        {latitude != null && longitude != null && (
-          <p className="hint">概算: {latitude}, {longitude}</p>
+      <fieldset className="fieldset">
+        <legend>地図に載せる場所 *</legend>
+        <label className="radio">
+          <input
+            type="radio"
+            checked={locationMode === 'gps'}
+            onChange={() => {
+              setLocationMode('gps')
+              setResolvedPlaceLabel(null)
+            }}
+          />
+          位置情報（GPS）を使う
+        </label>
+        <label className="radio">
+          <input
+            type="radio"
+            checked={locationMode === 'manual'}
+            onChange={() => {
+              setLocationMode('manual')
+              setLatitude(null)
+              setLongitude(null)
+              setResolvedPlaceLabel(null)
+            }}
+          />
+          都道府県＋市町村を選ぶ
+        </label>
+
+        {locationMode === 'gps' ? (
+          <>
+            <button type="button" className="btn" onClick={() => void handleLocate()} disabled={locating}>
+              {locating ? '取得中…' : '現在地を取得'}
+            </button>
+            {latitude != null && longitude != null && (
+              <p className="hint">
+                {resolvedPlaceLabel
+                  ? `判定: ${resolvedPlaceLabel}`
+                  : `座標: ${latitude}, ${longitude}`}
+              </p>
+            )}
+          </>
+        ) : (
+          <div className="manual-location">
+            <select
+              value={manualPrefecture}
+              onChange={(e) => setManualPrefecture(e.target.value as PrefectureName)}
+            >
+              {PREFECTURES.map((pref) => (
+                <option key={pref.name} value={pref.name}>{pref.name}</option>
+              ))}
+            </select>
+            <input
+              value={manualCity}
+              onChange={(e) => setManualCity(e.target.value)}
+              placeholder="市町村（例: 大阪市、奈良市）"
+              required={locationMode === 'manual'}
+            />
+          </div>
         )}
-      </div>
+        <p className="hint">GPSは高精度で取得します。マップのピン位置は概算です。</p>
+      </fieldset>
 
       <div className="field">
         <label htmlFor="fartLocation">放屁場所 *</label>
@@ -606,6 +714,9 @@ export function formDataToLog(
     blurConfirmed: data.blurConfirmed,
     fartLocation: data.fartLocation,
     fartLocationOther: data.fartLocationOther || null,
+    locationSource: data.locationSource,
+    mapPrefecture: data.mapPrefecture,
+    mapCity: data.mapCity,
   }
   return {
     ...draft,

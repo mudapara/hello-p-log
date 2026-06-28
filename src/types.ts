@@ -40,6 +40,9 @@ export interface FartLog {
   blurConfirmed: boolean
   fartLocation: string | null
   fartLocationOther: string | null
+  locationSource: 'gps' | 'manual' | null
+  mapPrefecture: string | null
+  mapCity: string | null
 }
 
 export interface ContactSubmission {

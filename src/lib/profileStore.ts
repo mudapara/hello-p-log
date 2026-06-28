@@ -7,7 +7,7 @@ import {
   DAILY_LOGIN_POINTS,
   NEW_PREFECTURE_POINTS,
 } from './methanePoints'
-import { getPrefectureFromCoords } from './prefectures'
+import { getLogPrefecture } from './geocode'
 import { getOrCreateLocalUserId, isLocalUserId } from './localUserId'
 import { getSupabaseClient } from './supabase'
 import {
@@ -220,7 +220,7 @@ export async function awardMethanePointsForLog(userId: string, log: FartLog): Pr
     return getUserProfile(userId)
   }
   const profile = await getUserProfile(userId)
-  const prefecture = getPrefectureFromCoords(log.latitude, log.longitude)
+  const prefecture = getLogPrefecture(log)
   const updated = applyLogToProfile(profile, log, prefecture)
   return saveProfile(updated)
 }
@@ -284,7 +284,7 @@ export async function fetchPrefectureRanking(limit = 10): Promise<PrefectureRank
   const logs = (await fetchAllLogs()).filter((l) => l.source === 'user')
   const counts = new Map<string, number>()
   for (const log of logs) {
-    const pref = getPrefectureFromCoords(log.latitude, log.longitude)
+    const pref = getLogPrefecture(log)
     counts.set(pref, (counts.get(pref) ?? 0) + 1)
   }
   return [...counts.entries()]
