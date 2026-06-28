@@ -68,10 +68,15 @@
 }
 
 .profile-titles h2,
-.profile-mist h2 {
+.profile-mist h2,
+.profile-mist-select-heading {
   font-size: 0.9rem;
   color: #e65100;
   margin: 0 0 0.5rem;
+}
+
+.profile-mist-select-heading {
+  margin-top: 0.25rem;
 }
 
 .title-chips,

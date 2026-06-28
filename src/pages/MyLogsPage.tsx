@@ -10,6 +10,7 @@ import {
 import { FEATURE_LOG_POST } from '../lib/constants'
 import { formatDateTime } from '../lib/geo'
 import { getTitleById, MIST_STYLES, computeUnlockedMistStyles, type MistStyleId } from '../lib/titles'
+import { MistPreview } from '../components/MistPreview'
 import type { FartLog, UserProfile } from '../types'
 import './MyLogsPage.css'
 
@@ -162,7 +163,10 @@ export function MyLogsPage() {
           </div>
 
           <div className="profile-mist">
-            <h2>特別モヤ</h2>
+            <h2>現在のモヤ</h2>
+            <MistPreview style={profile.activeMistStyle} />
+
+            <h2 className="profile-mist-select-heading">特別モヤを選ぶ</h2>
             <div className="mist-options">
               {unlockedMist.map((style) => (
                 <button

@@ -1,0 +1,38 @@
+.mist-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 1rem 0.75rem;
+  margin-bottom: 0.75rem;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 224, 130, 0.35);
+}
+
+.mist-preview-marker.mist-marker {
+  position: relative;
+  left: auto;
+  top: auto;
+  transform: none;
+  width: 104px;
+  height: 82px;
+  cursor: default;
+  animation: mist-hover 3.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.mist-preview-name {
+  margin: 0.25rem 0 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #fff8e1;
+}
+
+.mist-preview-desc {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(255, 248, 225, 0.85);
+  text-align: center;
+  line-height: 1.4;
+}
