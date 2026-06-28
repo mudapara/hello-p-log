@@ -16,7 +16,8 @@
 .field input,
 .field select,
 .fieldset input[type='text'],
-.fart-location-other {
+.fart-location-other,
+.field-other {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { FartLog } from '../types'
-import { TACTICS, METHANE_LEVEL_HINT, getSmellStrengthLabel, formatFartLocation } from '../lib/constants'
+import { TACTICS, METHANE_LEVEL_HINT, formatBustedCount, formatFartLocation, formatSmellStrength, formatSmellType } from '../lib/constants'
 import { getMethaneLevel } from '../lib/methaneConcentration'
 import { formatDateTime } from '../lib/geo'
 import './LogDetailModal.css'
@@ -79,8 +79,8 @@ export function LogDetailModal({ log, onClose }: Props) {
           <div>
             <dt>匂い</dt>
             <dd>
-              {log.smellType}
-              <span className="sub">匂いの強さ: {getSmellStrengthLabel(log.smellIntensity)}</span>
+              {formatSmellType(log.smellType, log.smellTypeOther)}
+              <span className="sub">匂いの強さ: {formatSmellStrength(log.smellIntensity, log.smellIntensityOther)}</span>
             </dd>
           </div>
           <div>
@@ -89,7 +89,7 @@ export function LogDetailModal({ log, onClose }: Props) {
           </div>
           <div>
             <dt>バレ度</dt>
-            <dd>{log.bustedCount}人</dd>
+            <dd>{formatBustedCount(log.bustedCount, log.bustedOther)}</dd>
           </div>
           {log.tactics.length > 0 && (
             <div>
@@ -100,9 +100,13 @@ export function LogDetailModal({ log, onClose }: Props) {
                     key={id}
                     type="button"
                     className="tactic-chip"
-                    onClick={() => setTacticHelp(TACTICS[id].description)}
+                    onClick={() => setTacticHelp(
+                      id === 'other'
+                        ? (log.tacticsOther ?? TACTICS.other.description)
+                        : TACTICS[id].description,
+                    )}
                   >
-                    {TACTICS[id].label}
+                    {id === 'other' ? (log.tacticsOther ?? TACTICS.other.label) : TACTICS[id].label}
                   </button>
                 ))}
               </dd>

@@ -1,6 +1,6 @@
 export type LogSource = 'ai' | 'user'
 export type EntityType = 'human' | 'animal'
-export type TacticId = 'rear_guard' | 'vortex' | 'sound_mask' | 'blame_shift'
+export type TacticId = 'rear_guard' | 'vortex' | 'sound_mask' | 'blame_shift' | 'other'
 
 export interface FartLog {
   id: string
@@ -17,11 +17,16 @@ export interface FartLog {
   hideAge: boolean
   mainComponent: string
   smellType: string
+  smellTypeOther: string | null
   smellIntensity: number
+  smellIntensityOther: string | null
   soundText: string
   soundPreset: string
+  soundOther: string | null
   bustedCount: number
+  bustedOther: string | null
   tactics: TacticId[]
+  tacticsOther: string | null
   releaseSpeedKmh: number | null
   releaseSpeedComparison: string | null
   dilutionRate: string | null

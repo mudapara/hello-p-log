@@ -16,9 +16,21 @@ function getSupabase() {
 function readLocalLogs(): FartLog[] {
   try {
     const raw = localStorage.getItem(LOGS_KEY)
-    return raw ? (JSON.parse(raw) as FartLog[]) : []
+    const logs = raw ? (JSON.parse(raw) as FartLog[]) : []
+    return logs.map(normalizeLog)
   } catch {
     return []
+  }
+}
+
+function normalizeLog(log: FartLog): FartLog {
+  return {
+    ...log,
+    smellTypeOther: log.smellTypeOther ?? null,
+    smellIntensityOther: log.smellIntensityOther ?? null,
+    soundOther: log.soundOther ?? null,
+    bustedOther: log.bustedOther ?? null,
+    tacticsOther: log.tacticsOther ?? null,
   }
 }
 
@@ -27,7 +39,7 @@ function writeLocalLogs(logs: FartLog[]): void {
 }
 
 function rowToLog(row: Record<string, unknown>): FartLog {
-  return {
+  return normalizeLog({
     id: row.id as string,
     userId: (row.user_id as string | null) ?? null,
     source: row.source as FartLog['source'],
@@ -42,11 +54,16 @@ function rowToLog(row: Record<string, unknown>): FartLog {
     hideAge: Boolean(row.hide_age),
     mainComponent: row.main_component as string,
     smellType: row.smell_type as string,
+    smellTypeOther: (row.smell_type_other as string | null) ?? null,
     smellIntensity: row.smell_intensity as number,
+    smellIntensityOther: (row.smell_intensity_other as string | null) ?? null,
     soundText: row.sound_text as string,
     soundPreset: row.sound_preset as string,
+    soundOther: (row.sound_other as string | null) ?? null,
     bustedCount: row.busted_count as number,
+    bustedOther: (row.busted_other as string | null) ?? null,
     tactics: row.tactics as FartLog['tactics'],
+    tacticsOther: (row.tactics_other as string | null) ?? null,
     releaseSpeedKmh: (row.release_speed_kmh as number | null) ?? null,
     releaseSpeedComparison: (row.release_speed_comparison as string | null) ?? null,
     dilutionRate: (row.dilution_rate as string | null) ?? null,
@@ -60,7 +77,7 @@ function rowToLog(row: Record<string, unknown>): FartLog {
     blurConfirmed: Boolean(row.blur_confirmed),
     fartLocation: (row.fart_location as string | null) ?? null,
     fartLocationOther: (row.fart_location_other as string | null) ?? null,
-  }
+  })
 }
 
 function logToRow(log: FartLog): Record<string, unknown> {
@@ -79,11 +96,16 @@ function logToRow(log: FartLog): Record<string, unknown> {
     hide_age: log.hideAge,
     main_component: log.mainComponent,
     smell_type: log.smellType,
+    smell_type_other: log.smellTypeOther,
     smell_intensity: log.smellIntensity,
+    smell_intensity_other: log.smellIntensityOther,
     sound_text: log.soundText,
     sound_preset: log.soundPreset,
+    sound_other: log.soundOther,
     busted_count: log.bustedCount,
+    busted_other: log.bustedOther,
     tactics: log.tactics,
+    tactics_other: log.tacticsOther,
     release_speed_kmh: log.releaseSpeedKmh,
     release_speed_comparison: log.releaseSpeedComparison,
     dilution_rate: log.dilutionRate,

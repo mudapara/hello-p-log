@@ -9,7 +9,9 @@ import {
   AI_NAMES_NEUTRAL,
   ANIMALS,
   SMELL_STRENGTH_OPTIONS,
+  SMELL_TYPE_OTHER,
   SMELL_TYPES,
+  SOUND_PRESET_OTHER,
   SOCIAL_IMPACTS,
   SOCIAL_IMPACTS_INDOOR,
   SOCIAL_IMPACTS_OUTDOOR,
@@ -69,10 +71,11 @@ export function generateAiLog(
   const isAnimal = Math.random() < 0.2
   const entityType: EntityType = isAnimal ? 'animal' : 'human'
   const animal = isAnimal ? pick(ANIMALS) : null
-  const sound = pick(SOUND_OPTIONS)
-  const tactics = pickMany(Object.keys(TACTICS) as TacticId[], randomInt(1, 2))
+  const sound = pick(SOUND_OPTIONS.filter((s) => s.id !== SOUND_PRESET_OTHER))
+  const tacticIds = (Object.keys(TACTICS) as TacticId[]).filter((id) => id !== 'other')
+  const tactics = pickMany(tacticIds, randomInt(1, 2))
   const speed = randomInt(2, 14)
-  const smellStrength = pick(SMELL_STRENGTH_OPTIONS)
+  const smellStrength = pick(SMELL_STRENGTH_OPTIONS.filter((o) => o.value !== 0))
   const gender = isAnimal ? null : pick([...AI_GENDERS])
 
   const draft: FartLog = {
@@ -89,12 +92,17 @@ export function generateAiLog(
     hideGender: false,
     hideAge: false,
     mainComponent: pick(AI_FOOD_SAMPLES),
-    smellType: pick(SMELL_TYPES),
+    smellType: pick(SMELL_TYPES.filter((s) => s !== SMELL_TYPE_OTHER)),
+    smellTypeOther: null,
     smellIntensity: smellStrength.value,
+    smellIntensityOther: null,
     soundText: sound.text,
     soundPreset: sound.id,
+    soundOther: null,
     bustedCount: randomInt(0, 4),
+    bustedOther: null,
     tactics,
+    tacticsOther: null,
     releaseSpeedKmh: speed,
     releaseSpeedComparison: getComparisonForSpeed(speed),
     dilutionRate: null,

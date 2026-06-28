@@ -59,6 +59,7 @@ function speedFactor(kmh: number): number {
 }
 
 function bustedFactor(count: number): number {
+  if (count < 0) return 1
   return 1 + Math.min(count, 4) * 0.035
 }
 
@@ -83,7 +84,9 @@ export function estimateMethaneLevel(
 ): string {
   if (log.soundPreset === 'large_nuclear') return '99.9'
 
-  const smellIdx = Math.max(1, Math.min(6, log.smellIntensity)) - 1
+  const smellIdx = log.smellIntensity === 0
+    ? 2
+    : Math.max(1, Math.min(6, log.smellIntensity)) - 1
   let level = SMELL_BASE_LEVEL[smellIdx]!
 
   const soundCategory = getSoundOption(log.soundPreset)?.category ?? '中'

@@ -74,7 +74,12 @@ export const SMELL_TYPES = [
   'コンビニの温かい肉まんの残り香',
   '正体不明のノスタルジー',
   '畳の部屋で豆乳飲んだ後の空気',
+  'その他',
 ] as const
+
+export const SMELL_TYPE_OTHER = 'その他' as const
+
+export const SMELL_INTENSITY_OTHER = 0
 
 export const SMELL_STRENGTH_OPTIONS = [
   { value: 1, label: '無臭' },
@@ -83,11 +88,40 @@ export const SMELL_STRENGTH_OPTIONS = [
   { value: 4, label: '激臭' },
   { value: 5, label: '今年一番' },
   { value: 6, label: 'ガスマスク必須' },
+  { value: SMELL_INTENSITY_OTHER, label: 'その他（自由記述）' },
 ] as const
 
 export function getSmellStrengthLabel(intensity: number): string {
   const found = SMELL_STRENGTH_OPTIONS.find((o) => o.value === intensity)
   return found?.label ?? `レベル${intensity}`
+}
+
+export function formatSmellType(
+  type: string,
+  other: string | null | undefined,
+): string {
+  if (type === SMELL_TYPE_OTHER) return other?.trim() || SMELL_TYPE_OTHER
+  return type
+}
+
+export function formatSmellStrength(
+  intensity: number,
+  other: string | null | undefined,
+): string {
+  if (intensity === SMELL_INTENSITY_OTHER) return other?.trim() || 'その他'
+  return getSmellStrengthLabel(intensity)
+}
+
+export const SOUND_PRESET_OTHER = 'custom_other'
+
+export const BUSTED_COUNT_OTHER = -1
+
+export function formatBustedCount(
+  count: number,
+  other: string | null | undefined,
+): string {
+  if (count === BUSTED_COUNT_OTHER) return other?.trim() || 'その他'
+  return `${count}人`
 }
 
 /** ログ投稿時の放屁場所（公共の場 + 自宅 + その他） */
@@ -211,6 +245,7 @@ export const SOUND_OPTIONS: SoundOption[] = [
   { id: 'large_zudoon', category: '大', label: 'ズドォォン！！', text: 'ズドォォン！！' },
   { id: 'large_gyaa', category: '大', label: 'ギャァァァ！！', text: 'ギャァァァ！！' },
   { id: 'large_dodon', category: '大', label: 'ドドドドドン！！', text: 'ドドドドドン！！' },
+  { id: SOUND_PRESET_OTHER, category: '小', label: 'その他（自由記述）', text: '' },
 ]
 
 export const SOUND_CATEGORIES = ['すかし', '小', '中', '大'] as const
@@ -235,6 +270,10 @@ export const TACTICS: Record<TacticId, { label: string; description: string }> =
   blame_shift: {
     label: '他者転嫁',
     description: '「くさっ！誰だよ！」と周囲を睨み、自分を被害者側に置く動き。',
+  },
+  other: {
+    label: 'その他（自由記述）',
+    description: '上記以外のオリジナル戦術。',
   },
 }
 

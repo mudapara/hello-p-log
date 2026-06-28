@@ -2,12 +2,16 @@ import { useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import type { EntityType, FartLog, TacticId } from '../types'
 import {
+  BUSTED_COUNT_OTHER,
   FART_LOCATION_OPTIONS,
   ABOUT_USAGE_URL,
+  SMELL_INTENSITY_OTHER,
   SMELL_STRENGTH_OPTIONS,
+  SMELL_TYPE_OTHER,
   SMELL_TYPES,
   SOUND_CATEGORIES,
   SOUND_OPTIONS,
+  SOUND_PRESET_OTHER,
   TACTICS,
   getSoundOption,
 } from '../lib/constants'
@@ -27,10 +31,15 @@ export interface UserLogFormData {
   hideGender: boolean
   hideAge: boolean
   smellType: string
+  smellTypeOther: string
   smellIntensity: number
+  smellIntensityOther: string
   soundPreset: string
+  soundOther: string
   bustedCount: number
+  bustedOther: string
   tactics: TacticId[]
+  tacticsOther: string
   entityType: EntityType
   animalSpecies: string
   observedConfirmed: boolean
@@ -63,10 +72,15 @@ export function logToFormData(log: FartLog): UserLogFormData {
     hideGender: log.hideGender,
     hideAge: log.hideAge,
     smellType: log.smellType,
+    smellTypeOther: log.smellTypeOther ?? '',
     smellIntensity: log.smellIntensity,
+    smellIntensityOther: log.smellIntensityOther ?? '',
     soundPreset: log.soundPreset,
+    soundOther: log.soundOther ?? (log.soundPreset === SOUND_PRESET_OTHER ? log.soundText : ''),
     bustedCount: log.bustedCount,
+    bustedOther: log.bustedOther ?? '',
     tactics: log.tactics,
+    tacticsOther: log.tacticsOther ?? '',
     entityType: log.entityType,
     animalSpecies: log.animalSpecies ?? '',
     observedConfirmed: log.observedConfirmed,
@@ -99,10 +113,15 @@ export function UserLogForm({
   const [smellType, setSmellType] = useState<typeof SMELL_TYPES[number]>(
     (defaults?.smellType as typeof SMELL_TYPES[number]) ?? SMELL_TYPES[0],
   )
+  const [smellTypeOther, setSmellTypeOther] = useState(defaults?.smellTypeOther ?? '')
   const [smellIntensity, setSmellIntensity] = useState(defaults?.smellIntensity ?? 3)
+  const [smellIntensityOther, setSmellIntensityOther] = useState(defaults?.smellIntensityOther ?? '')
   const [soundPreset, setSoundPreset] = useState(defaults?.soundPreset ?? 'small_pu')
+  const [soundOther, setSoundOther] = useState(defaults?.soundOther ?? '')
   const [bustedCount, setBustedCount] = useState(defaults?.bustedCount ?? 0)
+  const [bustedOther, setBustedOther] = useState(defaults?.bustedOther ?? '')
   const [tactics, setTactics] = useState<TacticId[]>(defaults?.tactics ?? [])
+  const [tacticsOther, setTacticsOther] = useState(defaults?.tacticsOther ?? '')
   const [entityType, setEntityType] = useState<EntityType>(defaults?.entityType ?? 'human')
   const [animalSpecies, setAnimalSpecies] = useState(defaults?.animalSpecies ?? '')
   const [observedConfirmed, setObservedConfirmed] = useState(defaults?.observedConfirmed ?? false)
@@ -120,7 +139,9 @@ export function UserLogForm({
   const [error, setError] = useState<string | null>(null)
   const [locating, setLocating] = useState(false)
 
-  const soundText = getSoundOption(soundPreset)?.text ?? ''
+  const soundText = soundPreset === SOUND_PRESET_OTHER
+    ? soundOther
+    : (getSoundOption(soundPreset)?.text ?? '')
 
   const toggleTactic = (id: TacticId) => {
     setTactics((prev) =>
@@ -171,6 +192,26 @@ export function UserLogForm({
       setError('「その他」を選んだ場合は場所を入力してください')
       return
     }
+    if (smellType === SMELL_TYPE_OTHER && !smellTypeOther.trim()) {
+      setError('匂いの種類で「その他」を選んだ場合は内容を入力してください')
+      return
+    }
+    if (smellIntensity === SMELL_INTENSITY_OTHER && !smellIntensityOther.trim()) {
+      setError('匂いの強さで「その他」を選んだ場合は内容を入力してください')
+      return
+    }
+    if (soundPreset === SOUND_PRESET_OTHER && !soundOther.trim()) {
+      setError('音で「その他」を選んだ場合は内容を入力してください')
+      return
+    }
+    if (bustedCount === BUSTED_COUNT_OTHER && !bustedOther.trim()) {
+      setError('バレ度で「その他」を選んだ場合は内容を入力してください')
+      return
+    }
+    if (tactics.includes('other') && !tacticsOther.trim()) {
+      setError('戦術で「その他」を選んだ場合は内容を入力してください')
+      return
+    }
     if (!agreed) {
       setError('使い方・注意事項への同意が必要です')
       return
@@ -207,10 +248,15 @@ export function UserLogForm({
         hideGender,
         hideAge,
         smellType,
+        smellTypeOther: smellType === SMELL_TYPE_OTHER ? smellTypeOther.trim() : '',
         smellIntensity,
+        smellIntensityOther: smellIntensity === SMELL_INTENSITY_OTHER ? smellIntensityOther.trim() : '',
         soundPreset,
+        soundOther: soundPreset === SOUND_PRESET_OTHER ? soundOther.trim() : '',
         bustedCount,
+        bustedOther: bustedCount === BUSTED_COUNT_OTHER ? bustedOther.trim() : '',
         tactics,
+        tacticsOther: tactics.includes('other') ? tacticsOther.trim() : '',
         entityType,
         animalSpecies,
         observedConfirmed,
@@ -370,6 +416,15 @@ export function UserLogForm({
             <option key={s} value={s}>{s}</option>
           ))}
         </select>
+        {smellType === SMELL_TYPE_OTHER && (
+          <input
+            className="field-other"
+            value={smellTypeOther}
+            onChange={(e) => setSmellTypeOther(e.target.value)}
+            placeholder="匂いを自由記述（例: 湿った雑誌の匂い）"
+            required
+          />
+        )}
       </div>
 
       <fieldset className="fieldset">
@@ -387,6 +442,15 @@ export function UserLogForm({
             </label>
           ))}
         </div>
+        {smellIntensity === SMELL_INTENSITY_OTHER && (
+          <input
+            className="field-other"
+            value={smellIntensityOther}
+            onChange={(e) => setSmellIntensityOther(e.target.value)}
+            placeholder="強さを自由記述（例: 部屋中に広がった）"
+            required
+          />
+        )}
       </fieldset>
 
       <div className="field">
@@ -400,7 +464,17 @@ export function UserLogForm({
             </optgroup>
           ))}
         </select>
-        <p className="hint">音: {soundText}</p>
+        {soundPreset === SOUND_PRESET_OTHER ? (
+          <input
+            className="field-other"
+            value={soundOther}
+            onChange={(e) => setSoundOther(e.target.value)}
+            placeholder="音を自由記述（例: プゥン…）"
+            required
+          />
+        ) : (
+          <p className="hint">音: {soundText}</p>
+        )}
       </div>
 
       <div className="field">
@@ -409,7 +483,17 @@ export function UserLogForm({
           {[0, 1, 2, 3, 4, 5].map((n) => (
             <option key={n} value={n}>{n}人</option>
           ))}
+          <option value={BUSTED_COUNT_OTHER}>その他（自由記述）</option>
         </select>
+        {bustedCount === BUSTED_COUNT_OTHER && (
+          <input
+            className="field-other"
+            value={bustedOther}
+            onChange={(e) => setBustedOther(e.target.value)}
+            placeholder="バレ度を自由記述（例: 気配だけバレた）"
+            required
+          />
+        )}
       </div>
 
       <fieldset className="fieldset">
@@ -427,6 +511,15 @@ export function UserLogForm({
             </label>
           ))}
         </div>
+        {tactics.includes('other') && (
+          <input
+            className="field-other"
+            value={tacticsOther}
+            onChange={(e) => setTacticsOther(e.target.value)}
+            placeholder="戦術を自由記述（例: 通話中に一瞬ミュート）"
+            required
+          />
+        )}
       </fieldset>
 
       {mode === 'with_photo' && photoDataUrl && (
@@ -472,7 +565,9 @@ export function formDataToLog(
   data: UserLogFormData,
   existing?: Pick<FartLog, 'id' | 'createdAt' | 'userId'>,
 ): FartLog {
-  const soundText = getSoundOption(data.soundPreset)?.text ?? ''
+  const soundText = data.soundPreset === SOUND_PRESET_OTHER
+    ? data.soundOther.trim()
+    : (getSoundOption(data.soundPreset)?.text ?? '')
   const draft: FartLog = {
     id: existing?.id ?? uuidv4(),
     userId: existing?.userId ?? null,
@@ -488,11 +583,16 @@ export function formDataToLog(
     hideAge: data.hideAge,
     mainComponent: data.mainComponent,
     smellType: data.smellType,
+    smellTypeOther: data.smellType === SMELL_TYPE_OTHER ? data.smellTypeOther || null : null,
     smellIntensity: data.smellIntensity,
+    smellIntensityOther: data.smellIntensity === SMELL_INTENSITY_OTHER ? data.smellIntensityOther || null : null,
     soundText,
     soundPreset: data.soundPreset,
+    soundOther: data.soundPreset === SOUND_PRESET_OTHER ? data.soundOther || null : null,
     bustedCount: data.bustedCount,
+    bustedOther: data.bustedCount === BUSTED_COUNT_OTHER ? data.bustedOther || null : null,
     tactics: data.tactics,
+    tacticsOther: data.tactics.includes('other') ? data.tacticsOther || null : null,
     releaseSpeedKmh: null,
     releaseSpeedComparison: null,
     dilutionRate: null,
