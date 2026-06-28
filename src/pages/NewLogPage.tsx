@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { formDataToLog, UserLogForm, type UserLogFormData } from '../components/UserLogForm'
 import { useAuth } from '../contexts/AuthContext'
@@ -6,6 +6,7 @@ import { awardMethanePointsForLog, getUserProfile } from '../lib/profileStore'
 import { FEATURE_LOG_POST, FEATURE_MAP } from '../lib/constants'
 import { saveLog } from '../lib/logStore'
 import { renderCompositeImage } from '../components/PhotoCanvas'
+import { getPlaceLabelFromCoords, shareLogPost } from '../lib/logShare'
 import { CameraIcon } from '../components/CameraIcon'
 import { MistIcon } from '../components/MistIcon'
 import type { PhotoOverlayLog } from '../types'
@@ -21,6 +22,15 @@ export function NewLogPage() {
   const [successId, setSuccessId] = useState<string | null>(null)
   const [pointsEarned, setPointsEarned] = useState<number | null>(null)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
+  const [sharePlace, setSharePlace] = useState<string | null>(null)
+  const [sharing, setSharing] = useState(false)
+  const [shareMessage, setShareMessage] = useState<string | null>(null)
+  const [lastPostCoords, setLastPostCoords] = useState<{ lat: number; lng: number } | null>(null)
+
+  useEffect(() => {
+    if (!successId || !lastPostCoords) return
+    setSharePlace(getPlaceLabelFromCoords(lastPostCoords.lat, lastPostCoords.lng))
+  }, [successId, lastPostCoords])
 
   const handlePhotoSelect = (file: File) => {
     const reader = new FileReader()
@@ -39,6 +49,9 @@ export function NewLogPage() {
     await saveLog(log)
     setSuccessId(log.id)
     setPointsEarned(null)
+    setSharePlace(null)
+    setShareMessage(null)
+    setLastPostCoords({ lat: log.latitude, lng: log.longitude })
 
     if (user?.id) {
       const before = await getUserProfile(user.id)
@@ -57,11 +70,35 @@ export function NewLogPage() {
     }
   }
 
+  const handleShareLog = async () => {
+    if (!sharePlace) return
+    setSharing(true)
+    setShareMessage(null)
+    try {
+      const result = await shareLogPost(sharePlace)
+      setShareMessage(
+        result === 'shared'
+          ? 'シェアしました'
+          : '文言をコピーしました。SNSに貼り付けてください',
+      )
+    } catch (e) {
+      if (e instanceof Error && e.name === 'AbortError') return
+      setShareMessage('シェアに失敗しました')
+    } finally {
+      setSharing(false)
+    }
+  }
+
   if (successId) {
     return (
       <div className="new-log-page">
         <div className="success-card">
           <h1>投稿完了</h1>
+          {sharePlace ? (
+            <p className="share-place-msg">
+              <strong>{sharePlace}</strong>にログを残しました
+            </p>
+          ) : null}
           <p>ログが{FEATURE_MAP.title}に反映されました。</p>
           {pointsEarned != null && pointsEarned > 0 && (
             <p className="points-toast">メタンポイント +{pointsEarned} pt</p>
@@ -78,12 +115,24 @@ export function NewLogPage() {
               合成画像をダウンロード
             </a>
           )}
+          <button
+            type="button"
+            className="btn btn-primary share-log-btn"
+            onClick={() => void handleShareLog()}
+            disabled={!sharePlace || sharing}
+          >
+            {sharing ? '準備中…' : 'SNSでシェア'}
+          </button>
+          {shareMessage && <p className="share-message">{shareMessage}</p>}
           <div className="success-actions">
             <Link to="/map" className="btn">マップを見る</Link>
             <button type="button" className="btn btn-ghost" onClick={() => {
               setSuccessId(null)
               setPointsEarned(null)
               setDownloadUrl(null)
+              setSharePlace(null)
+              setShareMessage(null)
+              setLastPostCoords(null)
               setMode('choose')
               setPhotoDataUrl(null)
             }}>

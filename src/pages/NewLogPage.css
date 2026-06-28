@@ -92,6 +92,29 @@
   margin-top: 0.5rem;
 }
 
+.share-place-msg {
+  margin: 0.75rem 0 0.5rem;
+  font-size: 1.05rem;
+  color: #4e342e;
+}
+
+.share-place-msg strong {
+  color: #e65100;
+}
+
+.share-log-btn {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  margin: 1rem auto 0;
+}
+
+.share-message {
+  margin: 0.75rem 0 0;
+  font-size: 0.9rem;
+  color: #6d4c41;
+}
+
 .success-actions {
   display: flex;
   gap: 0.75rem;
