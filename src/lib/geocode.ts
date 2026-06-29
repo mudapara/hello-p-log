@@ -1,5 +1,6 @@
 import { APP_NAME, SITE_URL } from './constants'
 import type { FartLog } from '../types'
+import { getMunicipalityCoords } from './municipalities'
 import { PREFECTURES, getPrefectureFromCoords, type PrefectureName } from './prefectures'
 
 const USER_AGENT = `${APP_NAME}/1.0 (${SITE_URL})`
@@ -148,6 +149,9 @@ export async function geocodeManualPlace(
   prefecture: PrefectureName,
   city: string,
 ): Promise<{ lat: number; lng: number } | null> {
+  const local = getMunicipalityCoords(prefecture, city)
+  if (local) return local
+
   const { base, label, suffix } = normalizeJapaneseCity(city)
   if (!base) return null
 

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import type { EntityType, FartLog, TacticId } from '../types'
 import {
@@ -17,6 +17,7 @@ import {
 } from '../lib/constants'
 import { estimateMethaneLevel } from '../lib/methaneConcentration'
 import { geocodeManualPlace, reverseGeocodePlace } from '../lib/geocode'
+import { getMunicipalitiesForPrefecture } from '../lib/municipalities'
 import { getCurrentPosition, roundCoordinate } from '../lib/geo'
 import { PREFECTURES, type PrefectureName } from '../lib/prefectures'
 import { nowDatetimeLocalValue, toDatetimeLocalValue } from '../lib/datetimeLocal'
@@ -148,7 +149,17 @@ export function UserLogForm({
   const [manualPrefecture, setManualPrefecture] = useState<PrefectureName>(
     (defaults?.mapPrefecture as PrefectureName | null) ?? '東京都',
   )
-  const [manualCity, setManualCity] = useState(defaults?.mapCity ?? '')
+  const [manualCity, setManualCity] = useState(() => {
+    const saved = defaults?.mapCity ?? ''
+    const pref = (defaults?.mapPrefecture as PrefectureName | null) ?? '東京都'
+    if (!saved) return ''
+    const cities = getMunicipalitiesForPrefecture(pref)
+    return cities.some((c) => c.name === saved) ? saved : ''
+  })
+  const cityOptions = useMemo(
+    () => getMunicipalitiesForPrefecture(manualPrefecture),
+    [manualPrefecture],
+  )
   const [resolvedPlaceLabel, setResolvedPlaceLabel] = useState<string | null>(null)
   const [agreed, setAgreed] = useState(Boolean(initialLog))
   const [loading, setLoading] = useState(false)
@@ -214,8 +225,8 @@ export function UserLogForm({
         setError('現在地を取得するか、都道府県＋市町村を選んでください')
         return
       }
-    } else if (!manualCity.trim()) {
-      setError('市町村を入力してください')
+    } else if (!manualCity) {
+      setError('市町村を選んでください')
       return
     }
     if (fartLocation === 'その他' && !fartLocationOther.trim()) {
@@ -411,21 +422,30 @@ export function UserLogForm({
           <div className="manual-location">
             <select
               value={manualPrefecture}
-              onChange={(e) => setManualPrefecture(e.target.value as PrefectureName)}
+              onChange={(e) => {
+                const next = e.target.value as PrefectureName
+                setManualPrefecture(next)
+                const cities = getMunicipalitiesForPrefecture(next)
+                setManualCity(cities[0]?.name ?? '')
+              }}
             >
               {PREFECTURES.map((pref) => (
                 <option key={pref.name} value={pref.name}>{pref.name}</option>
               ))}
             </select>
-            <input
+            <select
               value={manualCity}
               onChange={(e) => setManualCity(e.target.value)}
-              placeholder="市町村（例: 大阪市、奈良市）"
               required={locationMode === 'manual'}
-            />
+            >
+              <option value="">市町村を選択</option>
+              {cityOptions.map((city) => (
+                <option key={city.name} value={city.name}>{city.name}</option>
+              ))}
+            </select>
           </div>
         )}
-        <p className="hint">GPSは高精度で取得します。マップのピン位置は概算です。</p>
+        <p className="hint">GPSは高精度で取得します。手入力は市役所付近の概算位置です。</p>
       </fieldset>
 
       <div className="field">

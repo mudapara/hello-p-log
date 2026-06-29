@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "og:generate": "node scripts/generate-ogp.mjs"
+    "og:generate": "node scripts/generate-ogp.mjs",
+    "municipalities:generate": "node scripts/generate-municipalities.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
