@@ -12,6 +12,85 @@ function nominatimHeaders(): HeadersInit {
   }
 }
 
+type SearchHit = {
+  lat: string
+  lon: string
+  display_name: string
+  type?: string
+  class?: string
+  importance?: number
+}
+
+function normalizeJapaneseCity(city: string) {
+  const trimmed = city.trim().replace(/\s/g, '')
+  const suffix = trimmed.match(/(市|区|町|村)$/)?.[1] ?? '市'
+  const base = trimmed.replace(/(市|区|町|村)$/, '') || trimmed
+  const label = `${base}${suffix}`
+  return { base, label, suffix }
+}
+
+function buildSearchQueries(label: string, base: string, suffix: string, prefecture: PrefectureName): string[] {
+  const queries: string[] = []
+  if (suffix === '市') {
+    queries.push(`${base}市役所, ${prefecture}, 日本`)
+    queries.push(`${base}市駅, ${prefecture}, 日本`)
+  } else if (suffix === '区') {
+    queries.push(`${label}, ${prefecture}, 日本`)
+    queries.push(`${label}駅, ${prefecture}, 日本`)
+  } else {
+    queries.push(`${label}役場, ${prefecture}, 日本`)
+    queries.push(`${label}駅, ${prefecture}, 日本`)
+  }
+  queries.push(`${label}, ${prefecture}, 日本`)
+  return queries
+}
+
+async function nominatimSearch(params: Record<string, string>, limit = 5): Promise<SearchHit[]> {
+  const url = new URL('https://nominatim.openstreetmap.org/search')
+  for (const [key, value] of Object.entries(params)) {
+    url.searchParams.set(key, value)
+  }
+  url.searchParams.set('format', 'json')
+  url.searchParams.set('accept-language', 'ja')
+  url.searchParams.set('limit', String(limit))
+
+  const res = await fetch(url, {
+    headers: nominatimHeaders(),
+    signal: AbortSignal.timeout(8000),
+  })
+  if (!res.ok) return []
+  return (await res.json()) as SearchHit[]
+}
+
+function scoreSearchHit(
+  hit: SearchHit,
+  cityBase: string,
+  cityLabel: string,
+  prefecture: PrefectureName,
+): number {
+  const name = hit.display_name
+  const prefShort = prefecture.replace(/[都府県道]$/, '')
+  let score = 0
+
+  if (name.includes(cityBase)) score += 14
+  if (name.includes(cityLabel)) score += 10
+  if (name.includes(prefecture) || name.includes(prefShort)) score += 8
+  if (name.includes('市役所') || name.includes('役所') || name.includes('役場')) score += 12
+  if (name.includes('駅')) score += 9
+  if (hit.type === 'administrative' || hit.class === 'boundary') score += 5
+  if (hit.importance) score += hit.importance * 3
+
+  if (!name.includes(cityBase)) score -= 20
+  if (name.includes('大阪駅') && cityBase !== '大阪') score -= 30
+  if (name.includes('大阪市役所') && cityBase !== '大阪') score -= 40
+  if (name.includes('中之島') && cityBase !== '大阪') score -= 25
+  if (cityBase !== prefShort && name.includes(`${prefShort}市`) && !name.includes(cityBase)) {
+    score -= 15
+  }
+
+  return score
+}
+
 export function matchPrefectureName(raw: string): PrefectureName | null {
   const normalized = raw.replace(/\s/g, '')
   for (const pref of PREFECTURES) {
@@ -69,85 +148,45 @@ export async function geocodeManualPlace(
   prefecture: PrefectureName,
   city: string,
 ): Promise<{ lat: number; lng: number } | null> {
-  const trimmedCity = city.trim().replace(/\s/g, '')
-  if (!trimmedCity) return null
-
-  const cityLabel = /[市区町村]$/.test(trimmedCity) ? trimmedCity : `${trimmedCity}市`
-  const cityBase = cityLabel.replace(/[市区町村]$/, '')
-
-  const queries = [
-    `${cityLabel}市役所, ${prefecture}, 日本`,
-    `${cityLabel}駅, ${prefecture}, 日本`,
-    `${cityLabel}, ${prefecture}, 日本`,
-    `${cityBase}, ${prefecture}, 日本`,
-  ]
-
-  type SearchHit = {
-    lat: string
-    lon: string
-    display_name: string
-    type?: string
-    class?: string
-    importance?: number
-  }
+  const { base, label, suffix } = normalizeJapaneseCity(city)
+  if (!base) return null
 
   const candidates: SearchHit[] = []
 
-  for (const query of queries) {
+  try {
+    const structured = await nominatimSearch({
+      city: label,
+      state: prefecture,
+      country: 'Japan',
+      countrycodes: 'jp',
+    })
+    candidates.push(...structured)
+  } catch {
+    // continue with text queries
+  }
+
+  for (const query of buildSearchQueries(label, base, suffix, prefecture)) {
     try {
-      const url = new URL('https://nominatim.openstreetmap.org/search')
-      url.searchParams.set('q', query)
-      url.searchParams.set('format', 'json')
-      url.searchParams.set('accept-language', 'ja')
-      url.searchParams.set('countrycodes', 'jp')
-      url.searchParams.set('limit', '5')
-
-      const res = await fetch(url, {
-        headers: nominatimHeaders(),
-        signal: AbortSignal.timeout(8000),
-      })
-      if (!res.ok) continue
-
-      const results = (await res.json()) as SearchHit[]
+      const results = await nominatimSearch({ q: query, countrycodes: 'jp' })
       candidates.push(...results)
     } catch {
       // try next query
     }
   }
 
-  if (candidates.length > 0) {
-    const prefShort = prefecture.replace(/[都府県道]$/, '')
-    const scored = candidates
-      .map((hit) => {
-        const name = hit.display_name
-        let score = 0
-        if (name.includes(cityBase)) score += 12
-        if (name.includes(cityLabel)) score += 8
-        if (name.includes(prefecture) || name.includes(prefShort)) score += 6
-        if (name.includes('市役所') || name.includes('役所') || name.includes('市政')) score += 10
-        if (name.includes('駅')) score += 8
-        if (hit.type === 'administrative' || hit.class === 'boundary') score += 4
-        if (hit.importance) score += hit.importance * 3
-        if (cityBase !== '大阪' && cityBase !== prefShort && name.includes('大阪駅')) score -= 25
-        if (cityBase !== prefShort && name.includes(`${prefShort}駅`) && !name.includes(cityBase)) {
-          score -= 12
-        }
-        return { hit, score }
-      })
-      .sort((a, b) => b.score - a.score)
+  if (candidates.length === 0) return null
 
-    const best = scored[0]
-    if (best && best.score > 0) {
-      return {
-        lat: Number.parseFloat(best.hit.lat),
-        lng: Number.parseFloat(best.hit.lon),
-      }
-    }
+  const scored = candidates
+    .map((hit) => ({ hit, score: scoreSearchHit(hit, base, label, prefecture) }))
+    .sort((a, b) => b.score - a.score)
+
+  const best = scored[0]
+  if (!best || best.score < 8) return null
+
+  return {
+    lat: Number.parseFloat(best.hit.lat),
+    lng: Number.parseFloat(best.hit.lon),
   }
-
-  const pref = PREFECTURES.find((p) => p.name === prefecture)
-  if (!pref) return null
-  return { lat: pref.lat, lng: pref.lng }
 }
 
 export function formatPlaceLabel(

@@ -40,32 +40,44 @@
 
 .map-log-marker {
   position: relative;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
 }
 
 .map-log-marker-user .map-log-glow {
   position: absolute;
-  inset: 0;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 235, 59, 0.75) 0%, rgba(255, 193, 7, 0.45) 45%, rgba(255, 193, 7, 0) 72%);
-  animation: map-glow-pulse 2s ease-in-out infinite;
+  pointer-events: none;
+  animation: map-glow-pulse 2.8s ease-in-out infinite;
 }
 
-.map-log-marker-user .map-log-core {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 12px;
-  height: 12px;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #fff9c4 0%, #ffeb3b 40%, #ffc107 100%);
-  box-shadow:
-    0 0 6px rgba(255, 235, 59, 0.95),
-    0 0 12px rgba(255, 193, 7, 0.65),
-    inset 0 0 2px rgba(255, 255, 255, 0.8);
-  border: 1px solid #fdd835;
+.map-log-marker-user .map-log-glow-outer {
+  inset: -2px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 249, 196, 0.2) 0%,
+    rgba(255, 235, 59, 0.32) 38%,
+    rgba(255, 193, 7, 0.12) 62%,
+    rgba(255, 193, 7, 0) 78%
+  );
+  filter: blur(3px);
+}
+
+.map-log-marker-user .map-log-glow-inner {
+  inset: 4px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 253, 231, 0.15) 0%,
+    rgba(255, 241, 118, 0.38) 42%,
+    rgba(255, 193, 7, 0.1) 68%,
+    rgba(255, 193, 7, 0) 82%
+  );
+  filter: blur(2px);
+  animation-delay: 0.4s;
+}
+
+.map-log-marker-user .map-log-spark {
+  opacity: 0.35;
 }
 
 .map-log-spark {
@@ -107,33 +119,29 @@
   35% { opacity: 1; transform: scale(1.2); }
 }
 
-.map-marker-royal .map-log-core {
-  background: radial-gradient(circle at 35% 35%, #fff8e1 0%, #ffd54f 45%, #ff8f00 100%);
-  box-shadow: 0 0 10px rgba(255, 193, 7, 0.95);
+.map-marker-royal .map-log-glow-inner {
+  background: radial-gradient(circle, rgba(255, 248, 225, 0.2) 0%, rgba(255, 213, 79, 0.42) 45%, rgba(255, 143, 0, 0.08) 72%, transparent 85%);
 }
 
-.map-marker-toxic .map-log-core {
-  background: radial-gradient(circle at 35% 35%, #ffebee 0%, #ef5350 45%, #c62828 100%);
-  box-shadow: 0 0 12px rgba(244, 67, 54, 0.95);
+.map-marker-toxic .map-log-glow-inner {
+  background: radial-gradient(circle, rgba(255, 235, 238, 0.2) 0%, rgba(239, 83, 80, 0.45) 45%, rgba(198, 40, 40, 0.1) 72%, transparent 85%);
   animation: map-danger-pulse 1.6s ease-in-out infinite;
 }
 
-.map-marker-rainbow .map-log-core {
-  background: radial-gradient(circle at 30% 30%, #4a4038 0%, #5c6b5a 35%, #4a3d52 65%, #2a2520 100%);
-  box-shadow: 0 0 10px rgba(80, 70, 90, 0.8);
+.map-marker-rainbow .map-log-glow-inner {
+  background: radial-gradient(circle, rgba(74, 64, 56, 0.15) 0%, rgba(92, 107, 90, 0.38) 35%, rgba(74, 61, 82, 0.28) 65%, transparent 85%);
   animation: map-oil-shimmer 4.5s ease-in-out infinite;
 }
 
-.map-marker-ghost .map-log-core {
-  background: radial-gradient(circle at 35% 35%, rgba(255, 253, 231, 0.95) 0%, rgba(255, 241, 118, 0.55) 50%, rgba(255, 235, 59, 0.25) 100%);
-  box-shadow: 0 0 8px rgba(255, 245, 157, 0.5);
+.map-marker-ghost .map-log-glow-inner {
+  background: radial-gradient(circle, rgba(255, 253, 231, 0.12) 0%, rgba(255, 241, 118, 0.32) 50%, rgba(255, 235, 59, 0.08) 72%, transparent 85%);
   opacity: 0.75;
   animation: map-ghost-fade 3s ease-in-out infinite;
 }
 
 @keyframes map-danger-pulse {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); }
-  50% { transform: translate(-50%, -50%) scale(1.12); }
+  0%, 100% { transform: scale(0.95); }
+  50% { transform: scale(1.08); }
 }
 
 @keyframes map-oil-shimmer {
@@ -146,50 +154,46 @@
   50% { opacity: 0.9; }
 }
 
-.map-marker-ember .map-log-glow {
-  background: radial-gradient(circle, rgba(255, 152, 0, 0.8) 0%, rgba(255, 87, 34, 0.5) 45%, transparent 72%);
+.map-marker-ember .map-log-glow-outer {
+  background: radial-gradient(circle, rgba(255, 152, 0, 0.35) 0%, rgba(255, 87, 34, 0.2) 45%, transparent 75%);
 }
 
-.map-marker-ember .map-log-core {
-  background: radial-gradient(circle at 35% 35%, #fff3e0 0%, #ff9800 45%, #e65100 100%);
-  box-shadow: 0 0 12px rgba(255, 152, 0, 0.95);
+.map-marker-ember .map-log-glow-inner {
+  background: radial-gradient(circle, rgba(255, 243, 224, 0.15) 0%, rgba(255, 152, 0, 0.42) 45%, rgba(230, 81, 0, 0.1) 72%, transparent 85%);
   animation: map-ember-flicker 2s ease-in-out infinite;
 }
 
-.map-marker-void .map-log-glow {
-  background: radial-gradient(circle, rgba(49, 27, 66, 0.85) 0%, rgba(20, 10, 30, 0.55) 50%, transparent 75%);
+.map-marker-void .map-log-glow-outer {
+  background: radial-gradient(circle, rgba(49, 27, 66, 0.45) 0%, rgba(20, 10, 30, 0.25) 50%, transparent 75%);
 }
 
-.map-marker-void .map-log-core {
-  background: radial-gradient(circle at 40% 40%, #4a148c 0%, #1a0a24 55%, #000 100%);
-  box-shadow: 0 0 14px rgba(74, 20, 140, 0.9), inset 0 0 4px rgba(0, 0, 0, 0.8);
+.map-marker-void .map-log-glow-inner {
+  background: radial-gradient(circle, rgba(74, 20, 140, 0.35) 0%, rgba(26, 10, 36, 0.45) 55%, rgba(0, 0, 0, 0.15) 75%, transparent 88%);
   animation: map-void-pulse 3s ease-in-out infinite;
 }
 
-.map-marker-storm .map-log-glow {
-  background: radial-gradient(circle, rgba(81, 45, 168, 0.7) 0%, rgba(38, 50, 56, 0.55) 50%, transparent 75%);
+.map-marker-storm .map-log-glow-outer {
+  background: radial-gradient(circle, rgba(81, 45, 168, 0.35) 0%, rgba(38, 50, 56, 0.28) 50%, transparent 75%);
   animation: map-storm-spin 4s linear infinite;
 }
 
-.map-marker-storm .map-log-core {
-  background: radial-gradient(circle at 35% 35%, #78909c 0%, #455a64 40%, #263238 100%);
-  box-shadow: 0 0 10px rgba(96, 125, 139, 0.85);
+.map-marker-storm .map-log-glow-inner {
+  background: radial-gradient(circle, rgba(120, 144, 156, 0.2) 0%, rgba(69, 90, 100, 0.38) 40%, rgba(38, 50, 56, 0.12) 72%, transparent 85%);
 }
 
-.map-marker-neon .map-log-core {
-  background: radial-gradient(circle at 35% 35%, #e8f5e9 0%, #66bb6a 40%, #2e7d32 100%);
-  box-shadow: 0 0 14px rgba(102, 187, 106, 0.95), 0 0 6px rgba(0, 255, 100, 0.4);
+.map-marker-neon .map-log-glow-inner {
+  background: radial-gradient(circle, rgba(232, 245, 233, 0.15) 0%, rgba(102, 187, 106, 0.42) 40%, rgba(46, 125, 50, 0.1) 72%, transparent 85%);
   animation: map-neon-flicker 1.5s ease-in-out infinite;
 }
 
 @keyframes map-ember-flicker {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); filter: brightness(1); }
-  50% { transform: translate(-50%, -50%) scale(1.1); filter: brightness(1.2); }
+  0%, 100% { transform: scale(0.95); filter: brightness(1); }
+  50% { transform: scale(1.06); filter: brightness(1.15); }
 }
 
 @keyframes map-void-pulse {
-  0%, 100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.85; }
-  50% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+  0%, 100% { transform: scale(0.92); opacity: 0.75; }
+  50% { transform: scale(1.04); opacity: 1; }
 }
 
 @keyframes map-storm-spin {
@@ -204,56 +208,46 @@
   55% { opacity: 0.8; }
 }
 
-.map-marker-bud .map-log-core {
-  background: radial-gradient(circle at 35% 35%, #f1f8e9 0%, #aed581 45%, #c0ca33 100%);
-  box-shadow: 0 0 10px rgba(174, 213, 129, 0.85);
+.map-marker-bud .map-log-glow-inner {
+  background: radial-gradient(circle, rgba(241, 248, 233, 0.15) 0%, rgba(174, 213, 129, 0.4) 45%, rgba(192, 202, 51, 0.08) 72%, transparent 85%);
 }
 
-.map-marker-whisper .map-log-core {
-  background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 249, 196, 0.4) 60%, transparent 100%);
-  box-shadow: 0 0 6px rgba(255, 253, 231, 0.4);
+.map-marker-whisper .map-log-glow-inner {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 249, 196, 0.28) 60%, transparent 85%);
   opacity: 0.6;
 }
 
-.map-marker-ninja .map-log-core {
-  background: radial-gradient(circle at 40% 40%, #424242 0%, #212121 55%, #000 100%);
-  box-shadow: 0 0 8px rgba(33, 33, 33, 0.9);
+.map-marker-ninja .map-log-glow-inner {
+  background: radial-gradient(circle, rgba(66, 66, 66, 0.25) 0%, rgba(33, 33, 33, 0.42) 55%, rgba(0, 0, 0, 0.12) 75%, transparent 88%);
   opacity: 0.85;
 }
 
-.map-marker-travel .map-log-core {
-  background: radial-gradient(circle at 35% 35%, #e0f7fa 0%, #4db6ac 45%, #00897b 100%);
-  box-shadow: 0 0 10px rgba(77, 182, 172, 0.85);
+.map-marker-travel .map-log-glow-inner {
+  background: radial-gradient(circle, rgba(224, 247, 250, 0.15) 0%, rgba(77, 182, 172, 0.4) 45%, rgba(0, 137, 123, 0.08) 72%, transparent 85%);
 }
 
-.map-marker-sovereign .map-log-core {
-  background: radial-gradient(circle at 35% 35%, #fff8e1 0%, #ffb300 40%, #7b1fa2 100%);
-  box-shadow: 0 0 12px rgba(255, 179, 0, 0.95);
+.map-marker-sovereign .map-log-glow-inner {
+  background: radial-gradient(circle, rgba(255, 248, 225, 0.15) 0%, rgba(255, 179, 0, 0.38) 40%, rgba(123, 31, 162, 0.12) 72%, transparent 85%);
 }
 
-.map-marker-poetic .map-log-core {
-  background: radial-gradient(circle at 35% 35%, #fce4ec 0%, #f48fb1 45%, #ff8a65 100%);
-  box-shadow: 0 0 10px rgba(244, 143, 177, 0.85);
+.map-marker-poetic .map-log-glow-inner {
+  background: radial-gradient(circle, rgba(252, 228, 236, 0.15) 0%, rgba(244, 143, 177, 0.38) 45%, rgba(255, 138, 101, 0.1) 72%, transparent 85%);
 }
 
-.map-marker-veteran .map-log-core {
-  background: radial-gradient(circle at 35% 35%, #d7ccc8 0%, #a1887f 45%, #5d4037 100%);
-  box-shadow: 0 0 10px rgba(141, 110, 99, 0.85);
+.map-marker-veteran .map-log-glow-inner {
+  background: radial-gradient(circle, rgba(215, 204, 200, 0.15) 0%, rgba(161, 136, 127, 0.4) 45%, rgba(93, 64, 55, 0.1) 72%, transparent 85%);
 }
 
-.map-marker-fortune .map-log-core {
-  background: radial-gradient(circle at 35% 35%, #fff9c4 0%, #009688 45%, #ffd54f 100%);
-  box-shadow: 0 0 12px rgba(0, 150, 136, 0.9);
+.map-marker-fortune .map-log-glow-inner {
+  background: radial-gradient(circle, rgba(255, 249, 196, 0.15) 0%, rgba(0, 150, 136, 0.38) 45%, rgba(255, 213, 79, 0.1) 72%, transparent 85%);
 }
 
-.map-marker-titan .map-log-core {
-  background: radial-gradient(circle at 35% 35%, #b0bec5 0%, #546e7a 45%, #263238 100%);
-  box-shadow: 0 0 12px rgba(69, 90, 100, 0.9);
+.map-marker-titan .map-log-glow-inner {
+  background: radial-gradient(circle, rgba(176, 190, 197, 0.15) 0%, rgba(84, 110, 122, 0.42) 45%, rgba(38, 50, 56, 0.1) 72%, transparent 85%);
 }
 
-.map-marker-divine .map-log-core {
-  background: radial-gradient(circle at 35% 35%, #fff 0%, #fff9c4 40%, #ffd700 100%);
-  box-shadow: 0 0 16px rgba(255, 255, 255, 0.95), 0 0 8px rgba(255, 215, 0, 0.7);
+.map-marker-divine .map-log-glow-inner {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(255, 249, 196, 0.42) 40%, rgba(255, 215, 0, 0.12) 72%, transparent 85%);
   animation: map-divine-glow 2.5s ease-in-out infinite;
 }
 

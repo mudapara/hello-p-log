@@ -12,10 +12,12 @@ import { ArPage } from './pages/ArPage'
 import { AboutPage } from './pages/AboutPage'
 import { ContactPage } from './pages/ContactPage'
 import { AdminPage } from './pages/AdminPage'
+import { SiteAnalytics } from './components/SiteAnalytics'
 
 export default function App() {
   return (
     <BrowserRouter>
+      <SiteAnalytics />
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<TopPage />} />

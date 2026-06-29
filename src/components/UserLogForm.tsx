@@ -143,7 +143,7 @@ export function UserLogForm({
   )
   const [fartLocationOther, setFartLocationOther] = useState(defaults?.fartLocationOther ?? '')
   const [locationMode, setLocationMode] = useState<'gps' | 'manual'>(
-    defaults?.locationSource === 'manual' ? 'manual' : 'gps',
+    defaults?.locationSource === 'manual' || defaults?.mapCity ? 'manual' : 'gps',
   )
   const [manualPrefecture, setManualPrefecture] = useState<PrefectureName>(
     (defaults?.mapPrefecture as PrefectureName | null) ?? '東京都',

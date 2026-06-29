@@ -24,15 +24,15 @@ function makeUserMarkerIcon(mistStyle?: string) {
     className: 'map-log-marker-shell',
     html: `
     <div class="map-log-marker map-log-marker-user ${premium}" aria-hidden="true">
-      <span class="map-log-glow"></span>
-      <span class="map-log-core"></span>
+      <span class="map-log-glow map-log-glow-outer"></span>
+      <span class="map-log-glow map-log-glow-inner"></span>
       <span class="map-log-spark map-log-spark-1"></span>
       <span class="map-log-spark map-log-spark-2"></span>
       <span class="map-log-spark map-log-spark-3"></span>
     </div>
   `,
-    iconSize: [28, 28],
-    iconAnchor: [14, 14],
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
   })
 }
 
